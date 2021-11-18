@@ -124,7 +124,7 @@ $proxy_mem = (Get-WMIObject -class win32_ComputerSystem -ComputerName $proxy.Hos
 $proxy_memory = [math]::Round($proxy_mem/1024/1024/1024) 
 Write-Host "Amount of RAM (GB)         " -NoNewline
 Write-Host $proxy_memory -ForegroundColor Green -NoNewline
-If ($proxy_memory -lt 16) {"    More RAM might be added"} 
+If ($proxy_memory -lt 16) {"    More RAM may be needed"} 
 Else {""}
 Write-Host
    }
