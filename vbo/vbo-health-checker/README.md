@@ -45,6 +45,6 @@ The script is still "work in progress". Feedback welcome.
 
 * 1.1
     * Fixed - Proxy Server Total Memory not displayed correctly (Thanks to K00laidIT)
-    
+    * % free capacity for each local VBO repository    
 * 1.0
     * Initial Release
