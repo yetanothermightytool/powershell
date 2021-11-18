@@ -5,12 +5,12 @@
     Script to do a quick check of a VBO setup 
 .DESCRIPTION
     This script checks some VBO components and reports possible issues/misconfigurations
-    - Backup Job Status per Job 
+        - Backup Job Status per Job 
 	- Print license expiration date
 	- Check logs if throttling 
-    - Check logs for sync time entries > 200 - Possible slow backup due to slow backup repo
-    - Proxy stuff (min. recommended CPU and Memory)
-    - More - See history
+        - Check logs for sync time entries > 200 - Possible slow backup due to slow backup repo
+        - Proxy stuff (min. recommended CPU and Memory)
+        - More - See Readme on github
 .NOTES  
     File Name  : vbo-health-checker.ps1  
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
@@ -18,6 +18,7 @@
 .Version history
     1.1 - Bugfixes (see details on github)
         - Output order
+        - Veeam Build Number
         - % Free Capacity of each Local VBO repository
     1.0 - Initial version
 #>
@@ -31,6 +32,7 @@ Import-Module "C:\Program Files\Veeam\Backup365\Veeam.Archiver.PowerShell\Veeam.
 
 # Set the variables
 $orga =$exch = $exar = $od = $sites =$teams =$nok = 0
+$vbo_version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("C:\Program Files\Veeam\Backup365\Veeam.Archiver.Proxy.exe").FileVersion
 $vbo_org         = Get-VBOOrganization #-Name $organizationname
 $vbo_license     = Get-VBOLicensedUser
 $vbo_exp         = Get-VBOLicense
@@ -61,7 +63,7 @@ WriteLog "*** Start VBO Health Check ***"
 # Start the script
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "*                 VBO HEALTH-CHECKER                  *"
-Write-Host "**************************************************v1.0*" -ForegroundColor Cyan
+Write-Host "**************************************************v1.1*" -ForegroundColor Cyan
 
 # Get Backup Job Configuration
 Write-Host "Backup Jobs" -ForegroundColor Cyan
@@ -108,6 +110,10 @@ Write-Host "*******************************************************" -Foreground
 Write-Host "*              VBO Environment Check                  *"
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "Backup Environment" -ForegroundColor Cyan
+Write-Host "VBO Build Number           " -NoNewline
+Write-Host $vbo_version -ForegroundColor Green
+WriteLog   "VBO Build Number" $vbo_version
+Write-Host ""
 Write-Host "Number of Proxies          " -NoNewline
 Write-Host $vbo_proxy.Count -ForegroundColor Green
 WriteLog   "Number of Proxies" $vbo_proxy.Count
@@ -148,7 +154,7 @@ WriteLog "% Free Capacity" $vbo_repofree
 Write-Host
 
 # Check logs if throttling occured - All logs from current month get checked
-Write-Host "Did any throttling occur during" $month $year "?                  " -NoNewline
+Write-Host "Did any throttling occur during" $month $year "?                   " -NoNewline
 If ($m365_throttling.Count -eq 0) {"No"}
 $m365_throttling
 WriteLog "Did any throttling occur during $month $year ?" $m365_throttling.Count
@@ -165,11 +171,16 @@ Write-Host
 ForEach ($server in $vbo_proxy) {
 Write-Host "Any low memory conditions on" $server.Hostname "the last 48 h?  " -NoNewline
 $mem_events = Get-WinEvent -ComputerName $server.Hostname -FilterHashtable @{ LogName='System'; StartTime=$evt_date; Id='2004' } -ErrorAction SilentlyContinue
-If ($mem_events.Count -eq 0) {"No"}
-else{$mem_events.Count}
+If ($mem_events.Count -eq 0) 
+{
+Write-Host "No"
+WriteLog "No low memory conditions on" $server.Hostname
+}else{
+Write-Host $mem_events.Count
 WriteLog "Low memory conditions on"$server.Hostname $mem_events.Count
-Write-Host
 }
+}
+Write-Host
 
 # Print if a backup job is not in "Success" state
 Write-Host "Jobs not successfully run  " -NoNewline
