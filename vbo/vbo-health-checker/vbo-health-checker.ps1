@@ -5,21 +5,22 @@
     Script to do a quick check of a VBO setup 
 .DESCRIPTION
     This script checks some VBO components and reports possible issues/misconfigurations
-        - Backup Job Status per Job 
+    - Backup Job Status per Job 
 	- Print license expiration date
 	- Check logs if throttling 
-        - Check logs for sync time entries > 200 - Possible slow backup due to slow backup repo
-        - Proxy stuff (min. recommended CPU and Memory)
-        - More - See Readme on github
+    - Check logs for sync time entries > 200 - Possible slow backup due to slow backup repo
+    - Proxy stuff (min. recommended CPU and Memory)
+    - More - See Readme on github
 .NOTES  
     File Name  : vbo-health-checker.ps1  
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 .Version history
     1.1 - Bugfixes (see details on github)
-        - Output order
-        - Veeam Build Number
-        - % Free Capacity of each Local VBO repository
+        - Changed Output order
+        - Added Veeam Build Number
+        - Added % Free Capacity of each Local VBO repository
+        - Added output of Restore Sessions outside business hours (7 to 17)
     1.0 - Initial version
 #>
 param(
@@ -46,7 +47,7 @@ $evt_date        = (Get-Date).AddDays(-2)
 $m365_throttling = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Proxy_$special_date*.log -Pattern "throttled [^0]" | Select Line| Format-Table -AutoSize
 $vbo_sync        = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Proxy_$special_date*.log -Pattern "Sync time: (6\.(?!0[^\d]|00)\d{1,2}|(((4[1-9](?!\d)|[5-9][0-9])(?![\d])|\d*[1-9]\d{2,})(\.\d{1,2})?))" | Select Line| Format-Table -AutoSize
 $mem_events      = 0
-#$logfile=$args[0]
+$vbo_restore     = Get-VBORestoreSession | Where-Object {($_.StartTime.Hour -lt 7 -or $_.StartTime.Hour -ge 17)}
 if (!$logfile) {
 $logfile = "C:\Scripts\Veeam\vbo\vbo_healthcheck_$env:computername.log"
 }
@@ -196,4 +197,19 @@ Write-Host "License expiration         " -NoNewline
 Write-Host $vbo_exp.SupportExpirationDate -ForegroundColor Green
 WriteLog "License expiration" $vbo_exp.SupportExpirationDate
 Write-Host
+
+# Check for Restore Sessions outside of business hours (7 to 17)
+ForEach ($outside in $vbo_restore) {
+Write-Host "Restore started outside of business hours" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Start Time         " -NoNewline
+$outside.StartTime
+Write-Host "Restore Point      " -NoNewline
+$outside.Name
+Write-Host "Initiated by       " -NoNewline
+$outside.InitiatedBy
+Write-Host "Processed Object   " -NoNewline
+$outside.ProcessedObjects
+Write-Host ""
+}
 WriteLog "*** End VBO Health Check ***"
