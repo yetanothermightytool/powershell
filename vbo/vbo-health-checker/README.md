@@ -47,8 +47,9 @@ The script is still "work in progress". Feedback welcome.
 * 1.1
     * Fixed - Proxy Server Total Memory not displayed correctly (Thanks to K00laidIT)
     * Fixed - Low Memory Conditon on Proxy reported correctly
-    * % free capacity for each local VBO repository 
-    * Output of Veeam Backup for Microsoft 365 Build Number - https://www.veeam.com/kb4106
-    * Output order   
+    * Added % free capacity for each local VBO repository 
+    * Added output of Veeam Backup for Microsoft 365 Build Number - https://www.veeam.com/kb4106
+    * Added output of Restore Sessions outside business hours (7 to 17) - Can be adjusted $vbo_restore variable  
+    * Changed output order
 * 1.0
     * Initial Release
