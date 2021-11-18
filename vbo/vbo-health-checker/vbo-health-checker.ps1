@@ -7,7 +7,7 @@
     This script checks some VBO components and reports possible issues/misconfigurations
     - Backup Job Status per Job 
 	- Print license expiration date
-	- Check logs if throtthling 
+	- Check logs if throttling 
     - Check logs for sync time entries > 200 - Possible slow backup due to slow backup repo
     - Proxy stuff (min. recommended CPU and Memory)
     - More - See history
@@ -148,7 +148,7 @@ WriteLog "% Free Capacity" $vbo_repofree
 Write-Host
 
 # Check logs if throttling occured - All logs from current month get checked
-Write-Host "Did any throtthling occur during" $month $year "?                  " -NoNewline
+Write-Host "Did any throttling occur during" $month $year "?                  " -NoNewline
 If ($m365_throttling.Count -eq 0) {"No"}
 $m365_throttling
 WriteLog "Did any throttling occur during $month $year ?" $m365_throttling.Count
