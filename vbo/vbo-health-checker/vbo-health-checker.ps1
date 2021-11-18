@@ -172,3 +172,4 @@ Else {""}
 WriteLog "Jobs not successfully run" $jobs.Count
 Write-Host ""
 WriteLog "*** End VBO Health Check ***"
+
