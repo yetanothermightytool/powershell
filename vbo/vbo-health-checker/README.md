@@ -15,12 +15,12 @@ The script checks and reports possible issues/misconfigurations:
 
     - Backup Job Status per Job / Number of failed job
     - License expiration date
-    - Check logs if throtthling occured on MS side
+    - Check logs if throttling occured on MS side
     - Possible slow backup due to slow backup repository
     - Proxy stuff (min. recommended CPU and Memory)
     - Check Windows event log for low memory conditions    
     - Logfile with the findings
-    - Free Capacity (percentage) for each local repository
+    - Free capacity (percentage) for each repository (local not object storage)
 
 ## Parameters
   
