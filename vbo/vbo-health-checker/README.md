@@ -39,5 +39,12 @@ This script has been tested with the following versions of Veeam Backup for Offi
 
 The script is still "work in progress". Feedback welcome.
 
-
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
+
+## Version History
+
+* 1.1
+    * Proxy Server Total Memory not displayed correctly
+    
+* 1.0
+    * Initial Release
