@@ -19,6 +19,7 @@
     Requires   : PowerShell 
 
 .Version history
+    1.1 - Bug fixes - See Readme on git
     1.0 - Initial version
 #>
 param(
