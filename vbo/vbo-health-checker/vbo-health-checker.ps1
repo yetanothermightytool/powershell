@@ -10,17 +10,15 @@
 	- Check logs if throtthling 
     - Check logs for sync time entries > 200 - Possible slow backup due to slow backup repo
     - Proxy stuff (min. recommended CPU and Memory)
-	Created for Veeam Backup for Microsoft Office 365 v5
-
-
+    - More - See history
 .NOTES  
     File Name  : vbo-health-checker.ps1  
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
-
 .Version history
     1.1 - Bugfixes (see details on github)
-        - % Free Capacity of each local VBO repository
+        - Output order
+        - % Free Capacity of each Local VBO repository
     1.0 - Initial version
 #>
 param(
@@ -109,6 +107,7 @@ $total_objects=$orga+$exch+$exar+$od+$sites+$teams
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "*              VBO Environment Check                  *"
 Write-Host "*******************************************************" -ForegroundColor Cyan
+Write-Host "Backup Environment" -ForegroundColor Cyan
 Write-Host "Number of Proxies          " -NoNewline
 Write-Host $vbo_proxy.Count -ForegroundColor Green
 WriteLog   "Number of Proxies" $vbo_proxy.Count
@@ -119,7 +118,7 @@ Write-Host $proxy.Hostname
 $proxy_cpu = (Get-WmiObject -Class Win32_Processor -ComputerName $proxy.Hostname)
 Write-Host "Number of CPUs             " -NoNewline
 Write-Host $proxy_cpu.Count -ForegroundColor Green -NoNewline
-If ($proxy_cpu.Count -lt 4) {"     More CPUs might be added"} 
+If ($proxy_cpu.Count -lt 4) {"     More CPUs may be needed"} 
 Else {""}
 $proxy_mem = (Get-WMIObject -class win32_ComputerSystem -ComputerName $proxy.Hostname | % {$_.TotalPhysicalMemory})
 $proxy_memory = [math]::Round($proxy_mem/1024/1024/1024) 
@@ -129,6 +128,25 @@ If ($proxy_memory -lt 16) {"    More RAM might be added"}
 Else {""}
 Write-Host
    }
+# Number of Repositories - No more checks
+Write-Host "Number of Repositories     " -NoNewline
+Write-Host $vbo_repository.Count -ForegroundColor Green
+WriteLog "Number of Repositories" $vbo_repository.Count
+Write-Host
+ForEach ($repo in $vbo_repository) {
+If (!$repo.ObjectStorageRepository){
+Write-Host "Local Repository Usage"
+Write-Host "Repository Name:           " -NoNewline
+Write-Host $repo.Name
+WriteLog "Repository Name" $repo.name
+$vbo_repofree = [math]::Round(($repo.FreeSpace*100/$repo.Capacity)) 
+Write-Host "% Free Capacity:           " -NoNewline
+Write-Host $vbo_repofree -ForegroundColor Green
+WriteLog "% Free Capacity" $vbo_repofree
+}
+}
+Write-Host
+
 # Check logs if throttling occured - All logs from current month get checked
 Write-Host "Did any throtthling occur during" $month $year "?                  " -NoNewline
 If ($m365_throttling.Count -eq 0) {"No"}
@@ -153,23 +171,12 @@ WriteLog "Low memory conditions on"$server.Hostname $mem_events.Count
 Write-Host
 }
 
-# Number of Repositories - No more checks
-Write-Host "Number of Repositories     " -NoNewline
-Write-Host $vbo_repository.Count -ForegroundColor Green
-WriteLog "Number of Repositories" $vbo_repository.Count
-Write-Host
-ForEach ($repo in $vbo_repository) {
-If (!$repo.ObjectStorageRepository){
-Write-Host "Repository Name:           " -NoNewline
-Write-Host $repo.Name
-WriteLog "Repository Name" $repo.name
-$vbo_repofree = [math]::Round(($repo.FreeSpace*100/$repo.Capacity)) 
-Write-Host "% Free Capacity:           " -NoNewline
-Write-Host $vbo_repofree -ForegroundColor Green
-WriteLog "% Free Capacity" $vbo_repofree
-}
-}
-Write-Host
+# Print if a backup job is not in "Success" state
+Write-Host "Jobs not successfully run  " -NoNewline
+Write-Host $nok -ForegroundColor Yellow
+If ($jobs.Count -le 1 -and $orga -gt 1) {"                           Only one Backup Job configured"} 
+Else {""}
+WriteLog "Jobs not successfully run" $jobs.Count
 
 # Licensed user & expiration date
 Write-Host "Licensed user              " -NoNewline
@@ -178,12 +185,4 @@ Write-Host "License expiration         " -NoNewline
 Write-Host $vbo_exp.SupportExpirationDate -ForegroundColor Green
 WriteLog "License expiration" $vbo_exp.SupportExpirationDate
 Write-Host
-
-# Print if any job is not in "Success" state
-Write-Host "Jobs not successfully run  " -NoNewline
-Write-Host $nok -ForegroundColor Yellow
-If ($jobs.Count -le 1 -and $orga -gt 1) {"                           Only one Backup Job configured"} 
-Else {""}
-WriteLog "Jobs not successfully run" $jobs.Count
-Write-Host ""
 WriteLog "*** End VBO Health Check ***"
