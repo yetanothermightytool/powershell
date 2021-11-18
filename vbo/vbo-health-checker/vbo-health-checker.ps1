@@ -11,15 +11,16 @@
     - Check logs for sync time entries > 200 - Possible slow backup due to slow backup repo
     - Proxy stuff (min. recommended CPU and Memory)
 	Created for Veeam Backup for Microsoft Office 365 v5
-    
-	
+
+
 .NOTES  
     File Name  : vbo-health-checker.ps1  
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 
 .Version history
-    1.1 - Bug fixes - See Readme on git
+    1.1 - Bugfixes (see details on github)
+        - % Free Capacity of each local VBO repository
     1.0 - Initial version
 #>
 param(
@@ -37,6 +38,7 @@ $vbo_license     = Get-VBOLicensedUser
 $vbo_exp         = Get-VBOLicense
 $vbo_proxy       = Get-VBOProxy
 $vbo_repository  = Get-VBORepository
+$vbo_repofree    = 0
 $special_date    = (Get-Date).tostring("yyyy_MM")
 $year            = (Get-Date).tostring("yyyy")
 $month           = [cultureinfo]::InvariantCulture.DateTimeFormat.GetAbbreviatedMonthName((Get-Date).Month) 
@@ -73,7 +75,7 @@ ForEach ($j in $jobs) {
   $job_items = (Get-VBOJob -Name $j.Name)
   Write-Host "Job Name                   " -NoNewline
   Write-Host $j -ForegroundColor Cyan
-  
+
 # Get what got selected within the backup jobs
   If ($job_items.SelectedItems.Organization.Count -ge 1) {
   "Number of Organizations    "+$job_items.SelectedItems.Organization.Count
@@ -110,6 +112,7 @@ Write-Host "*******************************************************" -Foreground
 Write-Host "Number of Proxies          " -NoNewline
 Write-Host $vbo_proxy.Count -ForegroundColor Green
 WriteLog   "Number of Proxies" $vbo_proxy.Count
+
 ForEach ($proxy in $vbo_proxy) {
 Write-Host "Proxy Name                 " -NoNewline
 Write-Host $proxy.Hostname
@@ -155,6 +158,18 @@ Write-Host "Number of Repositories     " -NoNewline
 Write-Host $vbo_repository.Count -ForegroundColor Green
 WriteLog "Number of Repositories" $vbo_repository.Count
 Write-Host
+ForEach ($repo in $vbo_repository) {
+If (!$repo.ObjectStorageRepository){
+Write-Host "Repository Name:           " -NoNewline
+Write-Host $repo.Name
+WriteLog "Repository Name" $repo.name
+$vbo_repofree = [math]::Round(($repo.FreeSpace*100/$repo.Capacity)) 
+Write-Host "% Free Capacity:           " -NoNewline
+Write-Host $vbo_repofree -ForegroundColor Green
+WriteLog "% Free Capacity" $vbo_repofree
+}
+}
+Write-Host
 
 # Licensed user & expiration date
 Write-Host "Licensed user              " -NoNewline
@@ -172,4 +187,3 @@ Else {""}
 WriteLog "Jobs not successfully run" $jobs.Count
 Write-Host ""
 WriteLog "*** End VBO Health Check ***"
-
