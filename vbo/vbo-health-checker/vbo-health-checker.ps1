@@ -109,7 +109,6 @@ Write-Host "*******************************************************" -Foreground
 Write-Host "Number of Proxies          " -NoNewline
 Write-Host $vbo_proxy.Count -ForegroundColor Green
 WriteLog   "Number of Proxies" $vbo_proxy.Count
-
 ForEach ($proxy in $vbo_proxy) {
 Write-Host "Proxy Name                 " -NoNewline
 Write-Host $proxy.Hostname
@@ -118,14 +117,14 @@ Write-Host "Number of CPUs             " -NoNewline
 Write-Host $proxy_cpu.Count -ForegroundColor Green -NoNewline
 If ($proxy_cpu.Count -lt 4) {"     More CPUs might be added"} 
 Else {""}
-$proxy_mem = (Get-WmiObject win32_physicalmemory -ComputerName $proxy.Hostname | % {$_.Capacity/1024/1024/1024})
+$proxy_mem = (Get-WMIObject -class win32_ComputerSystem -ComputerName $proxy.Hostname | % {$_.TotalPhysicalMemory})
+$proxy_memory = [math]::Round($proxy_mem/1024/1024/1024) 
 Write-Host "Amount of RAM (GB)         " -NoNewline
-Write-Host $proxy_mem -ForegroundColor Green -NoNewline
-If ($proxy_mem -lt 16) {"    More RAM might be added"} 
+Write-Host $proxy_memory -ForegroundColor Green -NoNewline
+If ($proxy_memory -lt 16) {"    More RAM might be added"} 
 Else {""}
 Write-Host
    }
-
 # Check logs if throttling occured - All logs from current month get checked
 Write-Host "Did any throtthling occur during" $month $year "?                  " -NoNewline
 If ($m365_throttling.Count -eq 0) {"No"}
