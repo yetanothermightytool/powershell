@@ -3,7 +3,7 @@ Powershell script to get quickly some useful information about the health of a V
 
 ## Description
 ~~~~
-Version : 1.0 (November 10th 2021)
+Version : 1.1 (November 19th 2021)
 Requires: Veeam Backup for Microsoft Office 365 v5 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -44,7 +44,7 @@ The script is still "work in progress". Feedback welcome.
 ## Version History
 
 * 1.1
-    * Proxy Server Total Memory not displayed correctly
+    * Fixed - Proxy Server Total Memory not displayed correctly (Thanks to K00laidIT)
     
 * 1.0
     * Initial Release
