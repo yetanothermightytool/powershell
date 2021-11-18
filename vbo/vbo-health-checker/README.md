@@ -20,6 +20,7 @@ The script checks and reports possible issues/misconfigurations:
     - Proxy stuff (min. recommended CPU and Memory)
     - Check Windows event log for low memory conditions    
     - Logfile with the findings
+    - Free Capacity (percentage) for each local repository
 
 ## Parameters
   
