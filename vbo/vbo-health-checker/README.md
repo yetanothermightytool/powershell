@@ -46,6 +46,9 @@ The script is still "work in progress". Feedback welcome.
 
 * 1.1
     * Fixed - Proxy Server Total Memory not displayed correctly (Thanks to K00laidIT)
-    * % free capacity for each local VBO repository    
+    * Fixed - Low Memory Conditon on Proxy reported correctly
+    * % free capacity for each local VBO repository 
+    * Output of Veeam Backup for Microsoft 365 Build Number - https://www.veeam.com/kb4106
+    * Output order   
 * 1.0
     * Initial Release
