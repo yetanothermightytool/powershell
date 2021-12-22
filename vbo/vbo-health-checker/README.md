@@ -36,7 +36,7 @@ It's always recommended to open a support case as soon you're facing an issue wi
 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
 - v5.0 - All versions
-- v6.0beta
+- v6.0beta - Will need some adjustments due to new log file locations
 
 The script is still "work in progress". Feedback welcome.
 
@@ -53,4 +53,3 @@ The script is still "work in progress". Feedback welcome.
     * Changed output order
 * 1.0
     * Initial Release
-g
