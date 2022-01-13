@@ -15,26 +15,29 @@
     File Name  : vbo-health-checker.ps1  
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
-.Version history
-    1.1 - Bugfixes (see details on github)
-        - Changed Output order
-        - Added Veeam Build Number
-        - Added % Free Capacity of each Local VBO repository
-        - Added output of Restore Sessions outside business hours (7 to 17)
-    1.0 - Initial version
 #>
 param(
     [Parameter(Mandatory = $false)]
-    [String] $Logfile = "C:\Scripts\Veeam\vbo\vbo_healthcheck_$env:computername.log"
-    )
-clear
+    [String] $Logfile = "C:\Users\stephan.herzig\Documents\Script\vbo\vbo_healthcheck_$env:computername.log",
+    $Webcheck)
+Clear-Host
 # Import the Veeam Backup for Microsoft Office 365 Module
 Import-Module "C:\Program Files\Veeam\Backup365\Veeam.Archiver.PowerShell\Veeam.Archiver.PowerShell.psd1"
 
+
+
 # Set the variables
-$orga =$exch = $exar = $od = $sites =$teams =$nok = 0
+$orga = $exch = $exar = $od = $sites = $teams = $nok = 0
 $vbo_version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("C:\Program Files\Veeam\Backup365\Veeam.Archiver.Proxy.exe").FileVersion
+if ($Webcheck -eq "Yes") {
+$WebReq                    = Invoke-WebRequest https://www.veeam.com/kb4106
+$InnerText                 = $WebReq.AllElements | Where-Object {$_.tagName -eq "TD" -and $_.innerText -ne $null} | Select -ExpandProperty innerText
+$vbo_latestversion         = $InnerText[14]
+$vbo_latestdisplayversion  = $InnerText[16]
+$vbo_latestversionkb       = $InnerText[18]
+                   }
 $vbo_org         = Get-VBOOrganization #-Name $organizationname
+$vbo_logpath     = "C:\ProgramData\Veeam\Backup365\Logs\" + $vbo_org
 $vbo_license     = Get-VBOLicensedUser
 $vbo_exp         = Get-VBOLicense
 $vbo_proxy       = Get-VBOProxy
@@ -49,7 +52,7 @@ $vbo_sync        = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam
 $mem_events      = 0
 $vbo_restore     = Get-VBORestoreSession | Where-Object {($_.StartTime.Hour -lt 7 -or $_.StartTime.Hour -ge 17)}
 if (!$logfile) {
-$logfile = "C:\Scripts\Veeam\vbo\vbo_healthcheck_$env:computername.log"
+$logfile = "C:\Users\stephan.herzig\Documents\Script\vbo\vbo_healthcheck_$env:computername.log"
 }
 #WriteLog Function
 function WriteLog
@@ -64,7 +67,7 @@ WriteLog "*** Start VBO Health Check ***"
 # Start the script
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "*                 VBO HEALTH-CHECKER                  *"
-Write-Host "**************************************************v1.1*" -ForegroundColor Cyan
+Write-Host "**************************************************v1.2*" -ForegroundColor Cyan
 
 # Get Backup Job Configuration
 Write-Host "Backup Jobs" -ForegroundColor Cyan
@@ -75,7 +78,7 @@ Write-Host ""
 ForEach ($j in $jobs) {
   $job_items = (Get-VBOJob -Name $j.Name)
   Write-Host "Job Name                   " -NoNewline
-  Write-Host $j -ForegroundColor Cyan
+  Write-Host $j.Name -ForegroundColor Cyan
 
 # Get what got selected within the backup jobs
   If ($job_items.SelectedItems.Organization.Count -ge 1) {
@@ -98,23 +101,47 @@ ForEach ($j in $jobs) {
   $teams=$teams+$job_items.SelectedItems.Team.Count}
   Write-Host "Last Backup Status         " -NoNewline 
   Write-Host $job_items.LastStatus -ForegroundColor Green
+  Write-Host "Last Run                   " -NoNewline 
+  Write-Host $job_items.LastRun
+
+# Bottleneck from Job log - v6 and later
+  if ($vbo_version -gt 10) {
+  Write-Host "Bottleneck                 " -NoNewline 
+  $job_name = $j.Name
+  $FullFileName = Get-ChildItem -Path $vbo_logpath\$job_name -Filter *.log | Where-Object {!$_.PSIsContainer} | Sort-Object {$_.LastWriteTime} -Descending | Select-Object -First 1
+  ForEach ($File in $FullFileName)
+        {
+        $FilePath = $File.DirectoryName
+        $FileName = $File.Name
+        $bottleneck = Select-String -Path $FilePath"\"$FileName -Pattern "Bottleneck:" | Select Line 
+        Write-Host $bottleneck.Line
+        }
+        }
+# End bottleneck detection
+
   If($job_items.LastStatus -ne "Success") {$nok++}
   Write-Host " "
   sleep 3
     }
 
 # Calculate the total objects (not used)
-$total_objects=$orga+$exch+$exar+$od+$sites+$teams
+#$total_objects=$orga+$exch+$exar+$od+$sites+$teams
 
 # Now some checking
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "*              VBO Environment Check                  *"
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "Backup Environment" -ForegroundColor Cyan
-Write-Host "VBO Build Number           " -NoNewline
+Write-Host "Installed version          " -NoNewline
 Write-Host $vbo_version -ForegroundColor Green
-WriteLog   "VBO Build Number" $vbo_version
+WriteLog   "Installed Version" $vbo_version
 Write-Host ""
+if ($Webcheck -eq "Yes") {
+Write-Host "Latest available version   " -NoNewline
+Write-Host $vbo_latestdisplayversion -ForegroundColor Green
+Write-Host "Please see this KB Article " -NoNewline
+Write-Host $vbo_latestversionkb -ForegroundColor Green
+Write-Host ""            }
 Write-Host "Number of Proxies          " -NoNewline
 Write-Host $vbo_proxy.Count -ForegroundColor Green
 WriteLog   "Number of Proxies" $vbo_proxy.Count
@@ -125,7 +152,7 @@ Write-Host $proxy.Hostname
 $proxy_cpu = (Get-WmiObject -Class Win32_Processor -ComputerName $proxy.Hostname)
 Write-Host "Number of CPUs             " -NoNewline
 Write-Host $proxy_cpu.Count -ForegroundColor Green -NoNewline
-If ($proxy_cpu.Count -lt 4) {"     More CPUs may be needed"} 
+If ($proxy_cpu.Count -lt 4) {"More CPUs may be needed"} 
 Else {""}
 $proxy_mem = (Get-WMIObject -class win32_ComputerSystem -ComputerName $proxy.Hostname | % {$_.TotalPhysicalMemory})
 $proxy_memory = [math]::Round($proxy_mem/1024/1024/1024) 
@@ -170,7 +197,7 @@ Write-Host
 
 # Check Windows System Log - Looking for Memory Exhausted Event-Id 2004
 ForEach ($server in $vbo_proxy) {
-Write-Host "Any low memory conditions on" $server.Hostname "the last 48 h?  " -NoNewline
+Write-Host "Any low memory conditions on" $server.Hostname "the last 48 h?           " -NoNewline
 $mem_events = Get-WinEvent -ComputerName $server.Hostname -FilterHashtable @{ LogName='System'; StartTime=$evt_date; Id='2004' } -ErrorAction SilentlyContinue
 If ($mem_events.Count -eq 0) 
 {
