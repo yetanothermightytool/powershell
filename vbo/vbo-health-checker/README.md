@@ -27,7 +27,7 @@ The script checks and reports possible issues/misconfigurations:
   `Logfile`
 _(optional)_ The path and filename where the output gets written to.
 
- `Webchecl`
+ `Webcheck`
 _(optional)_ Set yes if you want to check the latest release from https://www.veeam.com/kb4106
 
   
