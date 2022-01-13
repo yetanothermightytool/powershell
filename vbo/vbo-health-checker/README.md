@@ -32,7 +32,7 @@ _(optional)_ Set yes if you want to check the latest release from https://www.ve
 
   
 ## Example: 
-`PS> .\vbo-health-checker.ps1 -Logfile C:\Logfiles\output.txt` -Webcheck yes
+`PS> .\vbo-health-checker.ps1 -Logfile C:\Logfiles\output.txt -Webcheck yes`
   
 ## Notes
 
