@@ -3,7 +3,7 @@ Powershell script to get quickly some useful information about the health of a V
 
 ## Description
 ~~~~
-Version : 1.1 (November 19th 2021)
+Version : 1.2 (January 13th 2022)
 Requires: Veeam Backup for Microsoft Office 365 v5 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -26,9 +26,13 @@ The script checks and reports possible issues/misconfigurations:
   
   `Logfile`
 _(optional)_ The path and filename where the output gets written to.
+
+ `Webchecl`
+_(optional)_ Set yes if you want to check the latest release from https://www.veeam.com/kb4106
+
   
 ## Example: 
-`PS> .\vbo-health-checker.ps1 -Logfile C:\Logfiles\output.txt`  
+`PS> .\vbo-health-checker.ps1 -Logfile C:\Logfiles\output.txt` -Webcheck yes
   
 ## Notes
 
@@ -36,13 +40,19 @@ It's always recommended to open a support case as soon you're facing an issue wi
 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
 - v5.0 - All versions
-- v6.0beta - Will need some adjustments due to new log file locations
+- v6.0beta - Will need some adjustments due to new log file locations (work in progress)
 
 The script is still "work in progress". Feedback welcome.
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+
+* 1.2
+    * Get available versions from https://www.veeam.com/kb4106 and display the latest available version - Optional prameter Webcheck
+    * Last run of Backup Job
+    * Bottleneck for every Backup Job - v6beta only
+    * Fixed - Code cleanup - Some used commands (eg. clear) replaced
 
 * 1.1
     * Fixed - Proxy Server Total Memory not displayed correctly (Thanks to K00laidIT)
