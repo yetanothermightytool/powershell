@@ -1,5 +1,5 @@
 # VBO Exchange Restore Checker
-Powershell Script to check backed up Exchange Online restore data.
+Powershell Script to check restored Exchange Online data backed up by Veeam Backup for Microsoft Office 365.
 
 ## Description
 ~~~~
@@ -33,7 +33,7 @@ _(mandatory)_ Search string (text) that should be found within the e-mail msg fi
 
 
 ## Example: 
-`PS> .\vbo-exrestore-checker.ps1 -Mailbox Monitoring -Subject vbo-exchecker -Pattern VBO-EX`
+`PS>.\vbo-exrestore-checker.ps1 -Mailbox Monitoring -Subject vbo-exchecker -Pattern VBO-EX`
   
 ## Notes
 
