@@ -11,7 +11,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 
 ## Prerequisites
 
-Send an email with with a subject and text of your choice, which will then be backed up with Veeam Backup for Microsoft Office 365. This email can then be searched and restored using this script.
+Send an email with with a subject and text of your choice to a specific mailbox, which will then be backed up with Veeam Backup for Microsoft Office 365. This email can then be searched and restored using this script.
 
 ## Purpose
 
