@@ -18,8 +18,8 @@ Get the hash value with the Powershell command "Get-FileHash".
 
 The script restores the file to a local folder and compares the hash values (SHA-256)
 
-   - Latest backup state will be used for the restore
-	 - If the compared hash values match the LastExitCode will be 0 otherwise 1
+    - Latest backup state will be used for the restore
+    - If the compared hash values match the LastExitCode will be 0 otherwise 1
 
 ## Parameters
   
