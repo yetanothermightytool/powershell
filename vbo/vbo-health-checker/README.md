@@ -1,5 +1,5 @@
 # VBO Health Checker
-Powershell script to get quickly some useful information about the health of a Veeam Backup for Microsoft Office 365 setup.
+Powershell script to quickly get some useful information about the health of a Veeam Backup for Microsoft Office 365 setup.
 
 ## Description
 ~~~~
