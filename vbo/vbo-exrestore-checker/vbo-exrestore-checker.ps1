@@ -9,7 +9,9 @@
 .NOTES  
     File Name  : vbo-exrestore-checker.ps1 
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
-    Requires   : PowerShell 
+    Requires   : PowerShell
+.VERSION
+    1.0        : Version history on github
 #>
 param(
         [String] $Scanpath = "C:\Scripts\vbo\vbo-checker\",
@@ -19,6 +21,9 @@ param(
         [String] $Pattern
      )
 Clear-Host
+
+#Impot Veeam Archiver Module
+Import-Module "C:\Program Files\Veeam\Backup365\Veeam.Archiver.PowerShell\Veeam.Archiver.PowerShell.psd1"
 
 #Start Exchange Restore Session pointing to the latest backup state
 Start-VBOExchangeItemRestoreSession -LatestState | Out-Null
