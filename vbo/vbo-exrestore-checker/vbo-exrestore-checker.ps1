@@ -22,9 +22,6 @@ param(
      )
 Clear-Host
 
-#Impot Veeam Archiver Module
-Import-Module "C:\Program Files\Veeam\Backup365\Veeam.Archiver.PowerShell\Veeam.Archiver.PowerShell.psd1"
-
 #Start Exchange Restore Session pointing to the latest backup state
 Start-VBOExchangeItemRestoreSession -LatestState | Out-Null
 
