@@ -36,7 +36,7 @@ This script has been tested with the following versions of Veeam Backup for Micr
 
  Script connects on the RestAPI running on localhost. The URL can be changed on the line containing this variable:
 
-`$veeamAPI = "https://localhost:4443"
+`$veeamAPI = "https://localhost:4443"`
 
 The script is still "work in progress". Feedback welcome.
 
