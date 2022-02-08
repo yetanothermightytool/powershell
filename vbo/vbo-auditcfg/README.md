@@ -23,7 +23,7 @@ Optionally the email notification settings can be set. (See Parameters)
 _(mandatory)_ Username of the user to be audited
 
  `SetAuditNotification`
-_(optional)_ Configures the Audit Notification settings. Please change the SMTP server settings within the script
+_(optional)_ Configures the Audit Notification settings. Please change the SMTP server settings within the script.
 
   
 ## Example: 
@@ -34,7 +34,7 @@ _(optional)_ Configures the Audit Notification settings. Please change the SMTP 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
 - v5.0 - All versions
 
- Script connects on the RestAPI running on localhost. The URL can be changed on the line containing this variable:
+ Script connects the the RestAPI service running on localhost. The URL can be changed on the line containing this variable:
 
 `$veeamAPI = "https://localhost:4443"`
 
