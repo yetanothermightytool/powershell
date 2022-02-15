@@ -1,4 +1,4 @@
-	# VBAzure - Worker "Tagger"
+# VBAzure - Worker "Tagger"
 Powershell script to modify the Worker tag and query the tag informations 
 
 ## Description
