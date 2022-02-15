@@ -32,10 +32,10 @@ _(value)_ Tag value. Please consider the MS naming conventions.
 
 ## Examples:
 
-Set the tag name "worker" and the value "bkp-department
+#Set the tag name "worker" and the value "bkp-department
 `PS> .\vbazure-workertag.ps1 -VBAzurehost veeambackup.domain.local -Set -TagName worker -TagValue bkp-department`
 
-Get all tags
+#Get all tags
 `PS>     .\vbazure-workertag.ps1 -VBAzurehost veeambackup.domain.local -Get`
   
 ## Notes
