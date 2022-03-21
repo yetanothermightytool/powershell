@@ -52,7 +52,7 @@ The script is still "work in progress". Feedback welcome.
 ## Version History
 
 * 1.3 
-    * New parameter "Organization" for multi org setups
+    * New parameter "Organization" for multi org setups (Thanks to azja09)
     * Script informs if any changes to the repository retentions have been applied during the current month
     * SP restore throttling information
     * Bottleneck for every Backup Job - v6+ only
