@@ -3,7 +3,7 @@ Powershell script to quickly get some useful information about the health of a V
 
 ## Description
 ~~~~
-Version : 1.2 (January 13th 2022)
+Version : 1.3 (March 21 2022)
 Requires: Veeam Backup for Microsoft Office 365 v5 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -24,15 +24,18 @@ The script checks and reports possible issues/misconfigurations:
 
 ## Parameters
   
+  `Organization`
+_(mandatory)_ The name of the organization.
+  
   `Logfile`
 _(optional)_ The path and filename where the output gets written to.
 
  `Webcheck`
-_(optional)_ Set yes if you want to check the latest release from https://www.veeam.com/kb4106
+_(optional)_ Check if the latest releas is installed - https://www.veeam.com/kb4106
 
   
 ## Example: 
-`PS> .\vbo-health-checker.ps1 -Logfile C:\Logfiles\output.txt -Webcheck yes`
+`PS> .\vbo-health-checker.ps1 -Organization ACMECompany -Logfile C:\Logfiles\output.txt -Webcheck`
   
 ## Notes
 
@@ -40,13 +43,19 @@ It's always recommended to open a support case as soon you're facing an issue wi
 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
 - v5.0 - All versions
-- v6.0beta - Will need some adjustments due to new log file locations (work in progress)
+- v6.0 
 
 The script is still "work in progress". Feedback welcome.
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+
+* 1.3 
+    * New parameter "Organization" for multi org setups
+    * Script informs if any changes to the repository retentions have been applied during the current month
+    * SP restore throttling information
+    * Bottleneck for every Backup Job - v6+ only
 
 * 1.2
     * Get available versions from https://www.veeam.com/kb4106 and display the latest available version - Optional prameter Webcheck
