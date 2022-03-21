@@ -5,38 +5,33 @@
     Script to do a quick check of a VBO setup 
 .DESCRIPTION
     This script checks some VBO components and reports possible issues/misconfigurations
-    - Backup Job Status per Job 
-	- Print license expiration date
-	- Check logs if throttling 
-    - Check logs for sync time entries > 200 - Possible slow backup due to slow backup repo
-    - Proxy stuff (min. recommended CPU and Memory)
-    - More - See Readme on github
+    & more - See Readme on github
 .NOTES  
     File Name  : vbo-health-checker.ps1  
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
+.VERSION
+    1.3
 #>
 param(
+    [Parameter(mandatory=$true)]
+    [String] $Organization,
     [Parameter(Mandatory = $false)]
-    [String] $Logfile = "C:\Users\stephan.herzig\Documents\Script\vbo\vbo_healthcheck_$env:computername.log",
-    $Webcheck)
+    [String] $Logfile = "C:\Temp\vbo_healthcheck_$env:computername.log",
+    [Switch] $Webcheck)
 Clear-Host
-# Import the Veeam Backup for Microsoft Office 365 Module
-Import-Module "C:\Program Files\Veeam\Backup365\Veeam.Archiver.PowerShell\Veeam.Archiver.PowerShell.psd1"
-
-
 
 # Set the variables
 $orga = $exch = $exar = $od = $sites = $teams = $nok = 0
 $vbo_version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("C:\Program Files\Veeam\Backup365\Veeam.Archiver.Proxy.exe").FileVersion
-if ($Webcheck -eq "Yes") {
-$WebReq                    = Invoke-WebRequest https://www.veeam.com/kb4106
+if($Webcheck){
+$WebReq                    = Invoke-WebRequest -Uri https://www.veeam.com/kb4106 
 $InnerText                 = $WebReq.AllElements | Where-Object {$_.tagName -eq "TD" -and $_.innerText -ne $null} | Select -ExpandProperty innerText
 $vbo_latestversion         = $InnerText[14]
 $vbo_latestdisplayversion  = $InnerText[16]
 $vbo_latestversionkb       = $InnerText[18]
                    }
-$vbo_org         = Get-VBOOrganization #-Name $organizationname
+$vbo_org         = Get-VBOOrganization -Name $Organization
 $vbo_logpath     = "C:\ProgramData\Veeam\Backup365\Logs\" + $vbo_org
 $vbo_license     = Get-VBOLicensedUser
 $vbo_exp         = Get-VBOLicense
@@ -49,6 +44,8 @@ $month           = [cultureinfo]::InvariantCulture.DateTimeFormat.GetAbbreviated
 $evt_date        = (Get-Date).AddDays(-2)
 $m365_throttling = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Proxy_$special_date*.log -Pattern "throttled [^0]" | Select Line| Format-Table -AutoSize
 $vbo_sync        = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Proxy_$special_date*.log -Pattern "Sync time: (6\.(?!0[^\d]|00)\d{1,2}|(((4[1-9](?!\d)|[5-9][0-9])(?![\d])|\d*[1-9]\d{2,})(\.\d{1,2})?))" | Select Line| Format-Table -AutoSize
+$sp_restore_429  = Select-String -Path C:\ProgramData\Veeam\Backup\SharePointExplorer\Logs\Veeam.SharePoint.*_$special_date*.log -Pattern "429 TOO MANY REQUESTS" | Select Line| Format-Table -AutoSize
+$reposcan        = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Shell_*$special_date*.log -CaseSensitive -Pattern '(Editing repository:)|(New configuration saved:)|(Repository:)|(Path:)|(Retention \()' | Select Line| Format-Table -AutoSize
 $mem_events      = 0
 $vbo_restore     = Get-VBORestoreSession | Where-Object {($_.StartTime.Hour -lt 7 -or $_.StartTime.Hour -ge 17)}
 if (!$logfile) {
@@ -67,11 +64,11 @@ WriteLog "*** Start VBO Health Check ***"
 # Start the script
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "*                 VBO HEALTH-CHECKER                  *"
-Write-Host "**************************************************v1.2*" -ForegroundColor Cyan
+Write-Host "**************************************************v1.3*" -ForegroundColor Cyan
 
 # Get Backup Job Configuration
 Write-Host "Backup Jobs" -ForegroundColor Cyan
-$jobs = (Get-VBOJob | Select-Object $_.Name)
+$jobs = (Get-VBOJob -Organization $vbo_org| Select-Object $_.Name)
 Write-Host "Number of Backup Jobs      " -NoNewline
 Write-Host $jobs.Count -ForegroundColor Green
 Write-Host ""
@@ -181,11 +178,18 @@ WriteLog "% Free Capacity" $vbo_repofree
 }
 Write-Host
 
-# Check logs if throttling occured - All logs from current month get checked
-Write-Host "Did any throttling occur during" $month $year "?                   " -NoNewline
+# Check logs if throttling during backup occured - All logs from current month get checked
+Write-Host "Did any throttling during backup occur in" $month $year "?         " -NoNewline
 If ($m365_throttling.Count -eq 0) {"No"}
 $m365_throttling
 WriteLog "Did any throttling occur during $month $year ?" $m365_throttling.Count
+Write-Host
+
+# Check logs if throttling during SP restore occured - All logs from current month get checked
+Write-Host "Any throttling during a SP restore Session in" $month $year "?     " -NoNewline
+If ($sp_restore_429.Count -eq 0) {"No"}
+$sp_restore_429
+WriteLog "Did any throttling occur during $month $year ?" $sp_restore_429.Count
 Write-Host
 
 # Check logs if Sync Time larger 200 - All logs from current month get checked
@@ -223,6 +227,13 @@ Write-Host $vbo_license.Count -ForegroundColor Green
 Write-Host "License expiration         " -NoNewline
 Write-Host $vbo_exp.SupportExpirationDate -ForegroundColor Green
 WriteLog "License expiration" $vbo_exp.SupportExpirationDate
+Write-Host
+
+# Check if anybody changed the repo retention settings
+Write-Host "Possible Repository retention setting changes in " $month $year "? " -NoNewline
+If ($reposcan.Count -eq 0) {"No"}
+$reposcan
+WriteLog "Possible Repository retention change activities"
 Write-Host
 
 # Check for Restore Sessions outside of business hours (7 to 17)
