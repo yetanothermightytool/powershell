@@ -2,7 +2,7 @@
 .NAME
     Veeam Backup for Microsoft 365 User List for Repository
 .SYNOPSIS
-    Script to get list of user data stored in the given repository
+    Script to get a list of user data stored in the given repository
 .DESCRIPTION
     You can get a list of users whose data is stored in the given backup repository
     More details on on github 
@@ -14,6 +14,7 @@
     1.0
 #>
 param(
+    [Parameter(mandatory=$true)]
     [String] $RepoName
     )
 Clear-Host
@@ -95,7 +96,7 @@ Write-Host ""
 $appURI             = "/v6/token"
 $token              = Connect-VeeamRestAPI -AppUri $appURI -Cred $cred
 
-#Get-Proxy ID
+#Get Proxy ID
 Write-Host "Getting proxy server id...." -ForegroundColor White
 Write-Host ""
 $appURI             = "/v6/Proxies/"
@@ -116,7 +117,8 @@ $appURI             = "/v6/BackupRepositories/$vboreponameid/UserData"
 $vborepostats       = Get-VeeamRestAPI -AppUri $appURI -Token $token
 $vborepostatsresult = $vborepostats.results
 
-Write-Host "User Data in repository $RepoName"
+Write-Host "User data in repository $RepoName"
+Write-Host ""
 ForEach ($r in $vborepostatsresult) {
   Write-Host "User                      " -NoNewline
   Write-Host $r.displayName -ForegroundColor Cyan
