@@ -55,6 +55,7 @@ The script is still "work in progress". Feedback welcome.
     * The number of configured backup applications  - A message appears if number is higher than 1 - 
       https://helpcenter.veeam.com/docs/vbo365/guide/backup_applications.html?ver=60
     * Number of configured threads per proxy
+    * Scans One Drive Jobs log files - If an entry "virus reported" is found, a line will be shown (currently only one) - V6 only
     
 * 1.3 
     * New parameter "Organization" for multi org setups (Thanks to azja09)
