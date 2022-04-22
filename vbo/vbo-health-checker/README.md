@@ -51,6 +51,11 @@ The script is still "work in progress". Feedback welcome.
 
 ## Version History
 
+* 1.4 
+    * The number of configured backup applications  - A message appears if number is higher than 1 - 
+      https://helpcenter.veeam.com/docs/vbo365/guide/backup_applications.html?ver=60
+    * Number of configured threads per proxy
+    
 * 1.3 
     * New parameter "Organization" for multi org setups (Thanks to azja09)
     * Script informs if any changes to the repository retentions have been applied during the current month
