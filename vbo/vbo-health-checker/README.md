@@ -3,7 +3,7 @@ Powershell script to quickly get some useful information about the health of a V
 
 ## Description
 ~~~~
-Version : 1.3 (March 21 2022)
+Version : 1.4 (March 25th 2022)
 Requires: Veeam Backup for Microsoft Office 365 v5 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -56,6 +56,7 @@ The script is still "work in progress". Feedback welcome.
       https://helpcenter.veeam.com/docs/vbo365/guide/backup_applications.html?ver=60
     * Number of configured threads per proxy
     * Scans One Drive Jobs log files - If an entry "virus reported" is found, a line will be shown (currently only one) - V6 only
+    * Cleanup code and output visibility
     
 * 1.3 
     * New parameter "Organization" for multi org setups (Thanks to azja09)
