@@ -43,7 +43,7 @@ _(optional)_ Cleans log file entries older than specified days
 ## Examples: 
 `PS> .\vbo-health-checker.ps1 -Organization ACMECompany -Logfile C:\Logfiles\output.txt -Webcheck`
 
-`PS> .\vbo-health-checker.ps1 -Organization ACMECompany -Clean -Days 30
+`PS> .\vbo-health-checker.ps1 -Organization ACMECompany -Clean -Days 30`
   
 ## Notes
 
