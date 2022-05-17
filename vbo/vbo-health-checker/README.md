@@ -3,7 +3,7 @@ Powershell script to quickly get some useful information about the health of a V
 
 ## Description
 ~~~~
-Version : 1.4 (March 25th 2022)
+Version : 1.5 (May 20th 2022)
 Requires: Veeam Backup for Microsoft Office 365 v5 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -31,11 +31,19 @@ _(mandatory)_ The name of the organization.
 _(optional)_ The path and filename where the output gets written to.
 
  `Webcheck`
-_(optional)_ Check if the latest releas is installed - https://www.veeam.com/kb4106
+_(optional)_ Check if the latest release is installed - https://www.veeam.com/kb4106
+
+`Clean`
+_(optional)_ Cleans log file entries  - To be used with the Days switch
+
+`Days`
+_(optional)_ Cleans log file entries older than specified days
 
   
-## Example: 
+## Examples: 
 `PS> .\vbo-health-checker.ps1 -Organization ACMECompany -Logfile C:\Logfiles\output.txt -Webcheck`
+
+`PS> .\vbo-health-checker.ps1 -Organization ACMECompany -Clean -Days 30
   
 ## Notes
 
@@ -50,6 +58,11 @@ The script is still "work in progress". Feedback welcome.
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+
+* 1.5
+    * New Clean and Days switches for cleaning up the logfile entries older than the specified number of days
+    * Alert for any disabled backup job
+    * prep
 
 * 1.4 
     * The number of configured backup applications  - A message appears if number is higher than 1 - 
