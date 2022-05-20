@@ -11,14 +11,17 @@
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 .VERSION
-    1.4
+    1.5
 #>
 param(
     [Parameter(mandatory=$true)]
     [String] $Organization,
     [Parameter(Mandatory = $false)]
     [String] $Logfile = "C:\Users\stephan.herzig\Documents\Script\vbo\vbo_healthcheck_$env:computername.log",
-    [Switch] $Webcheck)
+    [Switch] $Webcheck,
+    [Switch] $Clean,
+    [String] $Days,
+    [Switch] $Count)
 Clear-Host
 
 # Set the variables
@@ -49,8 +52,9 @@ $sp_restore_429  = Select-String -Path C:\ProgramData\Veeam\Backup\SharePointExp
 $reposcan        = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Shell_*$special_date*.log -CaseSensitive -Pattern '(Editing repository:)|(New configuration saved:)|(Repository:)|(Path:)|(Retention \()' | Select Line| Format-Table -AutoSize
 $mem_events      = 0
 $vbo_restore     = Get-VBORestoreSession | Where-Object {($_.StartTime.Hour -lt 7 -or $_.StartTime.Hour -ge 17)}
+$vbo_disabledjob = Get-VBOJob -Organization $vbo_org | Where-Object -Property IsEnabled -NE True
 if (!$logfile) {
-$logfile = "C:\Users\stephan.herzig\Documents\Script\vbo\vbo_healthcheck_$env:computername.log"
+$logfile         = "C:\temp\vbo_healthcheck_$env:computername.log"
 }
 
 #WriteLog Function
@@ -66,7 +70,7 @@ WriteLog "*** Start VBO Health Check ***"
 # Start the script
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "*                 VBO HEALTH-CHECKER                  *"
-Write-Host "**************************************************v1.4*" -ForegroundColor Cyan
+Write-Host "**************************************************v1.5*" -ForegroundColor Cyan
 
 # Get Backup Job Configuration
 Write-Host "Health Backup Jobs" -ForegroundColor Cyan
@@ -78,26 +82,6 @@ ForEach ($j in $jobs) {
   $job_items = (Get-VBOJob -Name $j.Name)
   Write-Host "Job Name                     " -NoNewline
   Write-Host $j.Name -ForegroundColor Cyan
-
-# Get what got selected within the backup jobs
-  If ($job_items.SelectedItems.Organization.Count -ge 1) {
-  "Number of Organizations      "+$job_items.SelectedItems.Organization.Count
-  $orga=$orga+$vbo_license.Count}
-  If($job_items.SelectedItems.User.Count -ge 1 -And $job_items.SelectedItems.Mailbox -eq "True") {
-  "Number of Exchange Users     "+$job_items.SelectedItems.User.Count
-  $exch=$exch+$job_items.SelectedItems.User.Count}
-  ElseIf($job_items.SelectedItems.User.Count -ge 1 -And $job_items.SelectedItems.ArchiveMailbox -eq "True") {
-  "Number of Exchange Archive   "+$job_items.SelectedItems.Mailbox.Count
-  $exar+=$job_items.SelectedItems.Mailbox.Count}        
-  ElseIf($job_items.SelectedItems.User.Count -ge 1 -And $job_items.SelectedItems.OneDrive -eq "True") {
-  "Number of OneDrive           "+$job_items.SelectedItems.User.Count
-  $od=$od+$job_items.SelectedItems.User.Count}
-  ElseIf($job_items.SelectedItems.Site.Count -ge 1) {
-  "Number of Sharepoint Sites   "+$job_items.SelectedItems.Site.Count
-  $sites=$sites+$job_items.SelectedItems.Site.Count}
-  ElseIf($job_items.SelectedItems.Team.Count -ge 1) {
-  "Number of MS Teams Sites     "+$job_items.SelectedItems.Team.Count
-  $teams=$teams+$job_items.SelectedItems.Team.Count}
   Write-Host "Last Backup Status           " -NoNewline 
   Write-Host $job_items.LastStatus -ForegroundColor Green
   Write-Host "Last Run                     " -NoNewline 
@@ -131,8 +115,7 @@ ForEach ($j in $jobs) {
         }
   }
   }
-
-
+  
   If($job_items.LastStatus -ne "Success") {$nok++}
   Write-Host " "
   sleep 3
@@ -269,6 +252,14 @@ $reposcan
 WriteLog "Possible Repository retention change activities"
 Write-Host
 
+# Check if any disabled Backup Job is present
+Write-Host "Is there a disabled backup job?                              " -NoNewline
+If ($vbo_disabledjob.Count -eq 0) {"No"}
+Else {
+$vbo_disabledjob.Count 
+WriteLog "Disabled backup jobs present" 
+}
+Write-Host ""
 # Check for Restore Sessions outside of business hours (7 to 17)
 Write-Host "Restore activites outside of business hours                  " -NoNewline
 If ($vbo_restore.Count -eq 0) {"No"}
@@ -286,3 +277,14 @@ $outside.ProcessedObjects
 Write-Host ""
 }
 WriteLog "*** End VBO Health Check ***"
+
+# Log clean
+if($Clean){
+$culture         = [System.Globalization.CultureInfo]::InvariantCulture
+$format          = 'dd/MM/yyyy HH:mm:ss'
+Write-Host ""
+Write-Host "                       Cleaner                         "
+Write-Host "*******************************************************" -ForegroundColor Cyan
+Write-Host "Cleaning up log file - Delete entries older than $Days days  "
+(get-content $Logfile )| Where-Object {$_} |  Where-Object { ([datetime]::ParseExact(([string]$_).Substring(0,19), $format, $culture) -ge (Get-Date).AddDays(-$Days)) } | Set-Content $Logfile
+}
