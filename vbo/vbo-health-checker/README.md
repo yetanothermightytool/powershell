@@ -62,7 +62,7 @@ The script is still "work in progress". Feedback welcome.
 * 1.5
     * New Clean and Days switches for cleaning up the logfile entries older than the specified number of days
     * Alert for any disabled backup job
-    * prep
+    * Cleanup some "counting" commands and preparation for another approach (stay tuned)
 
 * 1.4 
     * The number of configured backup applications  - A message appears if number is higher than 1 - 
