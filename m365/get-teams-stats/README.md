@@ -19,7 +19,7 @@ Client Secret Value
 
 ## Parameters
   
-  `RepoName`
+  `Period`
 _(mandatory)_ Report Period in days to be used - Possible values 7, 30, 90 or 180
 
   
