@@ -13,9 +13,9 @@ This script requires a pre-registered app & secret within the MS tenant. The app
 
 The following IDs needs to be stored in the script
 
-Tenant ID
-Application (client) ID
-Client Secret Value
+- Tenant ID
+- Application (client) ID
+- Client Secret Value
 
 ## Parameters
   
