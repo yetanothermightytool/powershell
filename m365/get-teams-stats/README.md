@@ -3,7 +3,7 @@ Powershell script to list the maximum and average chat message numbers for the g
 
 ## Description
 ~~~~
-Version : 1.0 (April 7th 2022)
+Version : 1.1 (June 22nd 2022)
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
 ~~~~
@@ -36,6 +36,7 @@ The script is still "work in progress". Feedback welcome.
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
-
+* 1.1
+    * Cleanup and cost calculation
 * 1.0
     * Initial Release
