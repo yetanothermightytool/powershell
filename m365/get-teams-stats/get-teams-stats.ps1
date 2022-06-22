@@ -11,7 +11,7 @@
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell and a registered app within the tenant
 .VERSION
-    1.0
+    1.1
 #>
 param(
         [Parameter(Mandatory = $true)]
@@ -19,9 +19,9 @@ param(
      )
 #Variables
 $ReportAPI          = "https://graph.microsoft.com"
-$TenantID           = "<value here>"
-$ClientID           = "<value here>"
-$Secret             = "<value here>"
+$TenantID           = "your id here"
+$ClientID           = "your id here"
+$Secret             = "Ayour secret here"
 $uri                = "https://login.microsoftonline.com/$TenantID/oauth2/token"
 
 #Get Access Token
@@ -59,18 +59,14 @@ $TeamsStats | Out-File "C:\Temp\TeamStats.csv"
 
 #Generate Data
 $TeamsTable         = Import-Csv -Path C:\Temp\TeamStats.csv
-$tcmavg             = $TeamsTable."Team Chat Messages"  | Measure -Average | select Average | Format-Table -HideTableHeaders | out-string 
-$tcmmax             = $TeamsTable."Team Chat Messages"  | Measure -Maximum | select Maximum | Format-Table -HideTableHeaders | out-string
-$tpmavg             = $TeamsTable."Private Chat Messages"  | Measure -Average | select Average | Format-Table -HideTableHeaders | out-string
-$tpmmax             = $TeamsTable."Private Chat Messages"  | Measure -Maximum | select Maximum | Format-Table -HideTableHeaders | out-string
+$tcmsum             = $TeamsTable."Team Chat Messages"  | Measure -Sum     | select Sum     | Format-Table -HideTableHeaders | Out-String
+$tcmsum             = $tcmsum -as [int]
+$tcmcost            = $tcmsum * 0.00075
+#$tpmsum            = $TeamsTable."Private Chat Messages"  | Measure -Sum | select Sum | Format-Table -HideTableHeaders | out-string
 Write-Host "*****************************" -ForegroundColor Cyan
 Write-Host "*         Statistics        *" -ForegroundColor Cyan 
 Write-Host "*****************************" -ForegroundColor Cyan
-Write-Host "Average Team Chat Messages" -NoNewline -ForegroundColor Cyan
-Write-Host "$tcmavg" -NoNewline
-Write-Host "Maximum Team Chat Messages" -NoNewline -ForegroundColor Cyan
-Write-Host "$tcmmax" -NoNewline
-Write-Host "Average Private Chat Messages" -NoNewline -ForegroundColor Cyan
-Write-Host "$tpmavg" -NoNewline
-Write-Host "Maximum Private Chat Messages" -NoNewline -ForegroundColor Cyan
-Write-Host "$tpmmax" -NoNewline
+Write-Host "Total Team Chat Messges during the last $Period days" -ForegroundColor Cyan
+Write-Host $tcmsum
+Write-Host "Expected costs using Price Model B" -ForegroundColor Cyan
+Write-Host $tcmcost
