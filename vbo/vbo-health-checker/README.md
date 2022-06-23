@@ -3,7 +3,7 @@ Powershell script to quickly get some useful information about the health of a V
 
 ## Description
 ~~~~
-Version : 1.5 (May 20th 2022)
+Version : 1.6 (June 23rd 2022)
 Requires: Veeam Backup for Microsoft Office 365 v5 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -51,13 +51,18 @@ It's always recommended to open a support case as soon you're facing an issue wi
 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
 - v5.0 - All versions
-- v6.0 
+- v6.0 - All versions
 
 The script is still "work in progress". Feedback welcome.
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+
+* 1.6
+    * Bug Fix - No error if Sharepoint Explorer directory doesn't exist
+    * Security
+
 
 * 1.5
     * New Clean and Days switches for cleaning up the logfile entries older than the specified number of days
