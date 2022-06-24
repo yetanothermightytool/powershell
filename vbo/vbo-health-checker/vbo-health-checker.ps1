@@ -11,13 +11,13 @@
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 .VERSION
-    1.5
+    1.6
 #>
 param(
     [Parameter(mandatory=$true)]
     [String] $Organization,
     [Parameter(Mandatory = $false)]
-    [String] $Logfile = "C:\Users\stephan.herzig\Documents\Script\vbo\vbo_healthcheck_$env:computername.log",
+    [String] $Logfile = "C:\temp\vbo_healthcheck_$env:computername.log",
     [Switch] $Webcheck,
     [Switch] $Clean,
     [String] $Days,
@@ -42,19 +42,20 @@ $vbo_exp         = Get-VBOLicense
 $vbo_proxy       = Get-VBOProxy
 $vbo_repository  = Get-VBORepository
 $vbo_repofree    = 0
+$vbo_enc         = Get-VBOEncryptionKey
 $special_date    = (Get-Date).tostring("yyyy_MM")
 $year            = (Get-Date).tostring("yyyy")
+$today           = Get-Date
 $month           = [cultureinfo]::InvariantCulture.DateTimeFormat.GetAbbreviatedMonthName((Get-Date).Month) 
 $evt_date        = (Get-Date).AddDays(-2)
 $m365_throttling = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Proxy_$special_date*.log -Pattern "throttled [^0]" | Select Line| Format-Table -AutoSize
 $vbo_sync        = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Proxy_$special_date*.log -Pattern "Sync time: (6\.(?!0[^\d]|00)\d{1,2}|(((4[1-9](?!\d)|[5-9][0-9])(?![\d])|\d*[1-9]\d{2,})(\.\d{1,2})?))" | Select Line| Format-Table -AutoSize
-$sp_restore_429  = Select-String -Path C:\ProgramData\Veeam\Backup\SharePointExplorer\Logs\Veeam.SharePoint.*_$special_date*.log -Pattern "429 TOO MANY REQUESTS" | Select Line| Format-Table -AutoSize
 $reposcan        = Select-String -Path C:\ProgramData\Veeam\Backup365\Logs\Veeam.Archiver.Shell_*$special_date*.log -CaseSensitive -Pattern '(Editing repository:)|(New configuration saved:)|(Repository:)|(Path:)|(Retention \()' | Select Line| Format-Table -AutoSize
 $mem_events      = 0
 $vbo_restore     = Get-VBORestoreSession | Where-Object {($_.StartTime.Hour -lt 7 -or $_.StartTime.Hour -ge 17)}
 $vbo_disabledjob = Get-VBOJob -Organization $vbo_org | Where-Object -Property IsEnabled -NE True
 if (!$logfile) {
-$logfile         = "C:\temp\vbo_healthcheck_$env:computername.log"
+$logfile         = "C:\Users\stephan.herzig\Documents\Script\vbo\vbo_healthcheck_$env:computername.log"
 }
 
 #WriteLog Function
@@ -70,7 +71,7 @@ WriteLog "*** Start VBO Health Check ***"
 # Start the script
 Write-Host "*******************************************************" -ForegroundColor Cyan
 Write-Host "*                 VBO HEALTH-CHECKER                  *"
-Write-Host "**************************************************v1.5*" -ForegroundColor Cyan
+Write-Host "**************************************************v1.6*" -ForegroundColor Cyan
 
 # Get Backup Job Configuration
 Write-Host "Health Backup Jobs" -ForegroundColor Cyan
@@ -202,8 +203,15 @@ WriteLog "Did any throttling occur during $month $year ?" $m365_throttling.Count
 Write-Host
 
 # Check logs if throttling during SP restore occured - All logs from current month get checked
+if (Test-Path -Path C:\ProgramData\Veeam\Backup\SharePointExplorer\Logs\) {
+$sp_restore_429  = Select-String -Path C:\ProgramData\Veeam\Backup\SharePointExplorer\Logs\Veeam.SharePoint.*_$special_date*.log -Pattern "429 TOO MANY REQUESTS" | Select Line| Format-Table -AutoSize
 Write-Host "Any throttling during a SP restore Session in" $month $year "?     " -NoNewline
 If ($sp_restore_429.Count -eq 0) {"No"}
+$sp_restore_429
+}
+else {
+    "Any throttling during a SP restore Session in $month $year ?     No"
+}
 $sp_restore_429
 WriteLog "Did any throttling occur during $month $year ?" $sp_restore_429.Count
 Write-Host
@@ -275,10 +283,74 @@ $outside.InitiatedBy
 Write-Host "Processed Object   " -NoNewline
 $outside.ProcessedObjects
 Write-Host ""
+
 }
+Write-Host ""
+# Display age of encryption keys
+Write-Host "Age of the configured encryption key(s)" -NoNewline
+Write-Host
+$keyReport = @()
+foreach ($enckey in $vbo_enc)
+{
+   $passwordAge    = [DateTime]$enckey.LastModified
+   $reportPassword = [PSCustomObject]@{
+        Password = $enckey.Description
+        AgeInDays = ($today - $passwordAge).Days
+                                      }
+   $keyReport += $reportPassword
+}
+$keyReport
+
+# That's all folks
 WriteLog "*** End VBO Health Check ***"
 
-# Log clean
+# Special Section
+if($Count){
+$usage = New-Object -TypeName System.Collections.Generic.List[PSCustomObject]
+function validate {
+    param (
+          $variable
+    )
+    if ($variable) {
+        return $variable.count
+    }
+    else {
+        return 0
+    }
+}
+foreach ($repo in $vbo_repository) {
+        $users           = Get-VBOEntityData -Repository $repo -Type User
+        $exc             = Get-VBOEntityData -Repository $repo -Type Mailbox
+        $od              = Get-VBOEntityData -Repository $repo -Type OneDrive
+        $groups          = Get-VBOEntityData -Repository $repo -Type Group
+        $sites           = Get-VBOEntityData -Repository $repo -Type Site
+        $teams           = Get-VBOEntityData -Repository $repo -Type Team
+        $orgs            = Get-VBOEntityData -Repository $repo -Type Organization
+
+$usage.Add([PSCustomObject]@{
+           RepName       = $repo.Name;
+           UserCount     = validate $users;
+           MailboxCount  = validate $exc
+           OneDriveCount = validate $od;
+           GroupCount    = validate $groups;
+           SiteCount     = validate $sites;
+           TeamCount     = validate $teams;
+           OrgCount      = validate $orgs
+    })
+}
+$total           = [PSCustomObject]@{
+          RepoCount      = $usage.count;
+          UserCount      = ($usage | Measure-Object -Property UserCount -Sum).Sum;
+          MailboxCount   = ($usage | Measure-Object -Property MailboxCount -Sum).Sum;
+          OneDriveCount  = ($usage | Measure-Object -Property OneDriveCount -Sum).Sum;
+          GroupCount     = ($usage | Measure-Object -Property GroupCount -Sum).Sum;
+          SiteCount      = ($usage | Measure-Object -Property SiteCount -Sum).Sum;
+          TeamCount      = ($usage | Measure-Object -Property TeamCount -Sum).Sum;
+          OrgCount       = ($usage | Measure-Object -Property OrgCount -Sum).Sum
+}
+return $total
+}
+# Log Cleaner
 if($Clean){
 $culture         = [System.Globalization.CultureInfo]::InvariantCulture
 $format          = 'dd/MM/yyyy HH:mm:ss'
