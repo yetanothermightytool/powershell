@@ -61,9 +61,10 @@ The script is still "work in progress". Feedback welcome.
 
 * 1.6
     * Bug Fix - No error if Sharepoint Explorer directory doesn't exist
-    * Security
-
-
+    * Default directory for the logfile is now c:\temp
+    * Security - Display of the age of the encryption keys (an option to specify when an alert should be given if key age is too "young"
+    * New section for future use
+    
 * 1.5
     * New Clean and Days switches for cleaning up the logfile entries older than the specified number of days
     * Alert for any disabled backup job
