@@ -31,7 +31,7 @@ _(mandatory)_ The name of the organization.
 _(optional)_ The path and filename where the output gets written to.
 
  `Webcheck`
-_(optional)_ Check if the latest release is installed - https://www.veeam.com/kb4106
+_(optional)_ Check if the latest release is installed - https://www.veeam.com/kb4106 - Note: Some issues reported.
 
 `Clean`
 _(optional)_ Cleans log file entries  - To be used with the Days switch
@@ -50,7 +50,7 @@ _(optional)_ Cleans log file entries older than specified days
 It's always recommended to open a support case as soon you're facing an issue with Veeam Backup for Microsoft Office 365. 
 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
-- v5.0 - All versions
+- v5.0 - All versions - Up to script version 1.3
 - v6.0 - All versions
 
 The script is still "work in progress". Feedback welcome.
