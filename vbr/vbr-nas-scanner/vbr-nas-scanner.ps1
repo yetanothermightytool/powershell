@@ -3,9 +3,9 @@
     NAS Share Scanner
 .DESCRIPTION
     This script launches a Instant File Share Recovery for a given Backup Job and executes a MS Defender malware scan.
-	Any program can be used to scan the presented share.
+    Any program can be used to scan the presented share.
 	
-	More details on Github
+    More details on Github - https://github.com/yetanothermightytool/powershell/vbr/vbr-nas-scanner/README.md
     
 .NOTES  
     File Name  : vbr-nas-scanner.ps1  
