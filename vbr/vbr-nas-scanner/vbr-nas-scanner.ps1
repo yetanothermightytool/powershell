@@ -38,8 +38,8 @@ $restoresession    = Start-VBRNASInstantRecovery -RestorePoint $restorepoint -Pe
 $defenderFolder    = (Get-ChildItem "C:\ProgramData\Microsoft\Windows Defender\Platform\" | Sort-Object -Descending | Select-Object -First 1).fullname
 $defender          = "$defenderFolder\MpCmdRun.exe"
 $output            = & $defender -scan -scantype 3 -file $restoresession.SharePath
-
 $output | ForEach-Object {Write-Verbose $_}
+$output
 
 #Stop Instant Recovery Session
 Stop-VBRNASInstantRecovery -InstantRecovery $restoresession -Force
