@@ -51,7 +51,7 @@ It's always recommended to open a support case as soon you're facing an issue wi
 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
 - v5.0 - All versions - Up to script version 1.3
-- v6.0 - All versions
+- v6.0 - All versions (incl. 6a aka 6.1.x)
 
 The script is still "work in progress". Feedback welcome.
 
