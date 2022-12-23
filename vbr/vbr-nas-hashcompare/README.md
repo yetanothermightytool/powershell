@@ -15,7 +15,7 @@ The SHA-256 hash value of the file that will be compared with the file stored in
 
 ## Purpose
 
-This script launches a Instant File Share Recovery for a specified file share backup job and compares the hash value using the given parameters.
+This script launches an Instant File Share Recovery for a specified file share backup job and compares the hash value using the given parameters.
 
 The share access permissions can be adjusted in line 32.
 The recovery reason can be adjusted in line 35.
