@@ -36,7 +36,7 @@ _(mandatory)_ Name of the VB365 Repository where Exchange Online Data is stored
 
 `PS> .\vb365-exo-usage-report.ps1 -Organization Organization01 -Reponame "Object Repository 01"`  
 
-## Output
+## Output - Example with Backup Data on Object Storage Repository
 
 | M365 Mailboxes | Backed up Mailboxes on Repo | MS365 Mailbox Size (MB) | Stored on Local Repo (MB) | Stored on Object Repo (MB)
 | :---:          | :---:                       | :---:                   | :---:                     | :---:
