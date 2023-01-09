@@ -32,10 +32,16 @@ _(mandatory)_ Name of the VB365 Organization
 `Filter`
 _(mandatory)_ Name of the VB365 Repository where Exchange Online Data is stored
   
-## Example: 
+## Example
 
 `PS> .\vb365-exo-usage-report.ps1 -Organization Organization01 -Reponame "Object Repository 01"`  
-  
+
+## Output
+
+| Attempt | #1    | #2    |
+| :---:   | :---: | :---: |
+| Seconds | 301   | 283   |
+
 ## Notes
 
 This script has been tested with the following versions of Veeam Backup for Office 365:
