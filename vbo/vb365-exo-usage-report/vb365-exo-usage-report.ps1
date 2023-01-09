@@ -61,12 +61,12 @@ $totalMbxSize              = $actMbxSize + $delMbxSize
 
 # Build and show output
 $hash                      = @{"M365 Mailboxes"=$mailboxCount;"Backed up Mailboxes on Repo"=$protectedMbxCount; "MS365 Mailbox Size (MB)"=$totalMbxSize;"Stored on Local Repo (MB)"=$locRepoUsageMB ;"Stored on Object Repo (MB)"=$objRepoUsageMB};
-$outtable                  = New-Object PSObject -Property $hash
+$outTable                  = New-Object PSObject -Property $hash
 
-$outtable |Format-Table -Wrap -AutoSize -Property @{Name='M365 Mailboxes';Expression={$_."M365 Mailboxes"};align='center'},
+$outTable |Format-Table -Wrap -AutoSize -Property @{Name='M365 Mailboxes';Expression={$_."M365 Mailboxes"};align='center'},
                                                   @{Name='Backed up Mailboxes on Repo';Expression={$_."Backed up Mailboxes on Repo"};align='center'},
                                                   @{Name='MS365 Mailbox Size (MB)';Expression={$_."MS365 Mailbox Size (MB)"};align='center'},
-		                                          @{Name='Stored on Local Repo (MB)';Expression={$_."Stored on Local Repo (MB)"};align='center'},
-		                                          @{Name='Stored on Object Repo (MB)';Expression={$_."Stored on Object Repo (MB)"};align='center'} 
+		                                  @{Name='Stored on Local Repo (MB)';Expression={$_."Stored on Local Repo (MB)"};align='center'},
+		                                  @{Name='Stored on Object Repo (MB)';Expression={$_."Stored on Object Repo (MB)"};align='center'} 
 
 Disconnect-ExchangeOnline -Confirm:$false
