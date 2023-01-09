@@ -19,7 +19,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 `PS> .\$credential.Password | ConvertFrom-SecureString | Set-Content <path to secure.txt>`
 
 - Change values of the following variables
-- 
+
 $userName             Username for retrieving Exchange Online Information (use the same username as in step 1)
 
 $passwordText         Path to the secure.txt file that has been created in advance
