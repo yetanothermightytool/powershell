@@ -15,6 +15,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 - Store the credentials (encrypted) in a txt file:
 
 `PS> .\$credential = Get-Credential`
+
 `PS> .\$credential.Password | ConvertFrom-SecureString | Set-Content <path to secure.txt>`
 
 - Change values of the following variables
