@@ -38,9 +38,10 @@ _(mandatory)_ Name of the VB365 Repository where Exchange Online Data is stored
 
 ## Output
 
-| Attempt | #1    | #2    |
-| :---:   | :---: | :---: |
-| Seconds | 301   | 283   |
+| M365 Mailboxes | Backed up Mailboxes on Repo | MS365 Mailbox Size (MB) | Stored on Local Repo (MB) | Stored on Object Repo (MB)
+| :---:          | :---:                       | :---:                   | :---:                     | :---:
+| 28             | 6                           | 363                     | 0                         | 115.71345
+
 
 ## Notes
 
