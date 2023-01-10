@@ -37,9 +37,9 @@ _(mandatory)_ Name of the VB365 Repository where Exchange Online Data is stored
 
 ## Output - Example with Backup Data on Object Storage Repository
 
-| M365 Mailboxes | Backed up Mailboxes on Repo | MS365 Mailbox Size (MB) | Stored on Local Repo (MB) | Stored on Object Repo (MB)
-| :---:          | :---:                       | :---:                   | :---:                     | :---:
-| 28             | 6                           | 363                     | 0                         | 115.71345
+| M365 Mailboxes | Backed up Mailboxes on Repo | MS365 Mailbox Size (MB) | Stored on Local Repo (MB) | Stored on Object Repo (MB) | Data Reduction in %
+| :---:          | :---:                       | :---:                   | :---:                     | :---:                      | :---:
+| 28             | 6                           | 363                     | 0                         | 115.71345                  | 22
 
 
 ## Notes
@@ -55,10 +55,9 @@ This script has been tested with the following versions of Veeam Backup for Offi
     * Round up Repository values
     * Added Data Reduction Percentage column
 
-
 ## Planned functions
 
-- Only get the total Exchange Online Mailbox size from backed up users
+- Switching to Application Authentication
 - OneDrive for Business (Checking possibilites)
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
