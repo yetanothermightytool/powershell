@@ -3,7 +3,7 @@ Powershell script that shows the total number of Exchange Online mailboxes, back
 
 ## Description
 ~~~~
-Version : 1.0 (January 9th 2023)
+Version : 1.1 (January 10th 2023)
 Requires: Veeam Backup for Microsoft 365 v6 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -47,6 +47,14 @@ _(mandatory)_ Name of the VB365 Repository where Exchange Online Data is stored
 This script has been tested with the following versions of Veeam Backup for Office 365:
   - v6.0 (latest)
   - v7.0 (BETA)
+
+## Version History
+
+* 1.1
+    * Only the size of the protected mailboxes gets reported in column "M365 Mailbox Size"
+    * Round up Repository values
+    * Added Data Reduction Percentage column
+
 
 ## Planned functions
 
