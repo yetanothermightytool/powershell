@@ -52,6 +52,7 @@ This script has been tested with the following versions of Veeam Backup for Offi
 
 * 1.1
     * Only the size of the protected mailboxes gets reported in column "M365 Mailbox Size"
+    * Group Mailbox Support (Thanks Mildur for the feedback)
     * Round up Repository values
     * Added Data Reduction Percentage column
 
