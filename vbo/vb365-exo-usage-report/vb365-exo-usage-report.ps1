@@ -35,7 +35,7 @@ $protectedMbxCount          = $protectedMbx.Count
 # Now heading to MS365
 # Credentials - Change $userName and password file location
 $userName                   = "<your username here>"
-$passwordText               = Get-Content <your path to the pwd file here - and yes, changes are coming soon>
+$passwordText               = Get-Content "<your path to the pwd file here - and yes, changes are coming soon>"
 
 # Convert to secure string
 $securePwd                  = $passwordText | ConvertTo-SecureString
@@ -51,16 +51,16 @@ if ((Get-InstalledModule -Name "ExchangeOnlineManagement" -ErrorAction SilentlyC
 Connect-ExchangeOnline -UserPrincipalName $userName -Credential $credObject -ShowBanner:$false
 
 # Fetch all Mailboxes
-$mailboxes                  = Get-EXOMailbox -Resultsize Unlimited
+$mailboxes                  = Get-ExoRecipient -Resultsize Unlimited
 $mailboxCount               = $mailboxes.Count
 
 # Check only Mailboxes having backup data
-$protectedMbx = Get-VBOEntityData -Repository $repo -Type Mailbox
+$protectedMbx = Get-VBOEntityData -Organization $org -Repository $repo -Type Mailbox
 
 ForEach ($protMbx in $protectedMbx.Email) {
 
-$actMbxSize                = ((get-exomailbox -UserPrincipalName $protMbx | get-exomailboxstatistics).TotalItemSize.Value.ToMB()| measure-object -sum).sum
-$delMbxSize                = ((get-exomailbox -UserPrincipalName $protMbx | get-exomailboxstatistics).TotalDeletedItemSize.Value.ToMB()| measure-object -sum).sum
+$actMbxSize                = ((Get-ExoRecipient -UserPrincipalName $protMbx | get-exomailboxstatistics).TotalItemSize.Value.ToMB()| measure-object -sum).sum
+$delMbxSize                = ((Get-ExoRecipient -UserPrincipalName $protMbx | get-exomailboxstatistics).TotalDeletedItemSize.Value.ToMB()| measure-object -sum).sum
 $totalMbxSize              += $actMbxSize + $delMbxSize
 }
 
