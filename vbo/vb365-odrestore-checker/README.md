@@ -4,7 +4,7 @@ Powershell Script to check restored OneDrive for Business data backed up by Veea
 ## Description
 ~~~~
 Version : 1.0 (January 21st 2022)
-Requires: Veeam Backup for Microsoft Office 365 v5 or later
+Requires: Veeam Backup for Microsoft 365 v6 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
 ~~~~
@@ -37,13 +37,13 @@ _(mandatory)_ Hash value (SHA-256) from the original file.
 
 
 ## Example: 
-`PS> .\vbo-odrestore-checker.ps1 -User "Hans Dampf" -Documentname Text-File.docx -Originalhash <hashvalue>`
+`PS> .\vb365-odrestore-checker.ps1 -User "Hans Dampf" -Documentname Text-File.docx -Originalhash <hashvalue>`
   
 ## Notes
 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
-- v5.0 latest
-- v6.0beta 
+- v6.0 (latest)
+- v7.0 (BETA) 
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
@@ -52,7 +52,7 @@ This script has been tested with the following versions of Veeam Backup for Micr
 * 1.0
     * Initial Release
 
-* 2023 - Changed to VB365
+* 2023 - Changed to VB365 and VB365 version update - No new version
 	
 ## Planned functions
 
