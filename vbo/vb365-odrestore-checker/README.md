@@ -1,4 +1,4 @@
-# VBO OneDrive for Business Restore Checker
+# VB365 OneDrive for Business Restore Checker
 Powershell Script to check restored OneDrive for Business data backed up by Veeam Backup for Microsoft Office 365.
 
 ## Description
@@ -51,6 +51,8 @@ This script has been tested with the following versions of Veeam Backup for Micr
 
 * 1.0
     * Initial Release
+
+* 2023 - Changed to VB365
 	
 ## Planned functions
 
