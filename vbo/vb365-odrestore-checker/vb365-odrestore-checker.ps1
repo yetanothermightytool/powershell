@@ -7,7 +7,7 @@
     This script restores a specific file from the last restore point to a local folder checks if the file has the same hash value as the original uploaded file
     The purpose is to check if the data in the restorepoint is consitent 
 .NOTES  
-    File Name  : vbo-odrestore-checker.ps1 
+    File Name  : vb365-odrestore-checker.ps1 
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell
 .VERSION
