@@ -21,4 +21,4 @@ $apiPermission = [Microsoft.Open.AzureAD.Model.RequiredResourceAccess]@{
 $myApp                 = New-AzureADApplication -DisplayName $appName -ReplyUrls 'http://localhost' -RequiredResourceAccess $apiPermission
 
 # Enable the Service Principal
-$mySP                  = New-AzureADServicePrincipal -AppID $myApp.AppID
+New-AzureADServicePrincipal -AppID $myApp.AppID
