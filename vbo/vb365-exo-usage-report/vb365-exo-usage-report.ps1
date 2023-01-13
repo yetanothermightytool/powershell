@@ -83,8 +83,8 @@ $outtable |Format-Table -Wrap -AutoSize -Property @{Name='M365 Mailboxes';Expres
                                                   @{Name='M365 Mailbox Size (MB)';Expression={$_."M365 Mailbox Size (MB)"};align='center'},
 		                                  @{Name='Stored on Local Repo (MB)';Expression={$_."Stored on Local Repo (MB)"};align='center'},
 		                                  @{Name='Stored on Object Repo (MB)';Expression={$_."Stored on Object Repo (MB)"};align='center'},
-                                      @{Name='Data Reduction in %';Expression={$_."Data Reduction in %"};align='center'},
-                                      @{Name='Used Capacity per User (MB)';Expression={$_."Used Capacity per User (MB)"};align='center'}
+                                                  @{Name='Data Reduction in %';Expression={$_."Data Reduction in %"};align='center'},
+                                                  @{Name='Used Capacity per User (MB)';Expression={$_."Used Capacity per User (MB)"};align='center'}
 
 
 
