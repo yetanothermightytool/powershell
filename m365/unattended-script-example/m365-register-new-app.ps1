@@ -6,7 +6,7 @@ $appName               = "exo_reporter"
 $api                   = (Get-AzureADServicePrincipal -Filter "AppID eq '00000002-0000-0ff1-ce00-000000000000'")
 
 # Get the permission ID
-$permission            = $api.AppRoles | Where-Object { $_.Value -eq 'MailboxSettings.Read' }
+$permission            = $api.AppRoles | Where-Object { $_.Value -eq 'Exchange.ManageAsApp' }
 
 # Build the permission object
 $apiPermission = [Microsoft.Open.AzureAD.Model.RequiredResourceAccess]@{
