@@ -3,7 +3,7 @@ Powershell script that shows the total number of Exchange Online mailboxes, back
 
 ## Description
 ~~~~
-Version : 1.2 (January 10th 2023)
+Version : 1.2 (January 13th 2023)
 Requires: Veeam Backup for Microsoft 365 v6 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -12,17 +12,12 @@ GitHub  : https://www.github.com/yetanothermightytool
 ## Prerequisites
 
 - Exchange Online Powershell Module V3 (Script installs it, when missing)
-- Store the credentials (encrypted) in a txt file:
-
-`PS> .\$credential = Get-Credential`
-
-`PS> .\$credential.Password | ConvertFrom-SecureString | Set-Content <path to secure.txt>`
-
+- An Azure AD application with the appropriate rights. A how-to guide will be posted soon on https://community.veeam.com
 - Change values of the following variables:
 
 `$MSOrganization`               M365 Organization name
 
-`$applicationID`                Application ID of the required Application within Microsoft Azure AD. A how-to guide will be posted soon on community.veeam.com
+`$applicationID`                Application ID of the required Application within Microsoft Azure AD. 
 
 `$certificationThumbPrint`      Thumbrpint of the uploaded certificate for accessing the application
 
