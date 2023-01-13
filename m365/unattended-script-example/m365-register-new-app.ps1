@@ -20,5 +20,5 @@ $apiPermission = [Microsoft.Open.AzureAD.Model.RequiredResourceAccess]@{
 # Register the newly created  Azure AD App with API Permissions
 $myApp                 = New-AzureADApplication -DisplayName $appName -ReplyUrls 'http://localhost' -RequiredResourceAccess $apiPermission
 
-# Enable the Service Principal
-New-AzureADServicePrincipal -AppID $myApp.AppID
+# Enable the new Service Principal
+$mySP                  = New-AzureADServicePrincipal -AppID $myApp.AppID
