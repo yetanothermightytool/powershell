@@ -3,7 +3,7 @@ Powershell script that shows the total number of Exchange Online mailboxes, back
 
 ## Description
 ~~~~
-Version : 1.1 (January 10th 2023)
+Version : 1.2 (January 10th 2023)
 Requires: Veeam Backup for Microsoft 365 v6 or later
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -18,17 +18,19 @@ GitHub  : https://www.github.com/yetanothermightytool
 
 `PS> .\$credential.Password | ConvertFrom-SecureString | Set-Content <path to secure.txt>`
 
-- Change values of the following variables
+- Change values of the following variables:
 
-`$userName`             Username for retrieving Exchange Online Information (use the same username as in step 1)
+`$MSOrganization`               M365 Organization name
 
-`$passwordText`         Path to the secure.txt file that has been created in advance
+`$applicationID`                Application ID of the required Application within Microsoft Azure AD. A how-to guide will be posted soon on community.veeam.com
+
+`$certificationThumbPrint`      Thumbrpint of the uploaded certificate for accessing the application
 
 ## Parameters
 `Organization`
 _(mandatory)_ Name of the VB365 Organization
 
-`Filter`
+`Reponame`
 _(mandatory)_ Name of the VB365 Repository where Exchange Online Data is stored
   
 ## Example
@@ -37,9 +39,9 @@ _(mandatory)_ Name of the VB365 Repository where Exchange Online Data is stored
 
 ## Output - Example with Backup Data on Object Storage Repository
 
-| M365 Mailboxes | Backed up Mailboxes on Repo | M365 Mailbox Size (MB)  | Stored on Local Repo (MB) | Stored on Object Repo (MB) | Data Reduction in %
-| :---:          | :---:                       | :---:                   | :---:                     | :---:                      | :---:
-| 28             | 6                           | 142                     | 0                         | 116                        | 22
+| M365 Mailboxes | Backed up Mailboxes on Repo | M365 Mailbox Size (MB)  | Stored on Local Repo (MB) | Stored on Object Repo (MB) | Data Reduction in % | Used Capacity per User (MB)
+| :---:          | :---:                       | :---:                   | :---:                     | :---:                      | :---:               | :---:
+| 28             | 6                           | 142                     | 0                         | 116                        | 22                  | 19
 
 
 ## Notes
@@ -50,6 +52,11 @@ This script has been tested with the following versions of Veeam Backup for Offi
 
 ## Version History
 
+* 1.2
+    * Using application authentication with certificate
+    * Calculation of used capacity per stored mailbox/user (average value)
+    * The old script using the basic authentication method is renamed to vb365-exo-usage-report-basicauth.ps1
+
 * 1.1
     * Only the size of the protected mailboxes gets reported in column "M365 Mailbox Size"
     * Group Mailbox Support (Thanks Mildur for the feedback)
@@ -58,7 +65,6 @@ This script has been tested with the following versions of Veeam Backup for Offi
 
 ## Planned functions
 
-- Switching to Application Authentication
 - OneDrive for Business (Checking possibilites)
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
