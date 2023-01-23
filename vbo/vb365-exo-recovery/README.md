@@ -13,8 +13,8 @@ GitHub  : https://www.github.com/yetanothermightytool
 ## Prerequisites
 
 - The mailboxes to be restored must be provided in a CSV file and present on the destination tenant - See CSV File Structure
-- An Azure AD application at the destination M365 tenant with the appropriate rights. 
-  See https://helpcenter.veeam.com/docs/vbo365/guide/adding_o365_organizations_sd.html
+- An configured Azure AD application at the destination M365 tenant with the appropriate rights
+  See https://helpcenter.veeam.com/docs/vbo365/guide/ad_app_permissions_sd.html
 - The exported certificate (.pfx) of the Azure AD application
 
 
@@ -25,7 +25,7 @@ SourceMbx | DestMbxName | DestOrg
 "Monitoring" | monitoring@M365x123456.onmicrosoft.com |M365x123456.onmicrosoft.com
 
 ## Parameters
-`SourceVB365Org`
+`SrcVB365Org`
 _(mandatory)_ Source VB365 Organization name
 
 `DstAppId`
@@ -39,7 +39,7 @@ _(mandatory)_ Path and file name .csv file.
   
 ## Example
 
-`PS> .\vb365-exo-recovery.ps1 -SourceVB365Org Organization -DstAppId <your-id> -DstAppCertFile C:\temp\cert.pfx -RestoreList C:\Temp\migrator.csv`  
+`PS> .\vb365-exo-recovery.ps1 -SrcVB365Org Organization -DstAppId <your-id> -DstAppCertFile C:\temp\cert.pfx -RestoreList C:\Temp\migrator.csv`  
 
 Note: After you have executed the command, you must enter the certificate password!
 
