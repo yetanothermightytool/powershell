@@ -18,7 +18,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 - The exported certificate (.pfx) of the Azure AD application
 
 
-## CSV File Structure
+## CSV File Structure - Example with two entries
 SourceMbx | DestMbxName | DestOrg
 | :---:   | :---:       | :---: 
 "Joe Doe" | joed@M365x123456.onmicrosoft.com | M365x123456.onmicrosoft.com
@@ -26,26 +26,32 @@ SourceMbx | DestMbxName | DestOrg
 
 ## Parameters
 `SourceVB365Org`
-_(mandatory)_ Name of the VB365 Organization 
+_(mandatory)_ Name source VB365 Organization (where the backup was made from)
 
 `DestAppId`
 _(mandatory)_ Application ID destination Microsoft Azure tenant
 
 `DestCertPath`
-_(mandatory)_ Path and file name of .pfx file (Application certificate)
+_(mandatory)_ Path and file name .pfx file (Application certificate)
 
 `RestoreList`
-_(mandatory)_ Path and file name of the csv file.
+_(mandatory)_ Path and file name csv file.
   
 ## Example
 
 `PS> .\vb365-exo-recovery.ps1 -SourceVB365Org Organization -DestAppId <your-id> -DestAppCertPath C:\temp\cert.pfx -RestoreList C:\Temp\migrator.csv`  
 
+Note: After you have executed the command, you must enter the certificate password!
+
 ## Output - Example with Backup Data on Object Storage Repository
 
 | Processed Mailboxes | Created Items | Skipped Items  | Failed Items
 | :---:               | :---:         | :---:          | :---: 
-| 10                  | 42            | 493            | 0                         
+| 2                   | 42            | 493            | 0                         
+
+Created Items = Restored Items 
+Skipped Items = Items that were already present in destination mailbox
+Failed Items  = Something went wrong. Please check the Exchange Explorer Log Files
 
 ## Considerations
 
@@ -61,7 +67,7 @@ This script has been tested with the following versions of Veeam Backup for Offi
 ## Version History
 
 * 1.1
-    * Use modern authentication
+    * Use modern authentication only
         
 * 1.0
     * Inital version using basic authentication
