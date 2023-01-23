@@ -26,16 +26,16 @@ SourceMbx | DestMbxName | DestOrg
 
 ## Parameters
 `SourceVB365Org`
-_(mandatory)_ Name source VB365 Organization (where the backup was made from)
+_(mandatory)_ Source VB365 Organization name
 
 `DestAppId`
-_(mandatory)_ Application ID destination Microsoft Azure tenant
+_(mandatory)_ Destination Microsoft Azure tenant Application (client)ID
 
 `DestCertPath`
 _(mandatory)_ Path and file name .pfx file (Application certificate)
 
 `RestoreList`
-_(mandatory)_ Path and file name csv file.
+_(mandatory)_ Path and file name .csv file.
   
 ## Example
 
