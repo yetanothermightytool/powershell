@@ -28,10 +28,10 @@ SourceMbx | DestMbxName | DestOrg
 `SourceVB365Org`
 _(mandatory)_ Source VB365 Organization name
 
-`DestAppId`
+`DstAppId`
 _(mandatory)_ Destination Microsoft Azure tenant Application (client)ID
 
-`DestCertPath`
+`DstAppCertFile`
 _(mandatory)_ Path and file name .pfx file (Application certificate)
 
 `RestoreList`
@@ -39,7 +39,7 @@ _(mandatory)_ Path and file name .csv file.
   
 ## Example
 
-`PS> .\vb365-exo-recovery.ps1 -SourceVB365Org Organization -DestAppId <your-id> -DestAppCertPath C:\temp\cert.pfx -RestoreList C:\Temp\migrator.csv`  
+`PS> .\vb365-exo-recovery.ps1 -SourceVB365Org Organization -DstAppId <your-id> -DstAppCertFile C:\temp\cert.pfx -RestoreList C:\Temp\migrator.csv`  
 
 Note: After you have executed the command, you must enter the certificate password!
 
