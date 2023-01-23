@@ -20,7 +20,9 @@ GitHub  : https://www.github.com/yetanothermightytool
 
 ## CSV File Structure
 SourceMbx | DestMbxName | DestOrg
+| :---:   | :---:       | :---: 
 "Joe Doe" | joed@M365x123456.onmicrosoft.com | M365x123456.onmicrosoft.com
+| :---:   | :---:       | :---: 
 "Monitoring" | monitoring@M365x123456.onmicrosoft.com |M365x123456.onmicrosoft.com
 
 ## Parameters
