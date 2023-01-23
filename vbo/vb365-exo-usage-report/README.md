@@ -9,10 +9,10 @@ Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
 ~~~~
 
-## Prerequisites
+## Prerequisites *** Update Userguide Link ***
 
 - Exchange Online Powershell Module V3 (Script installs it, when missing)
-- An Azure AD application with the appropriate rights. A how-to guide will be posted soon on https://community.veeam.com
+- An Azure AD application with the appropriate rights. How-to guide: https://community.veeam.com/discussion-boards-66/configure-exchange-online-certificate-based-authentication-to-automate-the-exchange-online-powershell-scripts-4039
 - Change values of the following variables:
 
 `$MSOrganization`               M365 Organization name
