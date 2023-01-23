@@ -42,7 +42,8 @@ _(mandatory)_ Path and file name of the csv file.
 
 ## Output - Example with Backup Data on Object Storage Repository
 
-| Processed Mailboxes | Created Items | Skipped Items  | Failed Items 
+| Processed Mailboxes | Created Items | Skipped Items  | Failed Items
+| :---:               | :---:         | :---:          | :---: 
 | 10                  | 42            | 493            | 0                         
 
 ## Considerations
