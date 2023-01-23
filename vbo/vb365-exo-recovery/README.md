@@ -19,9 +19,9 @@ GitHub  : https://www.github.com/yetanothermightytool
 
 
 ## CSV File Structure
-SourceMbx,DestMbxName,DestOrg
-"Joe Doe", joed@M365x123456.onmicrosoft.com,M365x123456.onmicrosoft.co
-"Monitoring", monitoring@M365x123456.onmicrosoft.com,M365x123456.onmicrosoft.co
+SourceMbx | DestMbxName | DestOrg
+"Joe Doe" | joed@M365x123456.onmicrosoft.com | M365x123456.onmicrosoft.com
+"Monitoring" | monitoring@M365x123456.onmicrosoft.com |M365x123456.onmicrosoft.com
 
 ## Parameters
 `SourceVB365Org`
@@ -44,10 +44,6 @@ _(mandatory)_ Path and file name of the csv file.
 
 | Processed Mailboxes | Created Items | Skipped Items  | Failed Items 
 | 10                  | 42            | 493            | 0                         
-
-Created Items = Non-existing (deleted items) items created in destination mailbox
-Skipped Items = Existing items in destination mailbox, so skipped
-Failed Items  = Something is wrong. See the Exchange Explorer log files
 
 ## Considerations
 
