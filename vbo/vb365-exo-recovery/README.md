@@ -1,5 +1,5 @@
 # Veeam Backup for Microsoft 365 Exchange Online Mailbox Recovery Tool
-A Powershell script to recover items from certain mailboxes from the last VB365 Exchange Online Restore point to another Microsoft organization.
+A Powershell script to recover items from specified mailboxes from the lastest VB365 Exchange Online Restore point to another Microsoft organization.
 
 
 ## Description
@@ -22,7 +22,6 @@ GitHub  : https://www.github.com/yetanothermightytool
 SourceMbx | DestMbxName | DestOrg
 | :---:   | :---:       | :---: 
 "Joe Doe" | joed@M365x123456.onmicrosoft.com | M365x123456.onmicrosoft.com
-| :---:   | :---:       | :---: 
 "Monitoring" | monitoring@M365x123456.onmicrosoft.com |M365x123456.onmicrosoft.com
 
 ## Parameters
