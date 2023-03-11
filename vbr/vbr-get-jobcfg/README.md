@@ -39,7 +39,6 @@ _(mandatory)_
   
 ## Notes
 
-Uses Get-VBRJob. This command is no longer supported. I check alternative possibilities.
 Depending on the feedback, other options will be included (for example other job types like backup copy job).
 
 This script has been tested with the following versions of Veeam Backup & Replication
