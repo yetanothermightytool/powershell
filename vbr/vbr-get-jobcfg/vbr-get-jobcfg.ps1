@@ -7,7 +7,6 @@
     File Name  : vbr-get-jobcfg.ps1
     Author     : Stephan Herzig, Veeam Software (stephan.herzig@veeam.com)
     Requires   : PowerShell, Veeam Backup & Replication v12
-	Important: : Uses Get-VBRJob. This command is no longer supported.
 
 .VERSION
     1.0
