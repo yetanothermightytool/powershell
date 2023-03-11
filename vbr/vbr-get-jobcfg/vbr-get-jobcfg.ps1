@@ -35,7 +35,8 @@ foreach ($jobs in $vbrJobs) {
     RepoType           = $jobs.FindBackupTargetRepository().Type
     BackupType         = $jobs.Options.BackupTargetOptions.Algorithm
     Synthetic          = $jobs.Options.BackupTargetOptions.TransformToSyntheticFull
-    BackupMode         = $jobs.Options.BackupTargetOptions.FullBackupScheduleKind
+    SyntheticDay       = $jobs.Options.BackupTargetOptions.TransformToSyntethicDays
+    ActiveFull         = $jobs.Options.BackupStorageOptions.EnableFullBackup
     FullBackupDay      = $jobs.Options.BackupTargetOptions.FullBackupDays 
     CompressionLevel   = $jobs.Options.BackupStorageOptions.CompressionLevel
     StorageOpt         = $opt = $jobs.Options.BackupStorageOptions.StgBlockSize
@@ -48,8 +49,9 @@ $finalResult | Format-Table -Wrap -AutoSize -Property @{Name='Job Name';Expressi
                                                       @{Name='Repository Type';Expression={$_.RepoType};align='left'},
                                                       @{Name='Backup Type';Expression={$_.BackupType};align='left'},
                                                       @{Name='Synthetic';Expression={$_.Synthetic};align='left'},
-                                                      @{Name='Backup Mode';Expression={$_.BackupMode};align='left'},
-                                                      @{Name='Full Backup on';Expression={$_.FullBackupDay};align='left'},
+                                                      @{Name='Synthetic on';Expression={$_.SyntheticDay};align='left'},
+                                                      @{Name='Active Full';Expression={$_.ActiveFull};align='left'},
+                                                      @{Name='Active Full on';Expression={$_.FullBackupDay};align='left'},
                                                       @{Name='Compression Level';Expression={$_.CompressionLevel};align='center'},
                                                       @{Name='Storage Optimization';Expression={$_.StorageOpt};align='left'},
                                                       @{Name='Backup Encryption';Expression={$_.JobEncryption};align='left'}
