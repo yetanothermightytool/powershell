@@ -4,7 +4,7 @@
 .DESCRIPTION
     Powershell script to display the used capacity in an object storage
 .NOTES  
-    File Name  : get-vbr-objectstorageusage.ps1
+    File Name  : vbr-get-objectstorageusage.ps1
     Author     : Stephan Herzig, Veeam Software (stephan.herzig@veeam.com)
     Requires   : PowerShell, Veeam Backup & Replication v12
 	Important  : Using unofficial .NET method 
