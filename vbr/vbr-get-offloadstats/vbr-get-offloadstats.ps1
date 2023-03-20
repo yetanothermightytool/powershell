@@ -4,7 +4,7 @@
 .DESCRIPTION
     Powershell script to display the offloaded capacity to an object storage.
 .NOTES  
-    File Name  : get-vbr-offloadstats.ps1
+    File Name  : vbr-get-offloadstats.ps1
     Author     : Stephan Herzig, Veeam Software (stephan.herzig@veeam.com)
     Requires   : PowerShell, Veeam Backup & Replication v12
 	Important  : Using unofficial .NET method 
