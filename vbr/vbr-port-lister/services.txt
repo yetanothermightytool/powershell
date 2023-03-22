@@ -1,0 +1,148 @@
+###Core Services###
+#Virtualization Servers				
+VBR Server:vCenter Server:443
+VBR Server:ESXi server:443
+VBR Server:ESXi server:902
+VBR Server:VMware Cloud Director:443
+#Other Servers				
+VBR Server:PostgreSQL server VBR configuration database:5432
+VBR Server:Microsoft SQL Server VBR configuration database:1433
+VBR Server:DNS server:53
+VBR Server:Veeam Update Notification Server (dev.veeam.com):443
+VBR Server:Veeam License Update Server (vbr.butler.veeam.com, autolk.veeam.com):443
+#Veeam Backup & Replication Server
+VBR Server:VBR Server:9501
+VBR Server:VBR Server:6172
+VBR Server:VBR Server:9380
+REST client:VBR Server:9419
+VBR Console:VBR Server:9392
+VBR Console:VBR Server:10003
+VBR Console:VBR Server:9396
+VBR Console:Mount server (if the mount server is not located on the console):2500-3300
+VBR Server:Windows server:445
+VBR Server:Windows server:135
+WAN accelerator:Windows server:49152-65535
+VBR Server:Linux server:22
+VBR Server:Linux server:6160
+VBR Server:Linux server:6162
+VBR Server:Linux server:2500-3300
+Linux server:VBR Server:2500-3300
+VBR Server:Tape Server:6166
+VBR Server:Tape Server:2500-3300
+Tape Server:VBR Server:2500-3300
+VBR Server:VM guest OS (Linux):22
+VBR Server:Guest interaction proxy:6190,6290,445
+Guest interaction proxy:ESXi server:443
+Guest interaction proxy:VM guest OS (Windows):443,135
+Guest interaction proxy:VM guest OS (Windows):2500-3300
+Guest interaction proxy:VM guest OS (Windows):49152-65535
+Guest interaction proxy:VM guest OS (Linux):22
+Guest interaction proxy:VM guest OS (Linux):2500-3300
+VM guest OS:Guest interaction proxy:2500-3300
+VBR Server:SQL Server:145,137-139,445
+VBR Server:SQL Server:49152-65535
+VBR Server:SQL Server (Log Shipping):6167
+Guest Interaction Proxy:SQL Server:145,137-139,445
+Guest Interaction Proxy:SQL Server:49152-65535
+Guest Interaction Proxy:SQL Server (Log Shipping):6167
+SQL Server:VBR Server:49152-65535
+SQL Server:Guest Interaction Proxy:49152-65535
+SQL Server:Log Shipping Server:2500-3300
+SQL Server:Backup Repository:2500-3300
+VBR Server:Oracle Server:135,137-139,445
+VBR Server:Oracle Server:49152-65535
+VBR Server:Oracle Server (Log Shipping):6167
+Oracle Server:VBR Server:49152-65535
+Oracle Server:Log Shipping Server:2500-3300
+Oracle Server:Backup Repository:2500-3300
+VBR Server:Oracle Server:6162
+VBR Server:Oracle Server:22
+VBR Server:Oracle Server (Log Shipping):2500-3300
+VBR Server:Oracle Server (Log Shipping):6167
+Oracle Server:Log Shipping Server:2500-3300
+Oracle Server:Backup Repository:2500-3300
+VBR Server:PostgreSQL (Linux):6162
+VBR Server:PostgreSQL (Linux):22
+VBR Server:PostgreSQL (Linux):2500-3300
+PostgreSQL (Linux):Log Shipping Server:2500-3300
+PostgreSQL (Linux):Backup Repository:2500-3300
+VBR Server:Exchange Server:135,137-139-445
+Guest Interaction Proxy:Exchange Server:135,137-139-445
+VBR Server:Exchange Server:6005-65535
+Guest Interaction Proxy:Exchange Server:6005-65535
+Exchange Server:VBR Server:6005-65535
+Exchange Server:Guest Interaction Proxy:6005-6553
+
+###Proxies###
+VBR Server:Windows Proxy:445:Deployment
+VBR Server:Windows Proxy:135:Optional
+VBR Server:Windows Proxy:6160:Veeam Installer
+Windows Proxy:Windows Repository:2500-3300:Data Transmission
+Windows Proxy:Linux Repository:2500-3300:Data Transmission
+Windows Proxy:VBR Server:2500-3300:Data Transmission
+VBR Server:Linux Proxy:22:Control Channel
+VBR Server:Linux Proxy:6160:Veeam Installer
+VBR Server:Linux Proxy:6162:Veeam Data Mover
+Linux Proxy:VBR Server:2500-3300:Data Transmission
+#Communication with VMware Servers				
+Windows Proxy:vCenter Server:443
+Windows Proxy:ESXi server:902
+Windows Proxy:ESXi server:443
+#Communication with Backup Repositories				
+Windows Proxy:Windows Repository:2500-3300
+Windows Proxy:Windows Repository (Windows):49152-65535
+Windows Proxy:SMB(CIFS) Backup Repository:445, 135
+Windows Proxy:NFS backup repository:111, 2049
+Windows Proxy:Gateway Server:49152-65535
+Windows Proxy:Linux Linux Repository:22:Initial
+Windows Proxy:Linux Repository:6160:Veeam Installer
+Windows Proxy:Linux Repository:6162:Veeam Data Mover
+Windows Proxy:Linux Repository:2500-3300:Data Transmission
+Linux Proxy:Windows Repository:2500-3300
+Linux Proxy:Windows Repository (Windows):49152-65535
+Linux Proxy:SMB(CIFS) Backup Repository:445, 135
+Linux Proxy:NFS backup repository:111, 2049
+Linux Proxy:Gateway Server:49152-65535
+Linux Proxy:Linux Linux Repository:22:Initial
+Linux Proxy:Linux Repository:6160:Veeam Installer
+Linux Proxy:Linux Repository:6162:Veeam Data Mover
+Linux Proxy:Linux Repository:2500-3300:Data Transmission
+Gateway Server (explicit):SMB (CIFS) backup repository:445, 1351
+Gateway Server (explicit):NFS backup repository:111, 2049
+#Communication with Veeam Backup & Replication Server				
+VBR Server:Windows Proxy:6210:VSS Snapshot SMB Share Backup
+###Gateway Services###
+Gateway Server:Amazon S3:443
+Gateway Server:Amazon S3 (Certificate):80
+Gateway Server:Azure BLOB:443
+Gateway Server:Azure BLOB (Certificate):80
+Gateway Server:Google Cloud storage:443
+Gateway Server:Google Cloud storage (Certificate):80
+Gateway Server:Amazon EC2 helper appliance:22,443
+Gateway Server:Microsoft Azure proxy appliance:22,443
+#Cloud helper appliances
+Amazon EC2 proxy appliance:Amazon S3:443
+Amazon EC2 proxy appliance:Amazon S3 (Certificate):80
+Microsoft Azure proxy appliance:Azure BLOB:443
+Microsoft Azure proxy appliance:Azure BLOB (Certificate):80
+
+
+###Work in Progress
+Backup proxy:Backup proxy:2500-3300
+Source Repository:Target Repository:2500-3300
+Source Repository:Object storage repository gateway server:2500-3300
+Backup Repository/secondary backup repository:Cache repository NAS backup:2500-3300
+vPower NFS Service:Backup Repository gateway server working with backup repository:2500-3300
+Gateway Server/backup proxy (Windows/Linux):NFS backup repository/file share:2049
+Gateway Server/backup proxy (Windows/Linux):NFS backup repository/file share:111
+Gateway Server/backup proxy (specified in the NFS repository settings):NFS backup repository/file share:111, 2049
+Gateway Server:Dell Data Domain:111,2049,2052
+VBR Server:ExaGrid:22
+Backup proxy:ExaGrid:2500-3300
+Gateway Server:HPE StoreOnce:9387,9388
+VBR Server:Quantum DXi:22
+Backup proxy:Quantum DXi:2500-3300
+VBR Server:Fujitsu ETERNUS CS800:22
+Backup proxy:Fujitsu ETERNUS CS800:2500-3300
+VBR Server:Infinidat InfiniGuard:22
+Backup proxy:Infinidat InfiniGuard:2500-3300
