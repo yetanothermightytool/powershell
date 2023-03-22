@@ -1,0 +1,63 @@
+VBR Server:AD Server:135
+VBR Server:AD Server:389
+VBR Server:AD Server:626,3268,3269
+VBR Server:AD Server:49152-65535
+VBR Console:AD Server:135
+VBR Console:AD Server:389
+VBR Console:AD Server:626,3268,3269
+VBR Console:AD Server:49152-65535
+VBR Server:SQL Server:135,445
+VBR Console:SQL Server:135,445
+Mount Server:SQL Server:135,445
+VBR Server:Staging Server:135,445
+VBR Console:Staging Server:135,445
+Mount Server:Staging Server:135,445
+VBR Server:SQL Server:49152-65535
+VBR Console:SQL Server:49152-65535
+Mount Server:SQL Server:49152-65535
+VBR Server:Staging Server:49152-65535
+VBR Console:Staging Server:49152-65535
+Mount Server:Staging Server:49152-65535
+VBR Server:SQL Server:6160
+VBR Console:SQL Server:6160
+Mount Server:SQL Server:6160
+VBR Server:Staging Server:6160
+VBR Console:Staging Server:6160
+Mount Server:Staging Server:6160
+VBR Server:SQL Server:1433,1434
+VBR Console:SQL Server:1433,1434
+Mount Server:SQL Server:1433,1434
+VBR Server:Staging Server:1433,1434
+VBR Console:Staging Server:1433,1434
+Mount Server:Staging Server:1433,1434
+VBR Server:SQL Server:1025-1034
+VBR Console:SQL Server:1025-1034
+Mount Server:SQL Server:1025-1034
+VBR Server:Staging Server:1025-1034
+VBR Console:Staging Server:1025-1034
+Mount Server:Staging Server:1025-1034
+SQL Server:Mount Server:3260-3270
+SQL Server:Staging Server:3260-3270
+VBR Server:Oracle Server (Windows):49152-65535
+VBR Console:Oracle Server (Windows):49152-65535
+Mount Server:Oracle Server (Windows):49152-65535
+VBR Server:Oracle Server (Windows):1025-1075
+VBR Console:Oracle Server (Windows):1025-1075
+Mount Server:Oracle Server (Windows):1025-1075
+VBR Server:Oracle Server (Windows):6160,1173
+VBR Console:Oracle Server (Windows):6160,1173
+Mount Server:Oracle Server (Windows):6160,1173
+VBR Server:Oracle Server (Linux):22
+VBR Console:Oracle Server (Linux):22
+Mount Server:Oracle Server (Linux):22
+Backup Repository:Oracle Server (Linux):2500-3300
+Oracle Server (Linux):Backup Repository:2500-3300
+Oracle Server (Windows):Mount Server:3260-3270
+Staging Server:Backup Repository:3260-3270
+VBR Server:Mount Server:6170
+VBR Console:Mount Server:6170
+Backup Repository:PostgreSQL (Linux):2500-3300
+PostgreSQL (Linux):Backup Respository:2500-3300
+Mount Server:PostgreSQL (Linux):22
+VBR Server:Exchange Server:443
+VBR Console:Exchange Server:443
