@@ -26,7 +26,13 @@ _(optional)_ Name of the File Share Backup Job
 
 Valid Source or Destination Roles are:
 
-`VBR Server` `VBR Console` `Windows Proxy` `Windows Repository` `Linux Proxy` `Linux Repository` `Gateway Server`
+"VBR Server"
+"VBR Console"
+"Windows Proxy"
+"Windows Repository"
+"Linux Proxy"
+"Linux Repository"
+"Gateway Server"
 
 More can be found in the specific .txt file
 
