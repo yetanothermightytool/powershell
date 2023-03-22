@@ -1,0 +1,45 @@
+VBR Server:Windows Agent:6184+
+VBR Server:Windows Agent:135,137-139,445,6160,11731
+VBR Server:Windows Agent:2500-3300
+VBR Server:Windows Agent (SQL Logs):6167
+VBR Server:Windows Agent (Storage Snapshots):6211
+VBR Server:Linux Agent:22,6160,6162
+VBR Server:Linux Agent:2500-3300
+VBR Server:Distribution Server:135(optional)
+VBR Server:Distribution Server:137-139,445,6160,11731
+VBR Server:Distribution Server:49152-65535
+VBR Server:Distribution Server:9380
+VBR Server:Backup Proxy:6211(Storage Snapshots)
+Distribution Server:Windows Agent:49152-65535
+Distribution Server:Windows Agent:6160,11731
+Distribution Server:Linux Agent:22,6160,6162
+Windows Agent:VBR Server:10005
+Linux Agent:VBR Server:10006
+Unix Agent:VBR Server:10006
+macOS Agent:VBR Server:10006
+Windows Agent:Windows Agent:9395+,6183+
+Linux Agent:Linux Agent:2500-3300
+UNIX Agent:Linux Agent:2500-3300
+macOS Agent:Linux Agent:2500-3300
+Windows Agent:Linux Backup Repository:2500-3300
+Windows Agent:Windows Backup Repository:49152-65535
+Windows Agent:Windows Backup Repository:2500-3300
+Windows Agent:SMB Backup Repository:137-139,445
+Windows Agent:Gateway Server:137-139,445
+Windows Agent:Gateway Server:49152-65535
+Windows Agent:Gateway Server:2500-3300
+Linux Agent:Linux Backup Repository:2500-3300
+Linux Agent:Windows Backup Repository:49152-65535
+Linux Agent:Windows Backup Repository:2500-3300
+Linux Agent:SMB Backup Repository:137-139,445
+Linux Agent:Gateway Server:137-139,445
+Linux Agent:Gateway Server:49152-65535
+Linux Agent:Gateway Server:2500-3300
+Gateway server:Amazon S3:443
+Gateway server:Amazon S3 (Certificate):80
+Gateway server:Azure BLOB:443
+Gateway server:Azure BLOB (Certificate):80
+Gateway server:Google Cloud storage:443
+Gateway server:Google Cloud storage (Certificate):80
+Gateway server:Amazon EC2 helper appliance:22,443
+Gateway server:Microsoft Azure proxy appliance:22,443
