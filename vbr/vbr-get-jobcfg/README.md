@@ -2,7 +2,7 @@
 
 ## Description
 ~~~~
-Version : 1.0 (March 10th 2023)
+Version : 1.1 (March 24th 2023)
 Requires: Veeam Backup & Replication v12
 Author  : Stephan "Steve" Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -33,6 +33,9 @@ _(mandatory)_
   `Retention`
 _(mandatory)_ 
 
+  `NAS`
+_(mandatory)_
+
 
 ## Example: 
 `PS>.\vbr-get-jobcfg.ps1 -Storage
@@ -48,5 +51,9 @@ This script has been tested with the following versions of Veeam Backup & Replic
 
 ## Version History
 
-* 1.0
+*  1.1
+    * Corrected not finalized calculation in line 41 (thanks ratkinson-prh for pusing this)
+    * Added NAS switch to get some NAS Backup Job Configuration settings (as requested by somebody)
+
+*  1.0
     * Initial Release
