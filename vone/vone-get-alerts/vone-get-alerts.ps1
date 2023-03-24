@@ -96,6 +96,6 @@ For ($i = 0; $i -le $vonesalert.items.count; $i++) {
        }   
     }
 }
-$finalResult | Format-Table -Wrap -AutoSize -Property @{Name='Job Name';Expression={$_.AlertName}},
-                                                      @{Name='Job Type';Expression={$_.AlertStatus};align='center'},
+$finalResult | Format-Table -Wrap -AutoSize -Property @{Name='Alert Name';Expression={$_.AlertName}},
+                                                      @{Name='Status';Expression={$_.AlertStatus};align='center'},
                                                       @{Name='Description';Expression={$_.AlertDesc}}
