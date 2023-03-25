@@ -30,12 +30,13 @@ _(mandatory)_ Percentage as decimal number. Example: 1.7 equals 70 %
 ## Examples
 
 Check if any of the last 5 incremental backups of Backup Job "demo_job" is  50 % larger than the average
-`PS>.\vbr-job-scanner.ps1 -JobName "demo_job" -Depth 5 -Growth 1.5
+
+`PS>.\vbr-job-scanner.ps1 -JobName "demo_job" -Depth 5 -Growth 1.5`
 
 The same for a Veeam Backup Job - Advanced Backup Settings/Scripts
 https://helpcenter.veeam.com/docs/backup/vsphere/backup_job_advanced_scripts_vm.html
 
-<path to script>\vbr-job-scanner-post-script.ps1 -Depth 5 -Growth 1.5
+`<path to script>\vbr-job-scanner-post-script.ps1 -Depth 5 -Growth 1.5`
 
   
 ## Notes
