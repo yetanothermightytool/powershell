@@ -49,7 +49,7 @@ $average = ($lastValues | Measure-Object -Average).Average
 
 # Check if any of the last 5 backups are more than 50% larger than the average
 if (($lastValues | Where-Object { $_ -gt $average * $Growth }).Count -gt 0) {
-    $BackupSession.Logger.AddWarning("Unexpected growth detected in the last 5 backups!")
+    $BackupSession.Logger.AddWarning("Unexpected growth detected in the last $Depth backups!")
 } else {
     $BackupSession.Logger.AddSuccess("No unexpected growth detected in the last $Depth backups.")
 }                                                                                      
