@@ -11,6 +11,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 ## Purpose
 
 This script checks if any of the x incremental backups (Depth) is y% larger (Growth) than the average. 
+
 The vbr-job-scanner-post-script.ps1 directly logs the information into your Veeam Backup and Replication job.
 
 ![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-job-scanner/pictures/job-bad.png)
