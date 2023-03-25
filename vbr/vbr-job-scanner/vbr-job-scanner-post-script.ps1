@@ -1,6 +1,7 @@
 # Variables
 $finalResult     = @()
-$bkpJob          = Get-VBRJob -Name "demo_vm_fra_obj_01" -WarningAction SilentlyContinue
+#####CHANGE JOB NAME HERE#####
+$bkpJob          = Get-VBRJob -Name <jobname> -WarningAction SilentlyContinue
 $bkpSession      = Get-VBRBackupSession| Where {$_.jobId -eq $bkpJob.Id.Guid} | Sort EndTimeUTC -Descending
 
 # Funciton to get Process ID - Credits to Tom Sightler
