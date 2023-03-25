@@ -1,3 +1,10 @@
+Param(
+    [Parameter(Mandatory=$true)]
+    [string]$Depth,
+    [Parameter(Mandatory=$true)]
+    [string]$Growth
+      )
+
 # Funciton to get Process ID - Credits to Tom Sightler
 function Get-VbrJobSessionFromPID {
 $parentpid = (Get-WmiObject Win32_Process -Filter "processid='$pid'").parentprocessid.ToString()
@@ -20,7 +27,7 @@ function Get-VbrJobNameFromPID {
 $finalResult     = @()
 $bkpJobName      = Get-VbrJobNameFromPID
 $bkpJob          = Get-VBRJob -Name $bkpJobName -WarningAction SilentlyContinue
-$bkpSession      = Get-VBRBackupSession| Where {$_.jobId -eq $bkpJob.Id.Guid} | Where-Object  {$_.sessioninfo.SessionAlgorithm  -eq "Increment"} | Sort EndTimeUTC -Descending
+$bkpSession      = Get-VBRBackupSession| Where {$_.jobId -eq $bkpJob.Id.Guid} | Where-Object  {$_.sessioninfo.SessionAlgorithm -eq "Increment"} | Sort EndTimeUTC -Descending
 
 # Get Backup Session
 $BackupSession   = Get-VbrJobSessionFromPID
@@ -35,14 +42,14 @@ for ($i = 0; $i -le $bkpSession.count; $i++) {
            }
 
 # Get the last 5 values from the array
-$lastValues = $finalResult.TransferedSize[0..5]
+$lastValues = $finalResult.TransferedSize[0..$Depth]
 
 # Calculate the average of the last 5 backups
 $average = ($lastValues | Measure-Object -Average).Average
 
 # Check if any of the last 5 backups are more than 50% larger than the average
-if (($lastValues | Where-Object { $_ -gt $average * 1.5 }).Count -gt 0) {
+if (($lastValues | Where-Object { $_ -gt $average * $Growth }).Count -gt 0) {
     $BackupSession.Logger.AddWarning("Unexpected growth detected in the last 5 backups!")
 } else {
-    $BackupSession.Logger.AddSuccess("No unexpected growth detected in the last 5 backups.")
+    $BackupSession.Logger.AddSuccess("No unexpected growth detected in the last $Depth backups.")
 }                                                                                      
