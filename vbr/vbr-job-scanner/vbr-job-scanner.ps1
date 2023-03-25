@@ -27,7 +27,7 @@ $average = ($lastValues | Measure-Object -Average).Average
 
 # Check if any of the last x backups are more than 10% larger than the average
 if (($lastValues | Where-Object { $_ -gt $average * 1.1 }).Count -gt 0) {
-    Write-Host "Unexpected growth detected in last $Dept Backup(s) values!"
+    Write-Host "Unexpected growth detected in the last $Depth Backups!"
 } else {
-    Write-Host "No unexpected growth detected in last $Depth Backup(s)."
+    Write-Host "No unexpected growth detected in the last $Depth Backups."
 }                                                                                            
