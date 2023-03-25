@@ -2,7 +2,10 @@ Param(
     [Parameter(Mandatory=$true)]
     [string]$JobName,
     [Parameter(Mandatory=$true)]
-    [string]$Depth
+    [string]$Depth,
+    [Parameter(Mandatory=$true)]
+    [string]$Growth
+
   )
 
 # Variables
@@ -26,7 +29,7 @@ $lastValues = $finalResult.TransferedSize[0..$Depth]
 $average = ($lastValues | Measure-Object -Average).Average
 
 # Check if any of the last x backups are more than 50% larger than the average
-if (($lastValues | Where-Object { $_ -gt $average * 1.5 }).Count -gt 0) {
+if (($lastValues | Where-Object { $_ -gt $average * $Growth }).Count -gt 0) {
     Write-Host "Unexpected growth detected in the last $Depth Backups!"
 } else {
     Write-Host "No unexpected growth detected in the last $Depth Backups."
