@@ -40,8 +40,8 @@ $lastValues = $finalResult.TransferedSize[0..5]
 # Calculate the average of the last 5 backups
 $average = ($lastValues | Measure-Object -Average).Average
 
-# Check if any of the last 5 backups are more than 10% larger than the average
-if (($lastValues | Where-Object { $_ -gt $average * 1.1 }).Count -gt 0) {
+# Check if any of the last 5 backups are more than 50% larger than the average
+if (($lastValues | Where-Object { $_ -gt $average * 1.5 }).Count -gt 0) {
     $BackupSession.Logger.AddWarning("Unexpected growth detected in the last 5 backups!")
 } else {
     $BackupSession.Logger.AddSuccess("No unexpected growth detected in the last 5 backups.")
