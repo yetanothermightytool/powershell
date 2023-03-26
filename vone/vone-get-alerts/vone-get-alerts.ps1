@@ -1,3 +1,25 @@
+<# 
+.NAME
+    Veeam ONE - Get VONE Alerts using RestAPI
+.DESCRIPTION
+    This script lists the alarms displayed in Veeam ONE filtered by status (Status option).
+    Possible statuses are Resolved, Warning and Error
+
+    Example: Display all alarms with the status error
+
+    .\vone-get-alerts.ps1 -Status Error
+.NOTES  
+    File Name  : vone-get-alerts.ps1
+    Author     : Stephan "Steve" Herzig
+    Requires   : PowerShell, Veeam Backup & Replication v12
+.VERSION
+    1.1
+#>
+Param(
+     [Parameter(Mandatory=$true)]
+     [ValidateSet("Resolved","Warning","Error")]
+     $Status
+ )
 Clear-Host
 # Variables
 $finalResult   = @()
@@ -17,11 +39,11 @@ function Connect-VeeamRestAPI {
         }
         
         $body = @{
-            "grant_type" = "password"
-            "username" = $cred.UserName 
-            "password" = $cred.GetNetworkCredential().password
+            "grant_type"    = "password"
+            "username"      = $cred.UserName 
+            "password"      = $cred.GetNetworkCredential().password
             "refresh_token" = " "
-            "rememberMe" = " "
+            "rememberMe"    = " "
         }
 
         $requestURI = $veeamAPI + $appUri
@@ -53,7 +75,7 @@ function Get-VeeamRestAPI {
 
 # Get credentials - The ones you need to login to the VONE
 $veeamAPI = "https://localhost:1239"
-$cred     = Get-Credential -Message "Please enter your VONE credentials"
+$cred = Get-Credential -Message "Please enter your VONE credentials"
 
 # Ignore any self-signed certificate
 add-type @"
@@ -96,6 +118,6 @@ For ($i = 0; $i -le $vonesalert.items.count; $i++) {
        }   
     }
 }
-$finalResult | Format-Table -Wrap -AutoSize -Property @{Name='Alert Name';Expression={$_.AlertName}},
-                                                      @{Name='Status';Expression={$_.AlertStatus};align='center'},
-                                                      @{Name='Description';Expression={$_.AlertDesc}}
+$finalResult | Where-Object {$_.AlertStatus -eq $Status} |Format-Table -AutoSize -Property @{Name='Alert Name';Expression={$_.AlertName}},
+                                                                                           @{Name='Status';Expression={$_.AlertStatus};align='center'},
+                                                                                           @{Name='Description';Expression={$_.AlertDesc}}
