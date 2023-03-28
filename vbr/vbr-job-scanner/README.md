@@ -65,7 +65,8 @@ There are two versions of this script:
 ## Version History
 * 1.1
     * Added Duration option
-    * "Corrected" warning and information messages
+    * Adjusted warning and information messages
+    * Insert user feedback - Get-VBRJob add "-WarningAction SilentlyContinue" to suppress warning message
     * Script layout
 
 * 1.0
