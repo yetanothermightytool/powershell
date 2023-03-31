@@ -29,7 +29,7 @@ _(optional)_ Percentage as decimal number. Example: 1.7 equals 70 %
  
 ## Examples
 
-Check if any of the last 5 incremental backups of Backup Job "demo_nas_job" transferred 50 % larger than the average.
+Check if any of the last 5 incremental backups of Backup Job "demo_nas_job" transferred 50 % more files than the average.
 
 `PS>.\vbr-nasjob-scanner.ps1 -JobName "demo_nas_job" -Depth 5 -Growth 1.5`
 
