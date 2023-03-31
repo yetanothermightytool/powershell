@@ -41,7 +41,7 @@ This script has been tested with the following versions of Veeam Backup & Replic
 ## Version History
 
 * 1.0
-    * Initial Release
+    * Initial Release (Renamed to vbr-nas-avscanner on World Backup Day ;))
 	
 ## Roadmap
 - Parameter to specify the mount server
