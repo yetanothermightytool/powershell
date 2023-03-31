@@ -33,7 +33,8 @@ Check if any of the last 5 incremental backups of Backup Job "demo_nas_job" tran
 
 `PS>.\vbr-nasjob-scanner.ps1 -JobName "demo_nas_job" -Depth 5 -Growth 1.5`
 
-The same for a Veeam Backup Job - Advanced Backup Settings/Scripts (see Notes)
+The same for a Veeam File Share Backup Job - Advanced Backup Settings/Scripts 
+https://helpcenter.veeam.com/docs/backup/vsphere/file_share_backup_job_advanced_scripts.html
 
 `<path to script>\vbr-job-scanner-post-script.ps1 -Depth 5 -Growth 1.5`
 
