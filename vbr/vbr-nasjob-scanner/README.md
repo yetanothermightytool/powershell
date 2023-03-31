@@ -47,10 +47,8 @@ There are two versions of this script:
 - vbr-nasjob-scanner.ps1             - For manual execution
 - vbr-nasjob-scanner-post-script.ps1 - For use in the Backup Job as post-script
 
-![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-job-scanner/pictures/advanced-settings-script.png)
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
-
 
 
 * 1.0
