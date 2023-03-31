@@ -8,7 +8,7 @@
     More details on Github - https://github.com/yetanothermightytool/powershell/vbr/vbr-nas-scanner/README.md
     
 .NOTES  
-    File Name  : vbr-nas-scanner.ps1  
+    File Name  : vbr-nas-avscanner.ps1  
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 .VERSION
