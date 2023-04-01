@@ -14,6 +14,7 @@ This script checks for an unexpectedly high number of files that have been backe
 
 The vbr-nasjob-scanner-post-script.ps1 directly logs the information into your Veeam Backup and Replication file share job.
 
+![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-nasjob-scanner/pictures/nasjob-bad.png)
 
 ## Parameters
   
@@ -43,10 +44,15 @@ https://helpcenter.veeam.com/docs/backup/vsphere/file_share_backup_job_advanced_
 
 Tested with Veeam Backup & Replication V12
 
+Important! The script currently only works if "full" shares and not specific folders within a share are selected as the backup source.
+
+![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-nasjob-scanner/pictures/tested-job-source.png)
+
 There are two versions of this script:
 - vbr-nasjob-scanner.ps1             - For manual execution
 - vbr-nasjob-scanner-post-script.ps1 - For use in the Backup Job as post-script
 
+![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-nasjob-scanner/pictures/advanced-settings-nasjob-script.png)
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
