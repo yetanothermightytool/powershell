@@ -23,7 +23,7 @@ Param(
 
 # Variables
 $finalResult        = @()
-$NASBkpJob          = Get-VBRNASBackupJob
+$NASBkpJob          = Get-VBRNASBackupJob -Name $JobName
 
 foreach($NASBkpJobPath in $NASBkpJob.BackupObject.Path){
 $NASBkpJobSession   = Get-VBRNASBackupTaskSession -Name $NASBkpJobPath | Sort EndTime -Descending
