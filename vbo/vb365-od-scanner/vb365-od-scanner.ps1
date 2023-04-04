@@ -17,7 +17,7 @@ $filterDate       = (Get-Date).AddDays(-$Daysback)
 # Start OneDrive Restore Session using the proper restore point
 if ($daysback -gt "0") 
     {
-    $restorePoint = Get-VBORestorePoint | Where-Object -Property isOneDrive | Where-Object {$_.BackupTime -ge $filterDate.Date} | sort -Property BackupTime | Select -First 1
+    $restorePoint = Get-VBORestorePoint | Where-Object -Property isOneDrive | Where-Object {$_.BackupTime -ge $filterDate.Date} | sort -Property BackupTime -Descending | Select -First 1
     Start-VEODRestoreSession -RestorePoint $restorePoint
     }
 elseif ([string]::IsNullOrEmpty($Daysback)) 
