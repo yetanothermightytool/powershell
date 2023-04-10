@@ -42,7 +42,7 @@ $objRepoUsageMB             = [math]::Round($repoUsage.ObjectStorageUsedSpace/1M
 $locRepoUsageMB             = [math]::Round($repoUsage.UsedSpace/1MB)
 
 # Get number of protected mailboxes on repository
-$protectedMbx               = Get-VBOEntityData -Repository $repo -Organization $org -Type Mailbox | where {$_.displayname -notlike "*In-Place Archive*"}
+$protectedMbx               = Get-VBOEntityData -Repository $repo -Organization $org -Type Mailbox | where-object {$_.displayname -notlike "*In-Place Archive*"}
 $protectedMbxCount          = $protectedMbx.Count
 
 # Fetch all Mailboxes
@@ -50,7 +50,7 @@ $mailboxes                  = Get-ExoRecipient -Resultsize Unlimited
 $mailboxCount               = $mailboxes.Count
 
 # Check only Mailboxes having backup data
-$protectedMbx = Get-VBOEntityData -Organization $org -Repository $repo -Type Mailbox | where {$_.displayname -notlike "*In-Place Archive*"}
+$protectedMbx = Get-VBOEntityData -Organization $org -Repository $repo -Type Mailbox | Where-Object {$_.displayname -notlike "*In-Place Archive*"}
 
 ForEach ($protMbx in $protectedMbx.Email) {
 
@@ -81,8 +81,8 @@ $outtable                  = New-Object PSObject -Property $hash
 $outtable |Format-Table -Wrap -AutoSize -Property @{Name='M365 Mailboxes';Expression={$_."M365 Mailboxes"};align='center'},
                                                   @{Name='Backed up Mailboxes on Repo';Expression={$_."Backed up Mailboxes on Repo"};align='center'},
                                                   @{Name='M365 Mailbox Size (MB)';Expression={$_."M365 Mailbox Size (MB)"};align='center'},
-		                                  @{Name='Stored on Local Repo (MB)';Expression={$_."Stored on Local Repo (MB)"};align='center'},
-		                                  @{Name='Stored on Object Repo (MB)';Expression={$_."Stored on Object Repo (MB)"};align='center'},
+		                                          @{Name='Stored on Local Repo (MB)';Expression={$_."Stored on Local Repo (MB)"};align='center'},
+		                                          @{Name='Stored on Object Repo (MB)';Expression={$_."Stored on Object Repo (MB)"};align='center'},
                                                   @{Name='Data Reduction in %';Expression={$_."Data Reduction in %"};align='center'},
                                                   @{Name='Used Capacity per User (MB)';Expression={$_."Used Capacity per User (MB)"};align='center'}
 
