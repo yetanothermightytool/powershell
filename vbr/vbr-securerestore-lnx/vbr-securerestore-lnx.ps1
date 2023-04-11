@@ -45,4 +45,5 @@ if ($infectedFilesValue.Count -ne 0) {
         Write-Host "No infected files found."
   }
 
+# Stop the Data Integration API Session
 Unpublish-VBRBackupContent -Session $session 
