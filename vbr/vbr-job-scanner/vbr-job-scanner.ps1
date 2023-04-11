@@ -30,7 +30,7 @@ Param(
 # Variables
 $finalResult   = @()
 $bkpJob          = Get-VBRJob -Name $JobName -WarningAction SilentlyContinue
-$bkpSession      = Get-VBRBackupSession| Where {$_.jobId -eq $bkpJob.Id.Guid} | Where-Object  {$_.sessioninfo.SessionAlgorithm  -eq "Increment"} | Sort EndTimeUTC -Descending
+$bkpSession      = Get-VBRBackupSession| Where-Object {$_.jobId -eq $bkpJob.Id.Guid} | Where-Object  {$_.sessioninfo.SessionAlgorithm  -eq "Increment"} | Sort-Object EndTimeUTC -Descending
 
 # Put the information together
 for ($i = 0; $i -le $bkpSession.count; $i++) {
