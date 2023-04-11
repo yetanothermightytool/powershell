@@ -31,7 +31,7 @@ Write-Progress "Publish Backup to Mounthost $Mounthost..." -PercentComplete 60
 $session      = Publish-VBRBackupContent -RestorePoint $restorePoint -TargetServerName $mountHost-TargetServerCredentials $creds -EnableFUSEProtocol
 
 # Get-VBRPublishedBackupContentInfo -session $session 
-$scanPath     = ($sessionInfo =Get-VBRPublishedBackupContentInfo -session $session).Disks.MountPoints
+$scanPath     = ($sessionInfo = Get-VBRPublishedBackupContentInfo -session $session).Disks.MountPoints
 
 # Start scanning using ClamAV
 Write-Progress "Start Scanning..." -PercentComplete 95
