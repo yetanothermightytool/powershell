@@ -9,7 +9,7 @@ Param(
 Clear-Host
 
 # Set the variables
-$keyFile      = "D:\Scripts\vbr\secure-restore-linux\key"
+$keyFile      = "D:\Scripts\vbr\securerestore-lnx\key"
 
 # Get the Backup Job
 Write-Progress "Get Backup Job..." -PercentComplete 10
