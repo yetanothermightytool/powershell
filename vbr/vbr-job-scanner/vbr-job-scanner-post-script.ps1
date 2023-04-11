@@ -50,7 +50,7 @@ function Get-VbrJobNameFromPID {
 $finalResult     = @()
 $bkpJobName      = Get-VbrJobNameFromPID
 $bkpJob          = Get-VBRJob -Name $bkpJobName -WarningAction SilentlyContinue
-$bkpSession      = Get-VBRBackupSession| Where {$_.jobId -eq $bkpJob.Id.Guid} | Where-Object  {$_.sessioninfo.SessionAlgorithm -eq "Increment"} | Sort EndTimeUTC -Descending
+$bkpSession      = Get-VBRBackupSession| Where-Object {$_.jobId -eq $bkpJob.Id.Guid} | Where-Object  {$_.sessioninfo.SessionAlgorithm -eq "Increment"} | Sort-Object EndTimeUTC -Descending
 
 # Get Backup Session
 $BackupSession   = Get-VbrJobSessionFromPID
