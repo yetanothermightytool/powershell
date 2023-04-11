@@ -38,7 +38,7 @@ $finalResult        = @()
 $NASBkpJob          = get-vbrnasbackupjob -Name $JobName
 
 foreach($NASBkpJobPath in $NASBkpJob.BackupObject.Path){
-$NASBkpJobSession   = Get-VBRNASBackupTaskSession -Name $NASBkpJobPath | Sort EndTime -Descending
+$NASBkpJobSession   = Get-VBRNASBackupTaskSession -Name $NASBkpJobPath | Sort-Object EndTime -Descending
 
 # Compiling the information
 for ($i = 0; $i -le $NASBkpJobSession.count; $i++) {
