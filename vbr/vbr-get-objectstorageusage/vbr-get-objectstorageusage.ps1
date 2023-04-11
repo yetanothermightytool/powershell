@@ -20,7 +20,7 @@ $finalResult   = @()
 # Get Object Storage Repository Information
 $repo = Get-VBRObjectStorageRepository 
 
-#foreach ($repoid in $repo) {
+foreach ($repoid in $repo) {
          $finalResult      += New-Object psobject -Property @{
          RepoName          =  $repoid.Name
          RepoUsageGB       =  [math]::round([Veeam.Backup.Core.CBackupRepository]::GetRepositoryBackupsSize($repoid.id) / 1Gb, 2)
