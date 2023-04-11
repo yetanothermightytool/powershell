@@ -6,7 +6,6 @@ Param(
     [Parameter(Mandatory=$true)]
     [string]$Jobname
     )
-#example .\vbr-securerestore-lnx.ps1 -mountHost lnx-ubuntu-02 -scanHost lnx-tinyvm-01 -jobName demo_vm_zrh_obj_01
 Clear-Host
 
 # Set the variables
