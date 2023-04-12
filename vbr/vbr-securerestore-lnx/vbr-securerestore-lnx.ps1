@@ -4,12 +4,13 @@ Param(
     [Parameter(Mandatory=$true)]
     [string]$Scanhost,
     [Parameter(Mandatory=$true)]
-    [string]$Jobname
+    [string]$Jobname,
+    [Parameter(Mandatory=$true)]
+    [string]$Keyfile,
+    [Switch]$Restore
     )
+#example .\vbr-securerestore-lnx.ps1 -mountHost lnx-ubuntu-02 -scanHost lnx-tinyvm-01 -jobName demo_vm_zrh_obj_01
 Clear-Host
-
-# Set the variables
-$keyFile      = "D:\Scripts\vbr\securerestore-lnx\key"
 
 # Get the Backup Job
 Write-Progress "Get Backup Job..." -PercentComplete 10
@@ -17,7 +18,7 @@ $backup       = Get-VBRBackup -Name $Jobname
 
 # Get the Restore Point for the Host to be scanned
 Write-Progress "Get Latest Restore Point..." -PercentComplete 30
-$restorePoint = Get-VBRRestorePoint -Backup $backup | Select-Object -last 1  | Where-Object {$_.VmName -eq $Scanhost}
+$restorePoint = Get-VBRRestorePoint -Backup $backup | Sort-Object -Property CreationTime -Descending | Select-Object -First 1 | Where-Object {$_.VmName -eq $Scanhost}
 
 # Set the Linux Server where scanning will take place. Note: This host needs to be added to VBR 
 $lnxHost      = Get-VBRServer -Name $Mounthost
@@ -26,7 +27,6 @@ $lnxHost      = Get-VBRServer -Name $Mounthost
 $creds        = Get-VBRCredentials -Entity $lnxHost
 
 # now we present the backup to the "mounthost"
-Write-Progress "Publish Backup to Mounthost $Mounthost..." -PercentComplete 60
 $session      = Publish-VBRBackupContent -RestorePoint $restorePoint -TargetServerName $mountHost-TargetServerCredentials $creds -EnableFUSEProtocol
 
 # Get-VBRPublishedBackupContentInfo -session $session 
@@ -34,16 +34,21 @@ $scanPath     = ($sessionInfo = Get-VBRPublishedBackupContentInfo -session $sess
 
 # Start scanning using ClamAV
 Write-Progress "Start Scanning..." -PercentComplete 95
-$scanner      = ssh administrator@$mountHost -i $keyFile "clamscan -r $scanPath"
+$scanner           = ssh administrator@$mountHost -i $Keyfile "clamscan -r $scanPath"
 
-# Assuming the PowerShell variable is named $scanSummary
+# Catch line "Infected files"
 $infectedFilesLine = $scanner -match 'Infected files: 0'
+$foundFile         = $scanner -match 'FOUND'
 
-if ($infectedFilesValue.Count -ne 0) {
-        Write-Host $infectedFilesLine
+if ($infectedFilesLine.Count -eq "") {
+        Write-Host "Infected file(s) detected" -ForegroundColor Yellow
+        $foundFile
     } else {
         Write-Host "No infected files found."
+        if ($Restore){
+        Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - YaMT Secure Restore Linux" -ToOriginalLocation -StoragePolicyAction Default"
+        }  
   }
-
-# Stop the Data Integration API Session
+  
+# Stop Disk Publish Session
 Unpublish-VBRBackupContent -Session $session 
