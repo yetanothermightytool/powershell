@@ -9,7 +9,6 @@ Param(
     [string]$Keyfile,
     [Switch]$Restore
     )
-#example .\vbr-securerestore-lnx.ps1 -mountHost lnx-ubuntu-02 -scanHost lnx-tinyvm-01 -jobName demo_vm_zrh_obj_01
 Clear-Host
 
 # Get the Backup Job
