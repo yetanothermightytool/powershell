@@ -1,4 +1,4 @@
-# Veeam Backup & Replication - Secure Restore for Linux VMs
+# Veeam Backup & Replication - Secure Restore for Linux and Windows VMs
 
 ## Description
 ~~~~
