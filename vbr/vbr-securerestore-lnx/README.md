@@ -2,7 +2,7 @@
 
 ## Description
 ~~~~
-Version : 1.0 (April 12th 2023)
+Version : 1.1 (April 26th 2023)
 Requires: Veeam Backup & Replication v12
 Author  : Stephan "Steve" Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -19,9 +19,6 @@ GitHub  : https://www.github.com/yetanothermightytool
 
 This script scans the Linux VM machine before running the restore. It leverages the Veeam Data Integration API: It presents the backup to the Linux server with ClamAV installed.
 If a Virus is found, the script will be stopped. 
-
-Coming soon: Restore point selection!
-
 
 ## Parameters
  
@@ -42,11 +39,11 @@ _(optional)_ Switch if Restore needs to be executed (see Notes)
 
 
 ## Example: 
-`PS>.\vbr-securerestore-lnx.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key
+`PS>.\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key
   
 ## Notes
 
-If the -Restore parameter is specified, the restore command is displayed only on the screen (line 48 of the code). You wonder why? Well, using the given restore command, the virtual machine would be overwritten without confirmation! 
+If the -Restore parameter is specified, the restore command is displayed only on the screen (line 77 of the code). You wonder why? Well, using the given restore command, the virtual machine would be overwritten without confirmation! 
 
 This script has been tested with the following versions of Veeam Backup & Replication
 - v12
@@ -54,6 +51,10 @@ This script has been tested with the following versions of Veeam Backup & Replic
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
-
+* 1.1
+   * Universal - Can also now be used with Windows VMs
+   * Restore Point selection
+   * Now uses clamdscan --multican (please provide performance feedback)
+   * Output optimizations
 *  1.0
     * Initial Release
