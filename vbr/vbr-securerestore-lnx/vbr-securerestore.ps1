@@ -11,6 +11,9 @@ Param(
     )
 Clear-Host
 
+# Connect VBR Server
+Connect-VBRServer -Server localhost
+
 function rpLister {
 Param (
     [Parameter(Position = 0,Mandatory = $False)]
@@ -83,3 +86,6 @@ Write-Host "***Scanning end***" -ForegroundColor White
   
 # Stop Disk Publish Session
 Unpublish-VBRBackupContent -Session $session
+
+# Disconnect VBR Server
+Disconnect-VBRServer
