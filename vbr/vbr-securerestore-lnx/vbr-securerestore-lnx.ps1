@@ -11,6 +11,9 @@ Param(
     )
 Clear-Host
 
+# Connect VBR Server
+Connect-VBRServer -Server localhost
+
 # Get the Backup Job
 Write-Progress "Get Backup Job..." -PercentComplete 10
 $backup       = Get-VBRBackup -Name $Jobname
@@ -51,3 +54,6 @@ if ($infectedFilesLine.Count -eq "") {
   
 # Stop Disk Publish Session
 Unpublish-VBRBackupContent -Session $session 
+
+#Disconnect VBR Server
+Disconnect-VBRServer
