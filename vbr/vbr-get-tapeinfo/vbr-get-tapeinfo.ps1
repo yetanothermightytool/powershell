@@ -1,11 +1,13 @@
 <# 
 .NAME
-    Veeam Backup & Replication - Tape Information
+    Veeam Backup & Replication - Backups stored on tape information
 .DESCRIPTION
-    Pre-Release - Description coming soon
-.EXAMPLE
+    This script shows the Veeam backup data stored on a specified tape
+.EXAMPLES
     Get the stored backup files on tape with barcode L00004L6
     .\vbr-get-tapeinfo.ps1 -Barcode H00004L5
+    Get information from multiple tapes
+    .\vbr-get-tapeinfo.ps1 -Barcode H00004L5,H00005L5
 
     Get information from all tapes (might be slow)
     .\vbr-get-tapeinfo.ps1
@@ -14,11 +16,11 @@
     Author     : Stephan "Steve" Herzig
     Requires   : PowerShell, Veeam Backup & Replication v12 - Uses undocumented functions/no support
 .VERSION
-    
+1.0  
 #>
 param(
 [Parameter(Mandatory = $false)]
-[String]$Barcode
+[string[]]$Barcode
       )
 
 # Preparations
@@ -49,9 +51,14 @@ $rps                      = Get-VBRRestorePoint -Backup $backupJob
 }
 
 # Show result if a barcode has been passed as a parameter
-if ($Barcode){
-              $TapeList | Select-Object TapeMedium, Content, CreationTime | Where-Object TapeMedium -Like $Barcode
-              }
+if ($Barcode) {
+               foreach ($b in $Barcode) {
+               Write-Host "TapeMedium value: $b"
+               $TapeList | Where-Object {$_.TapeMedium -like $b} | Group-Object TapeMedium | ForEach-Object {
+               $_.Group | Select-Object TapeMedium, Content, CreationTime | Format-Table -AutoSize
+               }
+       }
+}
 
 # Show everything
 else         {
