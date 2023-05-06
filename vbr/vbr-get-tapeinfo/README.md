@@ -22,13 +22,13 @@ _(optional)_
 
 ## Examples: 
 Get information from all tapes (might be slow)
-   `PS>.\vbr-get-tapeinfo.ps1
+   `PS>.\vbr-get-tapeinfo.ps1`
 
 Get the stored backup files on tape with barcode L00001L6
-    `PS>.\vbr-get-tapeinfo.ps1 -Barcode L00001L6
+    `PS>.\vbr-get-tapeinfo.ps1 -Barcode L00001L6`
 
 Get information from multiple tapes
-    `PS>.\vbr-get-tapeinfo.ps1 -Barcode L00001L6,L00002L6
+    `PS>.\vbr-get-tapeinfo.ps1 -Barcode L00001L6,L00002L6`
 
 Example Output
 ![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-get-tapeinfo/pictures/output.png)
