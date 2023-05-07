@@ -51,8 +51,10 @@ This script has been tested with the following versions of Veeam Backup & Replic
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+* 1.2 (Coming soon - tests ongoing)
+   * Scanning of backups on tape (no worries, the data will be restored into a disk repository first)
 * 1.1
-   * Universal - Can also now be used with Windows VMs
+   * Universal - Can now also be used with Windows VMs
    * Restore Point selection
    * Now uses clamdscan --multican (please provide performance feedback)
    * Output optimizations
