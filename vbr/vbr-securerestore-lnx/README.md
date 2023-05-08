@@ -17,9 +17,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 
 ## Purpose
 
-This script scans the Linux VM machine before running the restore. It leverages the Veeam Data Integration API: It presents the backup to the Linux server with ClamAV installed.
-If a Virus is found, the script will be stopped. 
-
+This script scans the selected system before running the restore (Restore for VMs only). It leverages the Veeam Data Integration API and presents the backup to the Linux server with ClamAV installed. If a virus is found, a desired restore process will not be executed.
 ## Parameters
  
   `Mounthost`
@@ -54,7 +52,7 @@ This script has been tested with the following versions of Veeam Backup & Replic
 * 1.2 (Coming soon - tests ongoing)
    * Scanning of backups on tape (no worries, the data will be restored into a disk repository first)
 * 1.1
-   * Universal - Can now also be used with Windows VMs
+   * Universal - Can now also be used with Windows VMs and Agent Backups (tests for Agents ongoing)
    * Restore Point selection
    * Now uses clamdscan --multican (please provide performance feedback)
    * Output optimizations
