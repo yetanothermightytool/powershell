@@ -106,7 +106,7 @@ if ($AgentTape){
 Start-VBRTapeRestore -WarningAction Ignore -RestorePoint $selectedRp -Repository $Repository | Out-Null
 $tapeJob           = Get-VBRBackup | Where-Object { $_.jobname -eq $Jobname } | Get-VBRRestorePoint | Where-Object { $_.name -eq $Scanhost } | Sort-Object CreationTime -Descending
 $selectedTapeRp    = $tapeJob | Where-Object { $_.Type -eq $selectedRp.Type -and $_.GetRepository().Name -eq $Repository}
-$session           = Publish-VBRBackupContent -RestorePoint $selectedTapeRp -TargetServerName $mountHost-TargetServerCredentials $creds -EnableFUSEProtocol
+$session           = Publish-VBRBackupContent -RestorePoint $selectedTapeRp -TargetServerName $mountHost -TargetServerCredentials $creds -EnableFUSEProtocol
 }
 
 # If VM Backup is stored on tape
