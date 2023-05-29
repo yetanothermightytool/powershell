@@ -13,7 +13,7 @@ $virtualLab           = "virtual-lab-location-a"
 $appGroupName         = "VeeamONE Remediation Action"
 $sbJobName            = "SureBackup Job initiated by Veeam ONE"
 $sbJobDesc            = "Scanning VM - Triggered by Alert Suspicious incremental backup size - $parameter"
-$VBRserver            = "win-vbr-01"
+$VBRserver            = "localhost"
 
 # Connect to the VBR Server
 Connect-VBRServer -Server $VBRserver
