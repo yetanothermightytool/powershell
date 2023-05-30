@@ -5,15 +5,12 @@ $parameter=$args[0]
 $pattern = 'VM\s(.*?)\)'
 $vmName = [regex]::Match($parameter, $pattern).Groups[1].Value
 
-# Display the extracted value
-$vmName | Out-File D:\Scripts\log.txt -Append
-
 # Set Variables - Change where necessary
-$virtualLab           = "virtual-lab-location-a"
+$virtualLab           = "<your virutal lab here>"
 $appGroupName         = "VeeamONE Remediation Action"
 $sbJobName            = "SureBackup Job initiated by Veeam ONE"
 $sbJobDesc            = "Scanning VM - Triggered by Alert Suspicious incremental backup size - $parameter"
-$VBRserver            = "localhost"
+$VBRserver            = "<your vbr server here>"
 
 # Connect to the VBR Server
 Connect-VBRServer -Server $VBRserver
@@ -28,15 +25,12 @@ $scanVMVBRJob         = foreach($Backup in Get-VBRBackup){
                         }
              }
  }
- Add-VBRViJobObject -Job $scanVMVBRJob.Name -Entities $scanVMObject
-
 # Set Startup Options - Change where necessary
 $sbStartOptions       = New-VBRSureBackupStartupOptions -AllocatedMemory 100 -EnableVMHeartbeatCheck:$true -EnableVMPingCheck:$false -MaximumBootTime 1800 -ApplicationInitializationTimeout 0 -DisableWindowsFirewall:$true
 
-# Workaround for Backup Jobs using VM tags
+# Create SureBackup VM
 $vbrJobObject         = Get-VBRJobObject -Job $scanVMVBRJob.Name -Name $scanVMObject.Name | Where-Object {$_.type -eq "Include"}
 $sbVM                += New-VBRSureBackupVM -VM $vbrJobObject -StartupOptions $sbStartOptions
-Remove-VBRJobObject -Objects $vbrJobObject -Completely
 
 # Finally, create the Application Group
 $AppGroup             = Add-VBRApplicationGroup -Name $appGroupName -VM $SbVM
