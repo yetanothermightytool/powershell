@@ -6,7 +6,7 @@ $pattern = 'VM\s(.*?)\)'
 $vmName = [regex]::Match($parameter, $pattern).Groups[1].Value
 
 # Set Variables - Change where necessary
-$virtualLab           = "<your virutal lab here>"
+$virtualLab           = "<your virtual lab here>"
 $appGroupName         = "VeeamONE Remediation Action"
 $sbJobName            = "SureBackup Job initiated by Veeam ONE"
 $sbJobDesc            = "Scanning VM - Triggered by Alert Suspicious incremental backup size - $parameter"
@@ -17,6 +17,7 @@ Connect-VBRServer -Server $VBRserver
 
 # Create the Application Group
 $scanVMObject         = Find-VBRViEntity -Name $vmName
+
 $scanVMVBRJob         = foreach($Backup in Get-VBRBackup){
                         foreach($RestorePoint in $Backup | Get-VBRRestorePoint){
                         if($RestorePoint.Name -eq $vmName){
@@ -25,12 +26,29 @@ $scanVMVBRJob         = foreach($Backup in Get-VBRBackup){
                         }
              }
  }
+
+# Check if VM exists in Job or Job is tag based
+if((Get-VBRJob -Name $scanVMVBRJob.Name | Get-VBRJobObject -Name $vmName) -eq $null) {
+Add-VBRViJobObject -Job $scanVMVBRJob.Name -Entities $scanVMObject
+
 # Set Startup Options - Change where necessary
 $sbStartOptions       = New-VBRSureBackupStartupOptions -AllocatedMemory 100 -EnableVMHeartbeatCheck:$true -EnableVMPingCheck:$false -MaximumBootTime 1800 -ApplicationInitializationTimeout 0 -DisableWindowsFirewall:$true
 
-# Create SureBackup VM
+# Get Object and add as SureBackup VM
 $vbrJobObject         = Get-VBRJobObject -Job $scanVMVBRJob.Name -Name $scanVMObject.Name | Where-Object {$_.type -eq "Include"}
 $sbVM                += New-VBRSureBackupVM -VM $vbrJobObject -StartupOptions $sbStartOptions
+
+# Remove VM from Job / Workaround for tag based jobs
+Get-VBRJob -Name $scanVMVBRJob.Name | Get-VBRJobObject -Name $vmName | Remove-VBRJobObject -Completely
+}
+else{
+# Set Startup Options - Change where necessary
+$sbStartOptions       = New-VBRSureBackupStartupOptions -AllocatedMemory 100 -EnableVMHeartbeatCheck:$true -EnableVMPingCheck:$false -MaximumBootTime 1800 -ApplicationInitializationTimeout 0 -DisableWindowsFirewall:$true
+
+# Get Object and add as SureBackup VM
+$vbrJobObject         = Get-VBRJobObject -Job $scanVMVBRJob.Name -Name $scanVMObject.Name | Where-Object {$_.type -eq "Include"}
+$sbVM                += New-VBRSureBackupVM -VM $vbrJobObject -StartupOptions $sbStartOptions
+}
 
 # Finally, create the Application Group
 $AppGroup             = Add-VBRApplicationGroup -Name $appGroupName -VM $SbVM
