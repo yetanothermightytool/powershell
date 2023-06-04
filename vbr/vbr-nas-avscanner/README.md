@@ -2,7 +2,7 @@
 
 ## Description
 ~~~~
-Version : 1.0 (August 22nd 2022)
+Version : 1.1 (June 4th 2023)
 Requires: Veeam Backup & Replication v11 and later
 Author  : Stephan "Steve" Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -17,9 +17,9 @@ Microsoft Defender on the system that scans the presented file share.
 
 This script launches a Instant File Share Recovery for a specified file share backup job and runs a MS Defender malware scan.
 
-The share access permissions can be adjusted in line 31
-The recovery reason can be adjusted in line 34
-Any scanning tool can be used. Just replace lines 38 - 42
+The share access permissions can be adjusted in line 71
+The recovery reason can be adjusted in line 74
+Any scanning tool can be used. Just replace lines 78 - 82
 
 ## Parameters
   
@@ -34,12 +34,15 @@ _(mandatory)_ Name of the File Share Backup Job
 
 This script has been tested with the following versions of Veeam Backup & Replication
 - v11 latest
-- v12 beta2
+- v12 latest
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
 
+* 1.1
+    * Restore Point selection
+    * Bugfixes
 * 1.0
     * Initial Release (Renamed to vbr-nas-avscanner on World Backup Day ;))
 	
