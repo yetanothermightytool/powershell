@@ -80,7 +80,7 @@ if ($Result.Count -eq 0) {
     rpLister $Result
 }
 # Ask for the restore point to be scanned - Automatically select latest restore points after 30 seconds
-$stopTime = [datetime]::Now.AddSeconds(10)
+$stopTime = [datetime]::Now.AddSeconds(30)
 $restorePointID = 0
 
 Write-Host -NoNewline "Please select restore point (Id) - Automatically selects the latest restore point after 30 seconds: "
