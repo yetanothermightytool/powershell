@@ -41,7 +41,7 @@ _(mandatory)_ The path to the script that will be executed during the staging pr
 _(mandatory)_ The name of the configured credentials for executing the staging script
 
 ## Example: 
-`PS>.\StagedVMRestore.ps1 -ESXiServer "ESXiServerName" -VMName "VMName" -Jobname "BackupJobName" -VirtualLab "VirtualLabName" -StagingScript "Path\To\StagingScript.ps1" -Credentials "CredentialsName"
+`PS>.\vbr-staged-restore.ps1 -ESXiServer "ESXiServerName" -VMName "VMName" -Jobname "BackupJobName" -VirtualLab "VirtualLabName" -StagingScript "Path\To\StagingScript.ps1" -Credentials "CredentialsName"
 
 Replace the parameters in quotes with your values.
   
