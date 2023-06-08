@@ -49,6 +49,8 @@ Replace the parameters in quotes with your values.
 Ensure that you have the necessary permissions and credentials to execute the script and perform the staged VM restore.
 A sample script for an AV scan - WinAVDeepScan.ps1 - can be found in this directory as well (Windows VM)
 
+If no restore point is selected in the selection menu, the last restore point is restored after 30 seconds.
+
 This script has been tested with the following versions of Veeam Backup & Replication
 - v12
 
