@@ -1,6 +1,5 @@
 # Veeam Backup & Replication - Staged VM Restore
 
-## Description
 ~~~~
 Version : 1.0 (June 8th 2023)
 Requires: Veeam Backup & Replication v12
