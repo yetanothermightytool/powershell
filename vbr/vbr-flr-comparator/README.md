@@ -24,8 +24,6 @@ Ensure you have Veeam Backup & Replication v12 installed before using this scrip
 
 Please note that this script requires PowerShell and Veeam Backup & Replication v12.
 
-For more information and examples, refer to the [GitHub repository](https://github.com/yetanothermightytool/powershell/tree/master/vbr/vbr-flr-comparator).
-
 ## Version History
 
 - 1.1
