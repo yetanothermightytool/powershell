@@ -11,7 +11,7 @@
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 .VERSION
-    1.0
+    1.1
 #>
 param(
     [Parameter(mandatory=$true)]
@@ -93,18 +93,18 @@ Write-Host "**************************************************v1.0*" -Foreground
 #Request Bearer Token
 Write-Host "Get Bearer Token...."
 Write-Host ""
-$appURI             = "/v6/token"
+$appURI             = "/v7/token"
 $token              = Connect-VeeamRestAPI -AppUri $appURI -Cred $cred
 
 #Get Proxy ID
 Write-Host "Getting proxy server id...." -ForegroundColor White
 Write-Host ""
-$appURI             = "/v6/Proxies/"
+$appURI             = "/v7/Proxies/"
 $vboproxyid         = Get-VeeamRestAPI -AppUri $appURI -Token $token
 $vboproxyserverid   = $vboproxyid.id     | Select-Object -Last 1 
 
 #Get Repository
-$appURI             = "/v6/BackupRepositories?proxyId=$vboproxyserverid&longTerm=false"
+$appURI             = "/v7/BackupRepositories?proxyId=$vboproxyserverid&longTerm=false"
 $vborepo            = Get-VeeamRestAPI -AppUri $appURI -Token $token
 $vboreponame        = $vborepo | Where-Object {$_.name -eq "$RepoName"}
 $vboreponameid      = $vboreponame.id
@@ -113,22 +113,75 @@ $vboreponameid      = $vboreponame.id
 Write-Host "Getting Statistics..."
 Write-Host ""       
 Write-Host "*******************************************************" -ForegroundColor Cyan
-$appURI             = "/v6/BackupRepositories/$vboreponameid/UserData"
+$appURI             = "/v7/BackupRepositories/$vboreponameid/UserData"
 $vborepostats       = Get-VeeamRestAPI -AppUri $appURI -Token $token
-$vborepostatsresult = $vborepostats.results
+# ...
 
-Write-Host "User data in repository $RepoName"
+$vborepostatsresult = $vborepostats.results
+Write-Host "Print table..." -ForegroundColor White
+$statsTable           = @()
+$exchangeCount        = 0
+$exchangeArchiveCount = 0
+$oneDriveCount        = 0
+$sharepointCount      = 0
+
+foreach ($r in $vborepostatsresult) {
+    $exchange = if ($r.isMailboxBackedUp) {
+        $exchangeCount++
+        "Yes"
+    } else {
+        "No"
+    }
+
+    $exchangeArchive = if ($r.isArchiveBackedUp) {
+        $exchangeArchiveCount++
+        "Yes"
+    } else {
+        "No"
+    }
+
+    $oneDrive = if ($r.isOneDriveBackedUp) {
+        $oneDriveCount++
+        "Yes"
+    } else {
+        "No"
+    }
+
+    $sharepoint = if ($r.isPersonalSiteBackedUp) {
+        $sharepointCount++
+        "Yes"
+    } else {
+        "No"
+    }
+
+    $rowData = [PSCustomObject]@{
+        'Username'             = $r.displayName
+        'Exchange'             = $exchange
+        'Exchange Archive'     = $exchangeArchive
+        'OneDrive'             = $oneDrive
+        'Sharepoint Personal'  = $sharepoint
+    }
+    $statsTable += $rowData
+}
+
+$separatorLine = [PSCustomObject]@{
+    'Username'             = "---------"
+    'Exchange'             = "---------"
+    'Exchange Archive'     = "---------"
+    'OneDrive'             = "---------"
+    'Sharepoint Personal'  = "---------"
+}
+
+$totalsRow = [PSCustomObject]@{
+    'Username'             = "Total"
+    'Exchange'             = $exchangeCount
+    'Exchange Archive'     = $exchangeArchiveCount
+    'OneDrive'             = $oneDriveCount
+    'Sharepoint Personal'  = $sharepointCount
+}
+
+$statsTable += $separatorLine
+$statsTable += $totalsRow
+
 Write-Host ""
-ForEach ($r in $vborepostatsresult) {
-  Write-Host "User                      " -NoNewline
-  Write-Host $r.displayName -ForegroundColor Cyan
-  Write-Host "Exchange data?            " -NoNewline
-  Write-Host $r.isMailboxBackedUp -ForegroundColor Cyan
-  Write-Host "Exchange Archive data?    " -NoNewline
-  Write-Host $r.isArchiveBackedUp -ForegroundColor Cyan
-  Write-Host "OneDrive data?            " -NoNewline
-  Write-Host $r.isOneDriveBackedUp -ForegroundColor Cyan
-  Write-Host "Sharepoint Personal data? " -NoNewline
-  Write-Host $r.isPersonalSiteBackedUp -ForegroundColor Cyan
-  Write-Host ""
-  }
+$statsTable | Format-Table -AutoSize
