@@ -36,8 +36,9 @@ _(mandatory)_ Search string (text) that should be found within the e-mail msg fi
 
 
 ## Example: 
-`PS>.\vbo-exrestore-checker.ps1 -Mailbox Monitoring -Subject vbo-exchecker -Pattern VBO-EX`
-  
+```powershell
+.\vbo-exrestore-checker.ps1 -Mailbox Monitoring -Subject vbo-exchecker -Pattern VBO-EX`
+```
 ## Notes
 
 This script has been tested with the following versions of Veeam Backup for Microsoft Office 365:
