@@ -56,7 +56,7 @@ _(mandatory)_ The Virtual Lab to be used.
 
 ## Examples
 
-Start the script using virtual-lab-1and scan through all the backups for the last 30 days and select 10 for the SureBackup Job
+Start the script using virtual-lab-1 and scan through all the backups for the last 30 days and select 10 for the SureBackup Job
 ```powershell
 .\vbr-dynamic-surebackup.ps1 -FilterDaysBack 30 -NumberofVMs 10 -VirtualLab virtual-lab-1
 ```
@@ -68,11 +68,11 @@ Start the script using virtual-lab-1and scan through all the backups for the las
 - Customers giving feedback
 
 ## Notes
+
 - The script has been tested with Veeam Backup & Replication v12.
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
-
 - 1.0
   - Initial Release (Update for VBR V12 support and some adjustments and improvements)
