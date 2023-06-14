@@ -9,7 +9,7 @@ GitHub: [https://www.github.com/yetanothermightytool](https://www.github.com/yet
 ~~~~
 
 ## Purpose
-This PowerShell script automates the mass testing process using Veeam Backup & Replication (VBR). It creates and manages SureBackup jobs to facilitate efficient and scalable application testing in a virtual lab setup.
+This PowerShell script automates the mass testing process using Veeam Backup & Replication. It creates and manages SureBackup jobs to facilitate efficient and scalable application testing in a virtual lab setup.
 
 The script performs the following tasks:
 
@@ -60,7 +60,6 @@ Start the script using virtual-lab-1and scan through all the backups for the las
 ```powershell
 .\vbr-dynamic-surebackup.ps1 -FilterDaysBack 30 -NumberofVMs 10 -VirtualLab virtual-lab-1
 ```
-
 
 ## Special thanks to
 - Luca (The father of the script) [https://www.virtualtothecore.com/can-test-1000-vms-veeam-surebackup/]
