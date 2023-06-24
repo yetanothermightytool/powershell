@@ -39,6 +39,6 @@ Locate the line that contains the references to the user account in the followin
 
    Replace both occurrences of "administrator" with the actual username of the desired user account.
 
-**Notes** 
+## Notes
 Ensure that you have the necessary permissions and connectivity to perform these actions on the target VM.
-Tested with Veeam Backup & Replication V12 and Ubuntu Linux VM
+Tested with Veeam Backup & Replication V12 and Ubuntu Linux VM.
