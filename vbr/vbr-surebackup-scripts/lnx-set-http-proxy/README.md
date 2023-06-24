@@ -1,6 +1,13 @@
 # Set HTTP Proxy Script
 
+## Description
 This script is designed to help you set the HTTP proxy on Linux VMs. It uses SSH and SCP to upload a shell script to the VM, set execute permissions, and then run the script to configure the HTTP proxy settings. 
+~~~~
+Version : 1.0 (June 16th 2023)
+Requires: Veeam Backup & Replication V12 and later
+Author  : Stephan "Steve" Herzig
+GitHub  : https://www.github.com/yetanothermightytool
+~~~~
 
 ## Prerequisites
 
