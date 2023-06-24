@@ -12,7 +12,7 @@ Before using this script, make sure that you meet the following requirements:
 - Add the Public Key to the known_hosts file of the user profile directory for the system account (Veeam Service runs under the system account)
 - Store the Linux user password as a secure string on the VBR server
 
-## Usage
+## Powershell Script Usage
 
 Adjust the necessary parameters and file paths in the script to match your environment. Modify the following lines to match your environment:
 
@@ -20,6 +20,7 @@ Adjust the necessary parameters and file paths in the script to match your envir
 - `$KeyFile           = "<path_to_key_file>"`: Replace `<path_to_key_file>` with the path to your SSH key file.
 - `scp -i $Keyfile "<path_to_shell_script>" administrator@${TestVmIp}:/tmp/set-http-proxy.sh`: Replace `<path_to_shell_script>` with the path to your shell script file. This file will be uploaded to the VM.
 
+## Linux Script
 Adjust the user account in the set-http-proxy.sh script.
 
 Locate the line that contains the references to the user account in the following sections:
