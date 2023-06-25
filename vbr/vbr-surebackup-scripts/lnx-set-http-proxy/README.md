@@ -1,44 +1,49 @@
-# Set HTTP Proxy Script
+# Veeam Backup & Replication - SureBackup - HTTP Proxy Configuration for Linux Virtual Machines 
 
 ## Description
-This script is designed to help you set the HTTP proxy on Linux VMs. It uses SSH and SCP to upload a shell script to the VM, set execute permissions, and then run the script to configure the HTTP proxy settings. 
 ~~~~
-Version : 1.0 (June 16th 2023)
-Requires: Veeam Backup & Replication V12 and later
+Version : 1.1 (June 25th 2023)
 Author  : Stephan "Steve" Herzig
-GitHub  : https://www.github.com/yetanothermightytool
+GitHub  : [https://www.github.com/yetanothermightytool]
 ~~~~
 
 ## Prerequisites
 
-Before using this script, make sure that you meet the following requirements:
-
-- Install the latest Win OpenSSH on the VBR server
-- SSH access to the target Linux VM
-- The SSH key file required for authentication on the Linux VM
-- Add the Public Key to the known_hosts file of the user profile directory for the system account (Veeam Service runs under the system account)
-- Store the Linux user password as a secure string on the VBR server
-
-## Powershell Script Usage
+- Veeam Backup & Replication v12 or later
+- PowerShell
+- OpenSSH package installed on the host (refer to https://github.com/PowerShell/Win32-OpenSSH/releases)
 
 Adjust the necessary parameters and file paths in the script to match your environment. Modify the following lines to match your environment:
 
 - `$encryptedPassword = Get-Content "<path_to_password_file>"`: Replace `<path_to_password_file>` with the path to your password file.
 - `$KeyFile           = "<path_to_key_file>"`: Replace `<path_to_key_file>` with the path to your SSH key file.
-- `scp -i $Keyfile "<path_to_shell_script>" administrator@${TestVmIp}:/tmp/set-http-proxy.sh`: Replace `<path_to_shell_script>` with the path to your shell script file. This file will be uploaded to the VM.
+	
 
-## Linux Script
-Adjust the user account in the set-http-proxy.sh script.
+## Purpose
+This script is designed to help you set the HTTP proxy on Linux VMs. It retrieves the HTTP port configuration from the specified virtual lab in Veeam Backup & Replication and uses SSH to connect to the target Linux VM. The script creates a shell script on the fly and uploads it to the VM, granting execute permission and running it to configure the HTTP proxy.
 
-Locate the line that contains the references to the user account in the following sections:
 
-   ```bash
-   echo "export http_proxy=${http_proxy}" >> /home/administrator/.bashrc
-   echo "export https_proxy=${http_proxy}" >> /home/administrator/.bashrc
-   ```
+## Parameters
+ 
+- `TestVmIP` (mandatory)   : %vm_ip% (this parameter retrieves the IP address assigned by SureBackup).
+- `lnxUsername` (mandatory): Username of the Linux VM.
+- `VirtualLab` (mandatory) : Name of the virtual lab containing the HTTP port configuration.
 
-   Replace both occurrences of "administrator" with the actual username of the desired user account.
+## Example: 
+```powershell
+PS>.\set-http-proxy.ps1 -TestVmIP %vm_ip% -lnxUsername admin -VirtualLab MyVirtualLab
+```
 
 ## Notes
 Ensure that you have the necessary permissions and connectivity to perform these actions on the target VM.
-Tested with Veeam Backup & Replication V12 and Ubuntu Linux VM.
+Tested with Veeam Backup & Replication V12 and Ubuntu Linux VM backups.
+
+**Please note this script is unofficial and is not created nor supported by Veeam Software.**
+
+## Version History
+- 1.1 (June 25th 2023)
+   - Parameter for Linux Username and Virtual Lab Name
+   - Creating the Linux Shell script on-the-fly
+   
+- 1.0 (June 16th 2023)
+   - Initial release  
