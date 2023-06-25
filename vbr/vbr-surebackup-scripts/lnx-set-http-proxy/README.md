@@ -24,15 +24,9 @@ This script is designed to help you set the HTTP proxy on Linux VMs. It retrieve
 
 
 ## Parameters
- 
-- `TestVmIP` (mandatory)   : %vm_ip% (this parameter retrieves the IP address assigned by SureBackup).
+ - `TestVmIP` (mandatory)   : %vm_ip% (this parameter retrieves the IP address assigned by SureBackup).
 - `lnxUsername` (mandatory): Username of the Linux VM.
 - `VirtualLab` (mandatory) : Name of the virtual lab containing the HTTP port configuration.
-
-## Example: 
-```powershell
-PS>.\set-http-proxy.ps1 -TestVmIP %vm_ip% -lnxUsername admin -VirtualLab MyVirtualLab
-```
 
 ## Notes
 Ensure that you have the necessary permissions and connectivity to perform these actions on the target VM.
