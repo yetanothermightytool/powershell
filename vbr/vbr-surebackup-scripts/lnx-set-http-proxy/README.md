@@ -4,7 +4,7 @@
 ~~~~
 Version : 1.1 (June 25th 2023)
 Author  : Stephan "Steve" Herzig
-GitHub  : [YetAnotherMightyTool](https://www.github.com/yetanothermightytool)
+GitHub  : ([YetAnotherMightyTool](https://www.github.com/yetanothermightytool))
 ~~~~
 
 ## Prerequisites
