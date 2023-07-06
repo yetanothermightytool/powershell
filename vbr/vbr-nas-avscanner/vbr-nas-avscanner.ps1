@@ -12,7 +12,7 @@
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 .VERSION
-    1.1
+    1.2
 #>
 param(
     [Parameter(mandatory=$true)]
@@ -38,7 +38,7 @@ $Output = $Result
     end {
  
         Write-Host
-        Write-Host "The following restore points were found...(newest first)"
+        Write-Host "The following restore points were found...(newest first)" -Foregroundcolor White
         Write-Host
         return $Output | Format-Table $RestoreTable
     }
@@ -49,10 +49,10 @@ $Output = $Result
 Clear-Host
 
 # Get NAS Backup Job informations
-$nasbackup         = Get-VBRNASBackup -Name $Jobname
+$nasbackup          = Get-VBRNASBackup -Name $Jobname
 
 # Get the latest restore point
-$restorepoint      = Get-VBRNASBackupRestorePoint -NASBackup $nasbackup | Sort-Object -Property CreationTime 
+$restorepoint       = Get-VBRNASBackupRestorePoint -NASBackup $nasbackup | Sort-Object -Property CreationTime -Descending
 
 # If no restore points have been found
 if ($restorepoint.Count -eq 0) {
@@ -65,21 +65,83 @@ if ($restorepoint.Count -eq 0) {
 do { [int]$restorePointID = Read-Host "Please select restore point (Id)" } until (($restorePointID -lt $restorepoint.Count) -and ($restorePointID -ge 0))
 
 # Get the selected restore point
-$selectedRp        = $restorepoint | Select-Object -Index $restorePointID
+$selectedRp         = $restorepoint | Select-Object -Index $restorePointID
 
 # Set the permissions - Permissions can be adjusted
-$permissions       = New-VBRNASPermissionSet -RestorePoint $restorepoint -Owner "Administrator" -AllowSelected -PermissionScope ("Administrator")
+$permissions        = New-VBRNASPermissionSet -RestorePoint $restorepoint -Owner "Administrator" -AllowSelected -PermissionScope ("Administrator")
 
 # Start the Instant NAS Recovery session - Reason can be changed
-$restoresession    = Start-VBRNASInstantRecovery -RestorePoint $selectedRp -Permissions $permissions -Reason "Security Scan"
+$restoresession     = Start-VBRNASInstantRecovery -RestorePoint $selectedRp -Permissions $permissions -Reason "Security Scan"
 
 #Scan the Share using whatever you want - Sharepath is in variable $restoresession.SharePath
 #Example with Microsoft Defender
-$defenderFolder    = (Get-ChildItem "C:\ProgramData\Microsoft\Windows Defender\Platform\" | Sort-Object -Descending | Select-Object -First 1).fullname
-$defender          = "$defenderFolder\MpCmdRun.exe"
-$output            = & $defender -scan -scantype 3 -file $restoresession.SharePath
-$output | ForEach-Object {Write-Verbose $_}
-$output
+$defenderFolder     = (Get-ChildItem "C:\ProgramData\Microsoft\Windows Defender\Platform\" | Sort-Object -Descending | Select-Object -First 1).fullname
+$defender           = "$defenderFolder\MpCmdRun.exe"
+$host.UI.RawUI.ForegroundColor = "White"
+$output             = & $defender -scan -scantype 3 -file $restoresession.SharePath
+
+# Grep if found threats greater than 0
+$threatCountPattern = "found (\d+) threats"
+$threatCountMatch   = $output | Select-String -Pattern $threatCountPattern
+$threatCount        = if ($threatCountMatch) { $threatCountMatch.Matches.Groups[1].Value } else { "0" }
+
+# Present result / Windows Event Log entries
+if ($threatCount -eq 0) {
+    $output | ForEach-Object {Write-Verbose $_}
+    $output
+    Write-Host "No threads were found"
+} else {
+    $maxEvents = [Math]::Min([int]$threatCount, 3)
+    $output | ForEach-Object {Write-Verbose $_}
+    $output
+    
+    # Retrieve the last x Windows Defender events with ID 1116
+$events            = Get-WinEvent -FilterHashtable @{
+    LogName        = 'Microsoft-Windows-Windows Defender/Operational'
+    ID             = 1116
+} -MaxEvents $maxEvents
+
+# Initialize an array to store custom objects with extracted information
+$eventInfo         = @()
+
+# Extract specific information from the event message and create custom objects
+foreach ($event in $events) {
+    # Split the event message into individual lines - that was a tough one ;)
+    $lines = $event.Message -split "`r`n"
+
+    # Initialize variables to store the extracted infos
+    $names         = @()
+    $category      = $path = $null
+
+    # Go through each line of the event message
+    foreach ($line in $lines) {
+        # Extract the name, category, and path if the line contains the corresponding information
+        if ($line -match "Name:(.*)") {
+            $names   += $Matches[1].Trim()
+        } elseif ($line -match "Category:(.*)") {
+            $category = $Matches[1].Trim()
+        } elseif ($line -match "Path:(.*)") {
+            $paths    = $Matches[1].Trim() -split ';'
+            $paths    = $paths | ForEach-Object { $_.Trim() }
+        }
+    }
+
+    $eventObjects = foreach ($path in $paths) {
+    [PSCustomObject]@{
+        TimeCreated = $event.TimeCreated
+        Names = $names -join ', '
+        Category = $category
+        Path = $path
+     }
+   }
+ }   
+# Display the extracted information in a table view
+#$eventInfo | Format-Table -AutoSize
+$eventObjects | Format-Table -Property TimeCreated, Names, Category, Path -AutoSize
+}
+
+# Text back to green
+$host.UI.RawUI.ForegroundColor = "Green"
 
 #Stop Instant Recovery Session
 Stop-VBRNASInstantRecovery -InstantRecovery $restoresession -Force
