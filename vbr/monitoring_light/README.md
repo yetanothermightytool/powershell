@@ -2,7 +2,7 @@ Coming soon
 
 Quick Setup
 
-Download the monitoring-light.ps1, rts-extractor.ps1 and job-stats.ps1 and place it in a diectory
+Download the monitoring-light.ps1, rts-extractor.ps1 and job-stats.ps1 scripts and place it in a diectory
 
 Start the script: .\monitoring-light.ps1
 
