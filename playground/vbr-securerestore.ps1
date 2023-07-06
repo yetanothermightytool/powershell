@@ -2,27 +2,30 @@
 .NAME
     Veeam Backup & Replication - Secure Restore for Linux and Windows VM and Agent Backups
 .DESCRIPTION
-    This script scans the given restore point before running the restore (VM only). 
-    It leverages the Veeam Data Integration API and presents the backup to a  Linux server with ClamAV installed. If a Virus is found, the script will be stopped.
+    This  script performs secure restores for Linux and Windows VM and agent backups using Veeam Backup & Replication. It scans the specified restore
+    point before initiating the restore process for VMs. The script leverages the Veeam Data Integration API and integrates with ClamAV for antivirus scanning or
+    YARA rules. For tape backups, additional steps are performed to restore the data to the desired repository. The script then initiates the scan using ClamAV or 
+    YARA rules.
+             
 .EXAMPLES
     Scan VM lnxvm01 on Linux host ubuntusrv01 from backup demo_vm
-    .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key
+    .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key -AVScan
      
-    Scan VM lnxvm01 on Linux host ubuntusrv01 from backup demo_vm and start a restore (Currently only the command gets printed out - Line 143)
-    .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key -Restore
+    Scan VM lnxvm01 on Linux host ubuntusrv01 from backup demo_vm and start a restore (Currently only the command gets printed out - Line 148)
+    .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key -AVScan -Restore 
              
     Scan VM lnxvm01 on Linux host ubuntusrv01 from VM backup demo_vm resding on tape. Restore the backup data from tape onto Repository win_local_01
-    .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key -Repository win_local_01 -VMTape
+    .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key -VMTape -Repository win_local_01
     
     Scan VM lnxvm01 on Linux host ubuntusrv01 from Agent backup demo_agent resding on tape. Restore the backup data from tape onto Repository win_local_01
-    .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_agent -Keyfile .\key.key -Repository win_local_01 -AgentTape
+    .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_agent -Keyfile .\key.key -AgentTape -Repository win_local_01
  .NOTES  
     File Name  : vbr-secrurerestore.ps1
     Author     : Stephan "Steve" Herzig
     Requires   : PowerShell, Veeam Backup & Replication v12, Linux host with ClamAV installed, OpenSSH Keyfile
                  More details https://community.veeam.com/script-library-67/vbr-securerestore-lnx-ps1-secure-restore-for-linux-vm-4617
 .VERSION
-1.2
+1.2a
 #>
 Param(
     [Parameter(Mandatory=$true)]
@@ -34,6 +37,8 @@ Param(
     [Parameter(Mandatory=$true)]
     [string]$Keyfile,
     [Parameter(Mandatory=$false)]
+    [Switch]$AVScan,
+    [Switch]$YARAScan,
     [string]$Repository,
     [Switch]$Restore,
     [Switch]$VMTape,
@@ -83,6 +88,7 @@ $Result = Get-VBRBackup | Where-Object { $_.jobname -eq $JobName } | Get-VBRRest
 # If no restore points have been found
 if ($Result.Count -eq 0) {
 	Write-Host 'Unable to locate any restore points for' $Scanhost 'in backup job' $Jobname -ForegroundColor White
+    Disconnect-VBRServer
 	Exit
 } else {
 # Present the result using the function rpLister
@@ -106,7 +112,7 @@ if ($AgentTape){
 Start-VBRTapeRestore -WarningAction Ignore -RestorePoint $selectedRp -Repository $Repository | Out-Null
 $tapeJob           = Get-VBRBackup | Where-Object { $_.jobname -eq $Jobname } | Get-VBRRestorePoint | Where-Object { $_.name -eq $Scanhost } | Sort-Object CreationTime -Descending
 $selectedTapeRp    = $tapeJob | Where-Object { $_.Type -eq $selectedRp.Type -and $_.GetRepository().Name -eq $Repository}
-$session           = Publish-VBRBackupContent -RestorePoint $selectedTapeRp -TargetServerName $mountHost -TargetServerCredentials $creds -EnableFUSEProtocol
+$session           = Publish-VBRBackupContent -RestorePoint $selectedTapeRp -TargetServerName $mountHost-TargetServerCredentials $creds -EnableFUSEProtocol
 }
 
 # If VM Backup is stored on tape
@@ -123,6 +129,8 @@ $session           = Publish-VBRBackupContent -RestorePoint $selectedTapeRp -Tar
 else{
 $session           = Publish-VBRBackupContent -RestorePoint $selectedRp -TargetServerName $mountHost-TargetServerCredentials $creds -EnableFUSEProtocol
 }
+
+if($AVScan){
 # Start scanning using ClamAV
 Write-Progress "Start Scanning..." -PercentComplete 95
 $scanner           = ssh administrator@$mountHost -i $Keyfile "sudo clamdscan --multiscan --fdpass /tmp/Veeam.Mount.FS.*"
@@ -142,10 +150,21 @@ if ($infectedFilesLine.Count -eq "") {
         if ($Restore -and $selectedRp.GetPlatform() -eq "EVmware"){
         Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - YaMT Secure Restore Linux" -ToOriginalLocation -StoragePolicyAction Default"
         }  
-  }
+   }
 
 # Write End Message
 Write-Host "***Scanning end***" -ForegroundColor White
+}
+if($YARAScan){
+# Start scanning using YARA
+Write-Progress "Start Scanning..." -PercentComplete 95
+$scanner           = ssh administrator@$mountHost -i $Keyfile "sudo yara -rfw ./yara-rules/rules/index.yar /tmp/Veeam.Mount.FS.*"
+Write-Host     "***Scanning start***" -ForegroundColor White
+$infectedFilesLine = $scanner -contains 'ANOMALY'
+$infectedFilesLine
+# Write End Message
+Write-Host "***Scanning end***" -ForegroundColor White
+}
   
 # Stop Disk Publish Session
 Unpublish-VBRBackupContent -Session $session 
