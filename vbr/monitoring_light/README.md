@@ -13,3 +13,4 @@ Optional Parameters
 Default Port is 80 and RefreshInterval is 30
 
 
+Needs to be started on the VBR server
