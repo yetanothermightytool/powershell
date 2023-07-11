@@ -46,7 +46,8 @@ AV Scan VM lnxvm01 on Linux host ubuntusrv01 from VM backup demo_vm resding on t
 ```Powershell
 .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key -VMTape -Repository win_local_01 -AVScan
 ```
-    Scan VM lnxvm01 on Linux host ubuntusrv01 from Agent backup demo_agent resding on tape. Restore the backup data from tape onto Repository win_local_01
+
+Scan VM lnxvm01 on Linux host ubuntusrv01 from Agent backup demo_agent resding on tape. Restore the backup data from tape onto Repository win_local_01
 ```Powershell
 .\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_agent -Keyfile .\key.key -AgentTape -Repository win_local_01 -AVScan
 ```
