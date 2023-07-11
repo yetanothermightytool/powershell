@@ -2,7 +2,7 @@
 
 ## Description
 ~~~~
-Version : 1.1 (April 26th 2023)
+Version : 1.2 (July 6th 2023)
 Requires: Veeam Backup & Replication v12
 Author  : Stephan "Steve" Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -17,7 +17,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 
 ## Purpose
 
-This script scans the selected system before running the restore (Restore for VMs only). It leverages the Veeam Data Integration API and presents the backup to the Linux server with ClamAV installed. If a virus is found, a desired restore process will not be executed.
+This script scans the selected system before performing the restore (restore for VMs only). It uses the Veeam Data Integration API and presents the backup on the Linux server with ClamAV installed. If a virus is found, the desired restore process is not executed.
 ## Parameters
  
   `Mounthost`
@@ -36,12 +36,24 @@ _(mandatory)_ Path to the key file
 _(optional)_ Switch if Restore needs to be executed (see Notes)
 
 
-## Example: 
-`PS>.\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key
-  
+## Examples: 
+AV Scan of backed up virtual machine lnxvm01 on Linux host ubuntusrv01 from backup job demo_vm. Key file key.key used for authentication to Linux server ubuntusrv01
+```Powershell
+.\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key -AVScan
+```
+
+AV Scan VM lnxvm01 on Linux host ubuntusrv01 from VM backup demo_vm resding on tape. Restore the backup data from tape onto Repository win_local_01
+```Powershell
+.\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_vm -Keyfile .\key.key -VMTape -Repository win_local_01 -AVScan
+```
+    Scan VM lnxvm01 on Linux host ubuntusrv01 from Agent backup demo_agent resding on tape. Restore the backup data from tape onto Repository win_local_01
+```Powershell
+.\vbr-securerestore.ps1 -Mounthost ubuntusrv01 -Scanhost lnxvm01 -Jobname demo_agent -Keyfile .\key.key -AgentTape -Repository win_local_01 -AVScan
+```
+
 ## Notes
 
-If the -Restore parameter is specified, the restore command is displayed only on the screen (line 77 of the code). You wonder why? Well, using the given restore command, the virtual machine would be overwritten without confirmation! 
+If the -Restore parameter is specified, the restore command is displayed only on the screen (line 151 of the code). You wonder why? Well, using the given restore command, the virtual machine would be overwritten without confirmation! 
 
 This script has been tested with the following versions of Veeam Backup & Replication
 - v12
@@ -49,7 +61,8 @@ This script has been tested with the following versions of Veeam Backup & Replic
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
-* 1.2 (Coming soon - tests ongoing)
+* 1.2a Coming soon! Yara scan (tests ongoing)
+* 1.2
    * Scanning of backups on tape (no worries, the data will be restored into a disk repository first)
 * 1.1
    * Universal - Can now also be used with Windows VMs and Agent Backups (tests for Agents ongoing)
