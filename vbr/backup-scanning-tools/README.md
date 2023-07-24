@@ -20,7 +20,7 @@ This script is designed to provide a user-friendly, menu-driven interface for tr
 ## Installation 
 1. **Download the Installer Script**
 
-[Download the `backup-scanning-tools-installer.ps1` script](https://github.com/yetanothermightytool/powershell/blob/master/vbr/backup-scanning-tools/backup-scanning-tools-installer.ps1) from this repository to your local machine.
+Download the [`backup-scanning-tools-installer.ps1`](https://github.com/yetanothermightytool/powershell/blob/master/vbr/backup-scanning-tools/backup-scanning-tools-installer.ps1) script to your local machine.
 
 2. **Open PowerShell**
 
