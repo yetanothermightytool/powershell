@@ -4,7 +4,7 @@
 ~~~~
 Version: 1.0 (July 24th 2023)
 Requires: Veeam Backup & Replication v12 / Scanning Tools downloaded (see Prerequisites)
-Author: Stephan "Steve" Herzig and many others (See "Special thanks")
+Author: Stephan "Steve" Herzig
 GitHub: [https://www.github.com/yetanothermightytool](https://www.github.com/yetanothermightytool)
 ~~~~
 
