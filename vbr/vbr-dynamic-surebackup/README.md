@@ -5,7 +5,7 @@
 Version: 1.0 (May 30th 2023)
 Requires: Veeam Backup & Replication v12
 Author: Stephan "Steve" Herzig and many others (See "Special thanks")
-GitHub: [https://www.github.com/yetanothermightytool](https://www.github.com/yetanothermightytool)
+GitHub: [yetanothermightytool](https://www.github.com/yetanothermightytool)
 ~~~~
 
 ## Purpose
