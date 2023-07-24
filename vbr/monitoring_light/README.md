@@ -17,7 +17,7 @@ Before running the `monitoring_light.ps1` script, make sure to download the [job
 ## Usage
 
 ```powershell
-.\VBR-Quick-Analyzer.ps1 -Port 80 -RefreshInterval 30
+.\monitoring_light.ps1 -Port 80 -RefreshInterval 30
 ```
 
 Open a web browser and Access the URL http://localhost:<port> in the web browser, where <port> is the port number specified when running the script (e.g., http://localhost:80).
@@ -40,6 +40,7 @@ The information displayed on the webpage includes:
 The page will refresh automatically based on the specified `$RefreshInterval` value.
 
 ## Note
+**Also take a look at Veeam ONE's numerous monitoring and reporting features!**
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
