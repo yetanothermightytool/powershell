@@ -60,6 +60,7 @@ The script presents the user with a menu of backup scanning options. The options
 6. **Exit**: This option allows the user to - what a surprise - exit the script. Before exiting, it asks for confirmation.
 
 ## How to Use
+![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/backup-scanning-tools/pictures/menu-selection.png)
 
 The user needs to run the script, and the menu with the listed options will be displayed. To select an option, the user enters the corresponding number. Depending on the chosen option, the script will prompt for specific parameters to execute the selected scanning operation. After processing the scan, the script will return to the menu for further actions.
 
