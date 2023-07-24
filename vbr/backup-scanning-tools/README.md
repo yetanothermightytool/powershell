@@ -15,6 +15,7 @@ This script is designed to provide a user-friendly, menu-driven interface for tr
 
 - PowerShell version 5.1
 - Internet access to download the scripts from the YAMT (Yet Another Mighty Tool) Git repository.
+- All prerequisites for the individual scanning scripts (see the corresponding readme)
 
 ## Installation 
 1. **Download the Installer Script**
