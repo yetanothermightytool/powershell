@@ -20,10 +20,10 @@ Before you run this script, make sure that a "Mounthost" is preconfigured as a v
 
 The script accepts the following parameters:
 
-`Mounthost`(mandatory): The name of the target VM where the recovered disks will be mounted.
-`Scanhost` (mandatory): The name of the VM for which the restore point will be selected.
-`Jobname`  (mandatory): The name of the Veeam backup job that contains the restore point.
-`vCenter`  (mandatory): The hostname or IP address of the vCenter Server managing the target VM.
+- `Mounthost`(mandatory): The name of the target VM where the recovered disks will be mounted.
+- `Scanhost` (mandatory): The name of the VM for which the restore point will be selected.
+- `Jobname`  (mandatory): The name of the Veeam backup job that contains the restore point.
+- `vCenter`  (mandatory): The hostname or IP address of the vCenter Server managing the target VM.
 
 ## Usage
 
