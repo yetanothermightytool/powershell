@@ -1,12 +1,10 @@
 # Veeam Backup & Replication - Dynamic SureBackup
 
 ## Description
-~~~~
 Version: 1.0 (May 30th 2023)
 Requires: Veeam Backup & Replication v12
 Author: Stephan "Steve" Herzig and many others (See "Special thanks")
 GitHub: [yetanothermightytool](https://www.github.com/yetanothermightytool)
-~~~~
 
 ## Purpose
 This PowerShell script automates the mass testing process using Veeam Backup & Replication. It creates and manages SureBackup jobs to facilitate efficient and scalable application testing in a virtual lab setup.
