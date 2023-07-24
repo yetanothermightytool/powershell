@@ -4,7 +4,9 @@ Param(
     [Parameter(Mandatory=$true)]
     [string]$Scanhost,
     [Parameter(Mandatory=$true)]
-    [string]$Jobname
+    [string]$Jobname,
+    [Parameter(Mandatory=$true)]
+    [string]$vCenter
     )
 Clear-Host
 
@@ -66,7 +68,7 @@ $virtualDevice     = Get-VBRViVirtualDevice -RestorePoint $selectedRp
 $instantRecovery   = Start-VBRViInstantVMDiskRecovery -RestorePoint $selectedRp -TargetVM $mountVM -TargetVirtualDevice $virtualDevice
 
 # Connect to vCenter Server 
-Connect-VIServer -Server vca-appliance-01 | Out-Null
+Connect-VIServer -Server $vCenter | Out-Null
 
 # Start VM
 start-vm -VM $Mounthost | Out-Null
