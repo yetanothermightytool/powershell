@@ -40,7 +40,7 @@ This script is designed to provide a user-friendly, menu-driven interface for tr
 Once the installation is complete, you can use the backup scanning tools from the specified installation directory. Run the menu script, and it will call the required backup scanning scripts based on the user's selection from the menu.
 
 
-## Variable to be modified in the `Backup Scanning Tool Menu` script
+## Variable to be modified in the "Backup Scanning Tool Menu" script
 
 - `$scanningToolsPath`: Specifies the path to the directory containing the scanning tools (scripts) used in the different scanning operations.
 
