@@ -4,7 +4,7 @@ This PowerShell script sets up a simple HTTP server that listens on a specified 
 
 ## Version Information
 ~~~~
-Version: 1.0 (July 24th 2023)
+Version: 1.0 (July 6th 2023)
 Requires: Veeam Backup & Replication v12 / Scanning Tools downloaded (see Prerequisites)
 Author: Stephan "Steve" Herzig
 GitHub: [https://www.github.com/yetanothermightytool](https://www.github.com/yetanothermightytool)
