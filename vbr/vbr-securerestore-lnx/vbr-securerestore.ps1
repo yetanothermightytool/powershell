@@ -158,7 +158,6 @@ Write-Host "***Scanning end***" -ForegroundColor White
 if($YARAScan){
 # Start scanning using YARA
 Write-Progress "Start Scanning..." -PercentComplete 95
-pause
 $scanner           = ssh administrator@$mountHost -i $Keyfile "sudo yara -rw -p 12 ./yara-rules/rules/index.yar /tmp/Veeam.Mount.FS.*"
 Write-Host     "***Scanning start***" -ForegroundColor White
 $infectedFilesLine = $scanner -contains 'ANOMALY'
