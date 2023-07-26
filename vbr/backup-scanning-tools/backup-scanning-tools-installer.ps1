@@ -15,7 +15,7 @@
     Author     : Stephan "Steve" Herzig
     Requires   : PowerShell
 .VERSION
-    1.0
+    1.1
 #>
 Param(
     [Parameter(Mandatory=$true)]
@@ -52,9 +52,19 @@ for ($i = 0; $i -lt $scriptCount; $i++) {
     $percentComplete = ($i + 1) / $scriptCount * 100
     Write-Progress -Activity "Downloading Scripts" -Status "Downloading..." -PercentComplete $percentComplete
 
-    Invoke-WebRequest -Uri $url -OutFile $localPath -UseBasicParsing
+    $request = [System.Net.WebRequest]::Create($url)
+    $request.UseDefaultCredentials = $true
+    $response = $request.GetResponse()
+    $stream = $response.GetResponseStream()
+    $reader = New-Object System.IO.StreamReader($stream, [System.Text.Encoding]::UTF8)
+    $content = $reader.ReadToEnd()
+    $reader.Close()
+    $stream.Close()
+    $response.Close()
+
+    Set-Content -Path $localPath -Value $content -Encoding UTF8
+
     Start-Sleep -Milliseconds 500
 }
-
 Write-Progress -Activity "Downloading Scripts" -Completed
 Write-Host "Download completed successfully. Scripts are saved in: $localDirectory"
