@@ -62,14 +62,15 @@ Scan VM lnxvm01 on Linux host ubuntusrv01 from Agent backup demo_agent resding o
 
 If the -Restore parameter is specified, the restore command is displayed only on the screen (line 151 of the code). You wonder why? Well, using the given restore command, the virtual machine would be overwritten without confirmation! 
 
-**All tape related actions are to be used at your own risk**
-The commands for scanning from tape are documented, but not listed in the Parameters section yet. Tests are still ongoing (a bug for the restore job naming was found and confirmed), and I want to make sure not the wrong backup data gets deleted after the scan. 
-**All tape related actions are to be used at your own risk**
-
 This script has been tested with the following versions of Veeam Backup & Replication
 - v12
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
+
+
+## Important - All tape related actions are to be used at your own risk
+Command examples for scanning "from tape" are documented but not yet listed in the Parameters section. Tests are still ongoing (a bug for the restore job naming was found and confirmed), and I want to make sure the correct backup data gets deleted after the scan. 
+
 
 ## Version History
 * 1.2a
