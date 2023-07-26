@@ -2,7 +2,7 @@
 
 ## Description
 ~~~~
-Version : 1.2 (July 6th 2023)
+Version : 1.2a (July 26th 2023)
 Requires: Veeam Backup & Replication v12
 Author  : Stephan "Steve" Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -35,6 +35,12 @@ _(mandatory)_ Path to the key file
   `Restore`
 _(optional)_ Switch if Restore needs to be executed (see Notes)
 
+  `AVScan`
+_(mandatory)_ Switch if Restore needs to be executed (see Notes)
+
+  `YARAScan`
+_(mandatory)_ Switch if Restore needs to be executed (see Notes)
+
 
 ## Examples: 
 AV Scan of backed up virtual machine lnxvm01 on Linux host ubuntusrv01 from backup job demo_vm. Key file key.key used for authentication to Linux server ubuntusrv01
@@ -56,13 +62,19 @@ Scan VM lnxvm01 on Linux host ubuntusrv01 from Agent backup demo_agent resding o
 
 If the -Restore parameter is specified, the restore command is displayed only on the screen (line 151 of the code). You wonder why? Well, using the given restore command, the virtual machine would be overwritten without confirmation! 
 
+**All tape related actions are to be used at your own risk**
+The commands for scanning from tape are documented, but not listed in the Parameters section yet. Tests are still ongoing (a bug for the restore job naming was found and confirmed), and I want to make sure not the wrong backup data gets deleted after the scan. 
+**All tape related actions are to be used at your own risk**
+
 This script has been tested with the following versions of Veeam Backup & Replication
 - v12
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
-* 1.2a Coming soon! Yara scan (tests ongoing)
+* 1.2a
+   * YARA Scan (needs to be installed on the Linux host and rules needs to be triggered in /home/administrator/yara-rules/rules/index.yar)
+   * Adjustments for the Backup Scanning Tools Menu script
 * 1.2
    * Scanning of backups on tape (no worries, the data will be restored into a disk repository first)
 * 1.1
