@@ -156,11 +156,11 @@ if ($infectedFilesLine.Count -eq "") {
 Write-Host "***Scanning end***" -ForegroundColor White
 }
 if($YARAScan){
-# Start scanning using YARA
+# Start scanning using YARA / Used parameters: recursive / fastscan / no-warnings / no-follow-symlinks / threads (16)
 Write-Progress "Start Scanning..." -PercentComplete 95
-$scanner           = ssh administrator@$mountHost -i $Keyfile "sudo yara -rw -p 12 ./yara-rules/rules/index.yar /tmp/Veeam.Mount.FS.*"
+$scanner           = ssh administrator@$mountHost -i $Keyfile "sudo yara -rfwN -p 16 ./yara-rules/rules/index.yar /tmp/Veeam.Mount.FS.*"
 Write-Host     "***Scanning start***" -ForegroundColor White
-$infectedFilesLine = $scanner -contains 'ANOMALY'
+$infectedFilesLine = $scanner
 $infectedFilesLine
 # Write End Message
 Write-Host "***Scanning end***" -ForegroundColor White
