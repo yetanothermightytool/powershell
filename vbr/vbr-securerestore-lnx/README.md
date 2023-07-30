@@ -2,7 +2,7 @@
 
 ## Description
 ~~~~
-Version : 1.2a (July 26th 2023)
+Version : 1.3 (July 30th 2023)
 Requires: Veeam Backup & Replication v12
 Author  : Stephan "Steve" Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -41,6 +41,9 @@ _(mandatory)_ Switch if Restore needs to be executed (see Notes)
   `YARAScan`
 _(mandatory)_ Switch if Restore needs to be executed (see Notes)
 
+  `LogFilePath`
+_(optional)_ Default "C:\Temp\log.txt"
+
 
 ## Examples: 
 AV Scan of backed up virtual machine lnxvm01 on Linux host ubuntusrv01 from backup job demo_vm. Key file key.key used for authentication to Linux server ubuntusrv01
@@ -60,6 +63,8 @@ Scan VM lnxvm01 on Linux host ubuntusrv01 from Agent backup demo_agent resding o
 
 ## Notes
 
+At the moment the script logs on to the Linux host as "Administrator" (See line 177 & 205) Adjust if necessary.
+
 If the -Restore parameter is specified, the restore command is displayed only on the screen (line 151 of the code). You wonder why? Well, using the given restore command, the virtual machine would be overwritten without confirmation! 
 
 This script has been tested with the following versions of Veeam Backup & Replication
@@ -73,6 +78,9 @@ Command examples for scanning "from tape" are documented but not yet listed in t
 
 
 ## Version History
+* 1.3
+   * New log file function to log the activities (Currently AV & YARA Scan only) in $LogFilePath - Default is C:\Temp\log.txt
+   * Automatically selects latest restore point after 30 seconds
 * 1.2a
    * YARA Scan (needs to be installed on the Linux host and rules needs to be triggered in /home/administrator/yara-rules/rules/index.yar)
    * Adjustments for the Backup Scanning Tools Menu script
