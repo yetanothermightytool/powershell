@@ -1,7 +1,7 @@
 # Veeam Backup & Replication - Staged VM Restore
 
 ~~~~
-Version : 1.0 (June 8th 2023)
+Version : 1.1 (July 30th 2023)
 Requires: Veeam Backup & Replication v12
 Author  : Stephan "Steve" Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -15,9 +15,7 @@ This PowerShell script is designed to perform a staged virtual machine (VM) rest
 - Veeam Backup & Replication V12
 - Access to the Veeam Backup & Replication server
 - Properly configured credentials and virtual lab in Veeam Backup & Replication
-- PowerShell version 3.0 or later
-
-
+- Windows PowerShell version 5 or later
 
 ## Parameters
 The script accepts the following parameters:
@@ -40,6 +38,9 @@ _(mandatory)_ The path to the script that will be executed during the staging pr
   `Credentials`
 _(mandatory)_ The name of the configured credentials for executing the staging script
 
+  `LogFilePath`
+_(optional)_ Logging the activities - Default is C:\Temp\log.txt
+
 ## Example: 
 `PS>.\vbr-staged-restore.ps1 -ESXiServer "ESXiServerName" -VMName "VMName" -Jobname "BackupJobName" -VirtualLab "VirtualLabName" -StagingScript "Path\To\StagingScript.ps1" -Credentials "CredentialsName"
 
@@ -57,6 +58,8 @@ This script has been tested with the following versions of Veeam Backup & Replic
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
-
+*  1.1
+    * Function to log the activities (Start the script)
+    * Automatically selects the latest restore point after 30 seconds
 *  1.0
     * Initial Release
