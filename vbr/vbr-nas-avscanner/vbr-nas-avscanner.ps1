@@ -12,15 +12,30 @@
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 .VERSION
-    1.2
+    1.3
 #>
 param(
     [Parameter(mandatory=$true)]
-    [String] $JobName)
+    [String] $JobName,
+    [Parameter(Mandatory = $false)]
+    [String] $LogFilePath = "C:\Temp\log.txt"
+    )
+
+# Variables
+$host.ui.RawUI.WindowTitle = "VBR NAS AV Scanner"
 
 # Connect to the VBR Server
 Connect-VBRServer -Server localhost
 
+function Log-Message {
+    param (
+        [string]$Message
+    )
+
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "$timestamp - $Message"
+    Add-Content -Path $LogFilePath -Value $logEntry
+}
 function rpLister {
 Param (
     [Parameter(Position = 0,Mandatory = $False)]
@@ -62,10 +77,30 @@ if ($restorepoint.Count -eq 0) {
 # Present the result using the function rpLister
    rpLister $restorepoint
 }
-do { [int]$restorePointID = Read-Host "Please select restore point (Id)" } until (($restorePointID -lt $restorepoint.Count) -and ($restorePointID -ge 0))
+$stopTime = [datetime]::Now.AddSeconds(30)
+$restorePointID = 0
+
+Write-Host -NoNewline "Please select restore point (Id) - Automatic selection of restore point 0 after 30 seconds:"
+while ([datetime]::Now -lt $stopTime -and -not [console]::KeyAvailable) {
+    Start-Sleep -Milliseconds 50
+}
+if ([console]::KeyAvailable) {
+    $restorePointID = [console]::ReadLine()
+    while (!($restorePointID -lt $restorepoint.Count -and $restorePointID -ge 0)) {
+        $restorePointID = [console]::ReadLine()
+    }
+} 
+
+while ([console]::KeyAvailable) {
+    [console]::ReadKey($true) | Out-Null 
+}
+
+$restorePointID = [int]$restorePointID  
+Write-Host ""
 
 # Get the selected restore point
-$selectedRp         = $restorepoint | Select-Object -Index $restorePointID
+$selectedRp               = $restorepoint | Select-Object -Index $restorePointID 
+
 
 # Set the permissions - Permissions can be adjusted
 $permissions        = New-VBRNASPermissionSet -RestorePoint $restorepoint -Owner "Administrator" -AllowSelected -PermissionScope ("Administrator")
@@ -75,6 +110,7 @@ $restoresession     = Start-VBRNASInstantRecovery -RestorePoint $selectedRp -Per
 
 #Scan the Share using whatever you want - Sharepath is in variable $restoresession.SharePath
 #Example with Microsoft Defender
+Log-Message -Message "Info - NAS AV Scanner - Scanning started"
 $defenderFolder     = (Get-ChildItem "C:\ProgramData\Microsoft\Windows Defender\Platform\" | Sort-Object -Descending | Select-Object -First 1).fullname
 $defender           = "$defenderFolder\MpCmdRun.exe"
 $host.UI.RawUI.ForegroundColor = "White"
@@ -90,11 +126,13 @@ if ($threatCount -eq 0) {
     $output | ForEach-Object {Write-Verbose $_}
     $output
     Write-Host "No threads were found"
+    Log-Message -Message "Info - NAS AV Scanner - Scanning ended - No threads were found"
+
 } else {
     $maxEvents = [Math]::Min([int]$threatCount, 3)
     $output | ForEach-Object {Write-Verbose $_}
     $output
-    
+    Log-Message -Message "Warning - NAS AV Scanner - Scanning ended - Result: $output"
     # Retrieve the last x Windows Defender events with ID 1116
 $events            = Get-WinEvent -FilterHashtable @{
     LogName        = 'Microsoft-Windows-Windows Defender/Operational'
