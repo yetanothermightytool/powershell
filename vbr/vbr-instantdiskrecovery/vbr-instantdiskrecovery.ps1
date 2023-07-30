@@ -6,12 +6,28 @@ Param(
     [Parameter(Mandatory=$true)]
     [string]$Jobname,
     [Parameter(Mandatory=$true)]
-    [string]$vCenter
+    [string]$vCenter,
+    [Parameter(Mandatory = $false)]
+    [String] $LogFilePath = "C:\Temp\log.txt"
     )
+    
 Clear-Host
+# Variables
+$host.ui.RawUI.WindowTitle = "VBR Instant Disk Recovery"
 
 # Connect VBR Server
 Connect-VBRServer -Server localhost
+
+# Log Message function
+function Log-Message {
+    param (
+        [string]$Message
+    )
+
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "$timestamp - $Message"
+    Add-Content -Path $LogFilePath -Value $logEntry
+}
 
 # function to list restore points
 function rpLister {
@@ -65,7 +81,8 @@ $virtualDevice     = Get-VBRViVirtualDevice -RestorePoint $selectedRp
 #$virtualDevice     = Set-VBRViVirtualDevice -VirtualDevice $virtualDevice -ControllerNumber 0 -Type SCSI -VirtualDeviceNode 5
 
 # Start Instant VM Disk Recovery
-$instantRecovery   = Start-VBRViInstantVMDiskRecovery -RestorePoint $selectedRp -TargetVM $mountVM -TargetVirtualDevice $virtualDevice
+Log-Message -Message "Info - Instant Disk Recovery - Scanning started"
+$instantRecovery   = Start-VBRViInstantVMDiskRecovery -RestorePoint $selectedRp -TargetVM $mountVM -TargetVirtualDevice $virtualDevice -Reason "Backup Scanning Tools Scan"
 
 # Connect to vCenter Server 
 Connect-VIServer -Server $vCenter | Out-Null
@@ -78,6 +95,15 @@ Disconnect-VIServer -Confirm:$false
 
 # Wait for scan completion
 $input = $(Write-Host "Please start the scan in the VM. After completion press Enter to continue..." -NoNewLine -ForegroundColor White ; Read-Host)
+Write-Host ""
+Write-Host "Was malware detected during the manual scan? (Y/N)?" -ForegroundColor "White"
+      $confirm   = Read-Host
+      $confirmed = ($confirm -eq "Y" -or $confirm -eq "y")
+          if ($confirmed) {
+             Log-Message -Message "Warning - Instant Disk Recovery - Scanning ended - Threads found - Manually confirmed"
+          } else {
+             Log-Message -Message "Info - Instant Disk Recovery - Scanning ended - No threads were found"
+          }
 
 # Stop Instant VM Disk Recovery Session
 Stop-VBRViInstantVMDiskRecovery -InstantRecovery $instantRecovery -Force
