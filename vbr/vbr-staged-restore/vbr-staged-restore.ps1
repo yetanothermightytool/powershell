@@ -13,7 +13,7 @@
     Requires   : PowerShell, Veeam Backup & Replication v12, properly configured credentials and virtual lab in Veeam Backup & Replication
                  More details https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-staged-restore/README.md
 .VERSION
-1.0
+1.1
 #>
 Param(
     [Parameter(Mandatory=$true)]
@@ -27,8 +27,26 @@ Param(
     [Parameter(Mandatory=$true)]
     [string]$StagingScript,
     [Parameter(Mandatory=$true)]
-    [string]$Credentials
+    [string]$Credentials,
+    [Parameter(Mandatory = $false)]
+    [String] $LogFilePath = "C:\Temp\log.txt"
     )
+
+# Variables
+$host.ui.RawUI.WindowTitle = "VBR Staged Restore"
+
+# Function for logging messages
+function Log-Message {
+    param (
+        [string]$Message
+    )
+
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "$timestamp - $Message"
+    Add-Content -Path $logFilePath -Value $logEntry
+}
+
+
 # Function to list restore points
 function rpLister {
 Param (
@@ -109,6 +127,7 @@ $selectedRp               = $Result | Select-Object -Index $restorePointID
 Clear-Host
 Write-Host "*** Start Staged Restore ***" -ForegroundColor White
 $startupOptions           = New-VBRApplicationGroupStartupOptions -MaximumBootTime 300 -ApplicationInitializationTimeout 180 -MemoryAllocationPercent 100
+Log-Message -Message "Info - Staged VM Restore - Scanning started"
 Start-VBRRestoreVM -RestorePoint $selectedRp -Server $restoreServer -StagingVirtualLab $vlab -StagingStartupOptions $startupOptions -StagingScript $StagingScript -EnableStagedRestore -StagingCredentials $creds | Out-Null
 
 # Disconnect from VBR server
