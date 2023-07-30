@@ -42,8 +42,9 @@ _(mandatory)_ The name of the configured credentials for executing the staging s
 _(optional)_ Logging the activities - Default is C:\Temp\log.txt
 
 ## Example: 
+```Powershell
 `PS>.\vbr-staged-restore.ps1 -ESXiServer "ESXiServerName" -VMName "VMName" -Jobname "BackupJobName" -VirtualLab "VirtualLabName" -StagingScript "Path\To\StagingScript.ps1" -Credentials "CredentialsName"
-
+```
 Replace the parameters in quotes with your values.
   
 ## Notes
