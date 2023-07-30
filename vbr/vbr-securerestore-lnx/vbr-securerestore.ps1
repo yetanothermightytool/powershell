@@ -25,7 +25,7 @@
     Requires   : PowerShell, Veeam Backup & Replication v12, Linux host with ClamAV installed, OpenSSH Keyfile
                  More details https://community.veeam.com/script-library-67/vbr-securerestore-lnx-ps1-secure-restore-for-linux-vm-4617
 .VERSION
-1.2a
+1.3
 #>
 Param(
     [Parameter(Mandatory=$true)]
@@ -42,12 +42,27 @@ Param(
     [Switch]$YARAScan,
     [Switch]$VMTape,
     [Switch]$AgentTape,
-    [string]$Repository
+    [string]$Repository,
+    [String] $LogFilePath = "C:\Temp\log.txt"
     )
 Clear-Host
 
+# Variables
+$host.ui.RawUI.WindowTitle = "VBR Secure Restore - Data Integration API"
+
 # Connect VBR Server
 Connect-VBRServer -Server localhost
+
+# Logging function
+function Log-Message {
+    param (
+        [string]$Message
+    )
+
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "$timestamp - $Message"
+    Add-Content -Path $logFilePath -Value $logEntry
+}
 
 # function to list restore points
 function rpLister {
@@ -95,7 +110,32 @@ if ($Result.Count -eq 0) {
     rpLister $Result
 }
 # Ask for the backup to be scanned
-do { [int]$restorePointID = Read-Host "Please select restore point (Id)" } until (($restorePointID -lt $Result.Count) -and ($restorePointID -ge 0))
+#do { [int]$restorePointID = Read-Host "Please select restore point (Id)" } until (($restorePointID -lt $Result.Count) -and ($restorePointID -ge 0))
+
+# Ask for the restore point to be scanned - Automatically select latest restore points after 30 seconds
+$stopTime = [datetime]::Now.AddSeconds(30)
+$restorePointID = 0
+
+Write-Host -NoNewline "Please select restore point (Id) - Automatically selects the latest restore point after 30 seconds: "
+
+while ([datetime]::Now -lt $stopTime -and -not [console]::KeyAvailable) {
+    Start-Sleep -Milliseconds 50
+}
+
+if ([console]::KeyAvailable) {
+    $restorePointID = [console]::ReadLine()
+    while (!($restorePointID -lt $Result.Count -and $restorePointID -ge 0)) {
+        $restorePointID = [console]::ReadLine()
+    }
+} 
+
+while ([console]::KeyAvailable) {
+    [console]::ReadKey($true) | Out-Null 
+}
+
+$restorePointID = [int]$restorePointID  # Convert the restore point ID to an integer
+Write-Host ""
+
 
 Write-Host
 # Set the Linux Server where scanning will take place. Note: This host needs to be added to VBR 
@@ -133,6 +173,7 @@ $session           = Publish-VBRBackupContent -RestorePoint $selectedRp -TargetS
 if($AVScan){
 # Start scanning using ClamAV
 Write-Progress "Start Scanning..." -PercentComplete 95
+Log-Message -Message "Info - Secure Restore - AV Scan - Scanning started"
 $scanner           = ssh administrator@$mountHost -i $Keyfile "sudo clamdscan --multiscan --fdpass /tmp/Veeam.Mount.FS.*"
 Write-Host     "***Scanning start***" -ForegroundColor White
 
@@ -145,8 +186,10 @@ if ($infectedFilesLine.Count -eq "") {
         Write-Host "Infected file(s) detected" -ForegroundColor Yellow
         Write-Host ""
         Write-Host $foundFile "" -ForegroundColor Yellow
+        Log-Message -Message "Warning - Secure Restore - AV Scan - Scanning ended - Result: $foundFile"
         } else {
         Write-Host "No infected files found." -ForegroundColor White
+        Log-Message -Message "Info - Secure Restore - AV Scan - Scanning ended - No threads were found"
         if ($Restore -and $selectedRp.GetPlatform() -eq "EVmware"){
         Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - YaMT Secure Restore Linux" -ToOriginalLocation -StoragePolicyAction Default"
         }  
@@ -158,10 +201,22 @@ Write-Host "***Scanning end***" -ForegroundColor White
 if($YARAScan){
 # Start scanning using YARA / Used parameters: recursive / fastscan / no-warnings / no-follow-symlinks / threads (16)
 Write-Progress "Start Scanning..." -PercentComplete 95
+Log-Message -Message "Info - Secure Restore - YARA Scan - Scanning started"
 $scanner           = ssh administrator@$mountHost -i $Keyfile "sudo yara -rfwN -p 16 ./yara-rules/rules/index.yar /tmp/Veeam.Mount.FS.*"
 Write-Host     "***Scanning start***" -ForegroundColor White
 $infectedFilesLine = $scanner
-$infectedFilesLine
+$scanner
+if ($infectedFilesLine.Count -gt 0) {
+        Write-Host ""
+        Write-Host "Infected file(s) detected" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host $infectedFilesLine "" -ForegroundColor Yellow
+        Log-Message -Message "Warning - Secure Restore - YARA Scan - Scanning ended - Result: $infectedFilesLine"
+        } else {
+        Write-Host "No infected files found." -ForegroundColor White
+        Log-Message -Message "Info - Secure Restore - YARA - Scanning ended - No threads were found"
+        }
+    
 # Write End Message
 Write-Host "***Scanning end***" -ForegroundColor White
 }
