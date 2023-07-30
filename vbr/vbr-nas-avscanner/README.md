@@ -2,7 +2,7 @@
 
 ## Description
 ~~~~
-Version : 1.2 (July 6th 2023)
+Version : 1.3 (July 30th 2023)
 Requires: Veeam Backup & Replication
 Author  : Stephan "Steve" Herzig
 GitHub  : https://www.github.com/yetanothermightytool
@@ -26,6 +26,9 @@ Any scanning tool can be used. Just replace lines 78++ if you don't want to use 
   `JobName`
 _(mandatory)_ Name of the File Share Backup Job
 
+ `LogFilePath`
+_(optional)_ Default is C:\Temp\log.txt
+
 
 ## Example: 
 `PS>.\vbr-nas-scanner.ps1 -JobName "Demo NAS to Local"
@@ -39,6 +42,9 @@ This script has been tested with the following versions of Veeam Backup & Replic
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+* 1.3
+    * New function to log the activities - Parameter LogFilePath. Default C:\Temp\log.txt
+    * Automatically selects restore point 0 after 30 seconds
 * 1.2
     * Script now presents the Event Log entries done by Microsoft Defender
     * corrections
