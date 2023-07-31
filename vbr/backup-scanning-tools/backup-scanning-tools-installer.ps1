@@ -41,7 +41,8 @@ $scriptUrls = @(
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-securerestore-lnx/vbr-securerestore.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-nas-avscanner/vbr-nas-avscanner.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-staged-restore/vbr-staged-restore.ps1",
-    "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-instantdiskrecovery/vbr-instantdiskrecovery.ps1"
+    "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-instantdiskrecovery/vbr-instantdiskrecovery.ps1",
+    "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-cleanrestore/vbr-cleanrestore.ps1"
 )
 
 # Download the scripts - special mode because of the ASCII codes in the menu script.
