@@ -15,7 +15,7 @@
     Author     : Stephan "Steve" Herzig
     Requires   : PowerShell
 .VERSION
-    1.1
+    1.2
 #>
 Param(
     [Parameter(Mandatory=$true)]
@@ -37,13 +37,14 @@ if (-Not (Test-Path -Path $localDirectory -PathType Container)) {
 # List of the backup scanning tools scripts
 $scriptUrls = @(
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/backup-scanning-tools/backup-scanning-tools-menu.ps1",
+	"https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/backup-scanning-tools/backup-scanning-tools-webmenu.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-securerestore-lnx/vbr-securerestore.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-nas-avscanner/vbr-nas-avscanner.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-staged-restore/vbr-staged-restore.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-instantdiskrecovery/vbr-instantdiskrecovery.ps1"
 )
 
-# Download the scripts
+# Download the scripts - special mode because of the ASCII codes in the menu script.
 $scriptCount = $scriptUrls.Count
 for ($i = 0; $i -lt $scriptCount; $i++) {
     $url             = $scriptUrls[$i]
@@ -66,5 +67,13 @@ for ($i = 0; $i -lt $scriptCount; $i++) {
 
     Start-Sleep -Milliseconds 500
 }
+
+# Download the png file
+Write-Progress -Activity "Downloading .png file" -PercentComplete 99
+$pngUrl       = "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/backup-scanning-tools/scanner.png"
+$localPngPath = "$installDir\scanner.png"
+Invoke-WebRequest -Uri $pngUrl -OutFile $localPngPath
+
+# That's all folks!
 Write-Progress -Activity "Downloading Scripts" -Completed
 Write-Host "Download completed successfully. Scripts are saved in: $localDirectory"
