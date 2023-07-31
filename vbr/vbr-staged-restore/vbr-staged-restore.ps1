@@ -36,7 +36,7 @@ Param(
 $host.ui.RawUI.WindowTitle = "VBR Staged Restore"
 
 # Function for logging messages
-function Log-Message {
+function BackupScan-Logentry {
     param (
         [string]$Message
     )
@@ -127,7 +127,7 @@ $selectedRp               = $Result | Select-Object -Index $restorePointID
 Clear-Host
 Write-Host "*** Start Staged Restore ***" -ForegroundColor White
 $startupOptions           = New-VBRApplicationGroupStartupOptions -MaximumBootTime 300 -ApplicationInitializationTimeout 180 -MemoryAllocationPercent 100
-Log-Message -Message "Info - Staged VM Restore - Scanning started"
+BackupScan-Logentry -Message "Info - Staged VM Restore - Scanning started"
 Start-VBRRestoreVM -RestorePoint $selectedRp -Server $restoreServer -StagingVirtualLab $vlab -StagingStartupOptions $startupOptions -StagingScript $StagingScript -EnableStagedRestore -StagingCredentials $creds | Out-Null
 
 # Disconnect from VBR server
