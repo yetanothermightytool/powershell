@@ -37,7 +37,7 @@ if (-Not (Test-Path -Path $localDirectory -PathType Container)) {
 # List of the backup scanning tools scripts
 $scriptUrls = @(
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/backup-scanning-tools/backup-scanning-tools-menu.ps1",
-	"https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/backup-scanning-tools/backup-scanning-tools-webmenu.ps1",
+    "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/backup-scanning-tools/backup-scanning-tools-webmenu.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-securerestore-lnx/vbr-securerestore.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-nas-avscanner/vbr-nas-avscanner.ps1",
     "https://raw.githubusercontent.com/yetanothermightytool/powershell/master/vbr/vbr-staged-restore/vbr-staged-restore.ps1",
