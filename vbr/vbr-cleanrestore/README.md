@@ -43,6 +43,8 @@ Start a clean restore process, scan 5 iteratins and restore if a clean restore p
 
 
 ## Notes
+The restore process is not executed, but only displayed in the console (Write-Host, line 170). If restores are desired, this must be adapted accordingly.
+
 This script has been tested with the following versions of Veeam Backup & Replication
 - v12
 
