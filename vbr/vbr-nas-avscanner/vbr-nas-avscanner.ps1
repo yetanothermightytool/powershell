@@ -32,7 +32,7 @@ function BackupScan-Logentry {
         [string]$Message
     )
 
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $timestamp = Get-Date -Format "dd-MM-yyyy HH:mm:ss"
     $logEntry = "$timestamp - $Message"
     Add-Content -Path $LogFilePath -Value $logEntry
 }
