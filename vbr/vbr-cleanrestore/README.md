@@ -28,15 +28,17 @@ The script accepts the following parameters:
 - `Scanhost`       (mandatory): The name of the server or VM to be scanned.
 - `Jobname`        (mandatory): The name of the backup job from which to select restore points.
 - `Keyfile`        (mandatory): The path to the SSH key file for accessing the mount host.
-- `AVScan` (switch, mandatory): Enables the ClamAV malware scan.
+- `AVScan`         (mandatory): Enables the ClamAV malware scan.
 - `MaxIterations`   (optional): The maximum number of iterations for scanning restore points. Default 5
-- `Restore` 		(optional): Enables restore using a clean restore point.
+- `Restore` 		  (optional): Enables restore using a clean restore point.
 - `LogFilePath`     (optional): The path to the log file for tracking scan results. Default "C:\Temp\log.txt"
 
 ## Example
 
+Start a clean restore process, scan 5 iteratins and restore if a clean restore point has been found.
+
 ```powershell
-.\vbr-cleanrestore.ps1 -Mounthost "LinuxHost -Scanhost "VM_Name" -Jobname "Backup_Job_Name" -Keyfile "Path_To_Private_Key" -AVScan -MaxIterations 5 
+.\vbr-cleanrestore.ps1 -Mounthost "LinuxHost -Scanhost "VM_Name" -Jobname "Backup_Job_Name" -Keyfile "Path_To_Private_Key" -AVScan -MaxIterations 5 -Restore
 ```
 
 
