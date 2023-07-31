@@ -59,7 +59,7 @@ function BackupScan-Logentry {
         [string]$Message
     )
 
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $timestamp = Get-Date -Format "dd-MM-yyyy HH:mm:ss"
     $logEntry = "$timestamp - $Message"
     Add-Content -Path $logFilePath -Value $logEntry
 }
@@ -190,7 +190,7 @@ if ($infectedFilesLine.Count -eq "") {
         Write-Host "No infected files found." -ForegroundColor White
         BackupScan-Logentry -Message "Info - Secure Restore - AV Scan - Scanning ended - No threads were found"
         if ($Restore -and $selectedRp.GetPlatform() -eq "EVmware"){
-        Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - YaMT Secure Restore Linux" -ToOriginalLocation -StoragePolicyAction Default"
+        Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - YaMT Secure Restore" -ToOriginalLocation -StoragePolicyAction Default"
         }  
    }
 
