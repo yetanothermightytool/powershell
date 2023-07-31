@@ -27,7 +27,7 @@ $host.ui.RawUI.WindowTitle = "VBR NAS AV Scanner"
 # Connect to the VBR Server
 Connect-VBRServer -Server localhost
 
-function Log-Message {
+function BackupScan-Logentry {
     param (
         [string]$Message
     )
@@ -110,7 +110,7 @@ $restoresession     = Start-VBRNASInstantRecovery -RestorePoint $selectedRp -Per
 
 #Scan the Share using whatever you want - Sharepath is in variable $restoresession.SharePath
 #Example with Microsoft Defender
-Log-Message -Message "Info - NAS AV Scanner - Scanning started"
+BackupScan-Logentry -Message "Info - NAS AV Scanner - Scanning started"
 $defenderFolder     = (Get-ChildItem "C:\ProgramData\Microsoft\Windows Defender\Platform\" | Sort-Object -Descending | Select-Object -First 1).fullname
 $defender           = "$defenderFolder\MpCmdRun.exe"
 $host.UI.RawUI.ForegroundColor = "White"
@@ -126,13 +126,13 @@ if ($threatCount -eq 0) {
     $output | ForEach-Object {Write-Verbose $_}
     $output
     Write-Host "No threads were found"
-    Log-Message -Message "Info - NAS AV Scanner - Scanning ended - No threads were found"
+    BackupScan-Logentry -Message "Info - NAS AV Scanner - Scanning ended - No threads were found"
 
 } else {
     $maxEvents = [Math]::Min([int]$threatCount, 3)
     $output | ForEach-Object {Write-Verbose $_}
     $output
-    Log-Message -Message "Warning - NAS AV Scanner - Scanning ended - Result: $output"
+    BackupScan-Logentry -Message "Warning - NAS AV Scanner - Scanning ended - Result: $output"
     # Retrieve the last x Windows Defender events with ID 1116
 $events            = Get-WinEvent -FilterHashtable @{
     LogName        = 'Microsoft-Windows-Windows Defender/Operational'
