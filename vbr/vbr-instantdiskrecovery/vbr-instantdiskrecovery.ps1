@@ -19,7 +19,7 @@ $host.ui.RawUI.WindowTitle = "VBR Instant Disk Recovery"
 Connect-VBRServer -Server localhost
 
 # Log Message function
-function Log-Message {
+function BackupScan-Logentry {
     param (
         [string]$Message
     )
@@ -81,7 +81,7 @@ $virtualDevice     = Get-VBRViVirtualDevice -RestorePoint $selectedRp
 #$virtualDevice     = Set-VBRViVirtualDevice -VirtualDevice $virtualDevice -ControllerNumber 0 -Type SCSI -VirtualDeviceNode 5
 
 # Start Instant VM Disk Recovery
-Log-Message -Message "Info - Instant Disk Recovery - Scanning started"
+BackupScan-Logentry -Message "Info - Instant Disk Recovery - Scanning started"
 $instantRecovery   = Start-VBRViInstantVMDiskRecovery -RestorePoint $selectedRp -TargetVM $mountVM -TargetVirtualDevice $virtualDevice -Reason "Backup Scanning Tools Scan"
 
 # Connect to vCenter Server 
@@ -100,9 +100,9 @@ Write-Host "Was malware detected during the manual scan? (Y/N)?" -ForegroundColo
       $confirm   = Read-Host
       $confirmed = ($confirm -eq "Y" -or $confirm -eq "y")
           if ($confirmed) {
-             Log-Message -Message "Warning - Instant Disk Recovery - Scanning ended - Threads found - Manually confirmed"
+             BackupScan-Logentry -Message "Warning - Instant Disk Recovery - Scanning ended - Threads found - Manually confirmed"
           } else {
-             Log-Message -Message "Info - Instant Disk Recovery - Scanning ended - No threads were found"
+             BackupScan-Logentry -Message "Info - Instant Disk Recovery - Scanning ended - No threads were found"
           }
 
 # Stop Instant VM Disk Recovery Session
