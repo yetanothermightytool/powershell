@@ -133,11 +133,10 @@ while ([console]::KeyAvailable) {
     [console]::ReadKey($true) | Out-Null 
 }
 
-$restorePointID = [int]$restorePointID  # Convert the restore point ID to an integer
-Write-Host ""
-
-
+$restorePointID = [int]$restorePointID
+Write-Host 
 Write-Host
+
 # Set the Linux Server where scanning will take place. Note: This host needs to be added to VBR 
 $lnxHost          = Get-VBRServer -Name $Mounthost
 
