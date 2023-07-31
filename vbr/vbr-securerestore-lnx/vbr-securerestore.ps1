@@ -54,7 +54,7 @@ $host.ui.RawUI.WindowTitle = "VBR Secure Restore - Data Integration API"
 Connect-VBRServer -Server localhost
 
 # Logging function
-function Log-Message {
+function BackupScan-Logentry {
     param (
         [string]$Message
     )
@@ -172,7 +172,7 @@ $session           = Publish-VBRBackupContent -RestorePoint $selectedRp -TargetS
 if($AVScan){
 # Start scanning using ClamAV
 Write-Progress "Start Scanning..." -PercentComplete 95
-Log-Message -Message "Info - Secure Restore - AV Scan - Scanning started"
+BackupScan-Logentry -Message "Info - Secure Restore - AV Scan - Scanning started"
 $scanner           = ssh administrator@$mountHost -i $Keyfile "sudo clamdscan --multiscan --fdpass /tmp/Veeam.Mount.FS.*"
 Write-Host     "***Scanning start***" -ForegroundColor White
 
@@ -185,10 +185,10 @@ if ($infectedFilesLine.Count -eq "") {
         Write-Host "Infected file(s) detected" -ForegroundColor Yellow
         Write-Host ""
         Write-Host $foundFile "" -ForegroundColor Yellow
-        Log-Message -Message "Warning - Secure Restore - AV Scan - Scanning ended - Result: $foundFile"
+        BackupScan-Logentry -Message "Warning - Secure Restore - AV Scan - Scanning ended - Result: $foundFile"
         } else {
         Write-Host "No infected files found." -ForegroundColor White
-        Log-Message -Message "Info - Secure Restore - AV Scan - Scanning ended - No threads were found"
+        BackupScan-Logentry -Message "Info - Secure Restore - AV Scan - Scanning ended - No threads were found"
         if ($Restore -and $selectedRp.GetPlatform() -eq "EVmware"){
         Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - YaMT Secure Restore Linux" -ToOriginalLocation -StoragePolicyAction Default"
         }  
@@ -200,7 +200,7 @@ Write-Host "***Scanning end***" -ForegroundColor White
 if($YARAScan){
 # Start scanning using YARA / Used parameters: recursive / fastscan / no-warnings / no-follow-symlinks / threads (16)
 Write-Progress "Start Scanning..." -PercentComplete 95
-Log-Message -Message "Info - Secure Restore - YARA Scan - Scanning started"
+BackupScan-Logentry -Message "Info - Secure Restore - YARA Scan - Scanning started"
 $scanner           = ssh administrator@$mountHost -i $Keyfile "sudo yara -rfwN -p 16 ./yara-rules/rules/index.yar /tmp/Veeam.Mount.FS.*"
 Write-Host     "***Scanning start***" -ForegroundColor White
 $infectedFilesLine = $scanner
@@ -210,10 +210,10 @@ if ($infectedFilesLine.Count -gt 0) {
         Write-Host "Infected file(s) detected" -ForegroundColor Yellow
         Write-Host ""
         Write-Host $infectedFilesLine "" -ForegroundColor Yellow
-        Log-Message -Message "Warning - Secure Restore - YARA Scan - Scanning ended - Result: $infectedFilesLine"
+        BackupScan-Logentry -Message "Warning - Secure Restore - YARA Scan - Scanning ended - Result: $infectedFilesLine"
         } else {
         Write-Host "No infected files found." -ForegroundColor White
-        Log-Message -Message "Info - Secure Restore - YARA - Scanning ended - No threads were found"
+        BackupScan-Logentry -Message "Info - Secure Restore - YARA - Scanning ended - No threads were found"
         }
     
 # Write End Message
