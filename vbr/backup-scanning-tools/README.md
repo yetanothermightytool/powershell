@@ -15,6 +15,7 @@ This script is designed to provide a user-friendly, menu-driven web site for tri
 	- Number of started scans
 	- Number of scans during which malware was found
 	- Number of possible suspicious incremental backups - see [`README`](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-job-scanner/README.md) for details.
+          (Checking the last 5 incremental backups of al VM backkup jobs. Alert if any of the restorepoint of the backup chain is 80 % larger than the average - can be adjusted)
 
 ## Prerequisites
 - PowerShell version 5.1
