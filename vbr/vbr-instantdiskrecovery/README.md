@@ -16,6 +16,9 @@ This PowerShell script performs an Instant VM Disk Recovery using Veeam Backup &
 
 Before you run this script, make sure that a "Mounthost" is preconfigured as a virtual machine that boots from an ISO image with the desired scan software and whose boot order is configured to boot from the ISO image.
 
+> VM Settings will be added soon
+> Also the registration for the Powercli Commands
+
 ## Script Parameters
 
 The script accepts the following parameters:
