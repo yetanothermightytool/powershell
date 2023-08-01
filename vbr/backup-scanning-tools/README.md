@@ -10,13 +10,13 @@ Author: Stephan "Steve" Herzig
 ## Description
 This script is designed to provide a user-friendly, menu-driven web site for triggering the various backup scan tools. It allows the user to choose from a number of options, each corresponding to a specific type of backup scan. The web interface offers much more possibilities and so many more features (compared to the "old school menu script") have been added:
 
-- Last 10 Scan Warning log entries
+- Last 10 scan warning log entries
 - Statistics:
 	- Number of started scans
 	- Number of scans during which malware was found
 	- Number of possible suspicious incremental backups - see [`README`](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-job-scanner/README.md) for details.
-          (Checking the last 5 incremental backups of al VM backkup jobs. Alert if any of the restorepoint of the backup chain is 80 % larger than the average - can be adjusted)
-
+          (Checking the last 5 incremental backups of all VM backkup jobs. Warning when one of the restore points of the backup chain is 80% larger than the average (can be adjusted)
+ 
 ## Prerequisites
 - PowerShell version 5.1
 - Internet access to download the scripts from the YAMT (Yet Another Mighty Tool) Git repository.
