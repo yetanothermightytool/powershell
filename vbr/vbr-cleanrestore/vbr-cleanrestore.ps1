@@ -26,7 +26,7 @@ Param(
     [Parameter(Mandatory=$false)]
     [int]$MaxIterations = 5,
     [Switch]$Restore,
-    [String] $LogFilePath = "C:\Temp\log.txt"
+    [String]$LogFilePath = "C:\Temp\log.txt"
     )
 Clear-Host
 
@@ -165,7 +165,7 @@ if ($infectedFilesLine.Count -eq "") {
         $restorePointID++
         } else {
         Write-Host "No infected files found." -ForegroundColor White
-        BackupScan-Logentry -Message "Info - Secure Restore - AV Scan - Scanning ended - No threads were found"
+        BackupScan-Logentry -Message "Info - Clean Restore - AV Scan - Scanning ended - No threads were found"
         if ($Restore -and $selectedRp.GetPlatform() -eq "EVmware"){
         Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - YaMT Secure Restore" -ToOriginalLocation -StoragePolicyAction Default"
         $infectionFound = $false
@@ -180,6 +180,7 @@ if ($infectedFilesLine.Count -eq "") {
      }
 
 } while ($infectionFound -and $iteration -lt $MaxIterations)
+
 # Write End Message
 Write-Host "***Scanning end***" -ForegroundColor White
 
