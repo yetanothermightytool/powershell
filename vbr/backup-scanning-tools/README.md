@@ -86,6 +86,8 @@ The web console presents the user with a menu of backup scanning options (Just c
 
 6. **Staged VM Restore**: This option triggers a staged VM recovery on a specified ESXi server. The script will then run the provided staging script. If the script runs successfully, the VM is restored into production. Users need to input details such as the target ESXi server, VM name, backup job name, virtual lab name, staging script (full path), and credentials for the script.
 
+Please also refer to the information in the README document of the corresponding scan script.
+
 ![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/backup-scanning-tools/pictures/backup-scanning-tools-webconsole.png)
 
 
