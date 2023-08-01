@@ -2,7 +2,7 @@
 .NAME
    VBR Clean Restore
 .DESCRIPTION
-    This script facilitates a clean restore process for virtual machine backup data using Veeam Backup & Replication and Data Integration API.
+    This script facilitates the restore process for virtual machine backup data using Veeam Backup & Replication and Data Integration API.
     The script iterates through the restore points, attempting to find a clean restore point. If a clean restore point is found, 
     it initiates the restore (if selected). If not, it stops after the specified number of iterations.
 .NOTES  
