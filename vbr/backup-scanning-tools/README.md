@@ -14,7 +14,7 @@ This script is designed to provide a user-friendly, menu-driven web site for tri
 - Statistics:
 	- Number of started scans
 	- Number of scans during which malware was found
-	- Number of possible suspicious incremental backups 
+	- Number of possible suspicious incremental backups - see [`README`](https://github.com/yetanothermightytool/powershell/blob/master/vbr/vbr-job-scanner/README.md) for details.
 
 ## Prerequisites
 - PowerShell version 5.1
