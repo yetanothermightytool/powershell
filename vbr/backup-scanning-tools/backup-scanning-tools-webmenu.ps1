@@ -504,7 +504,7 @@ $menuHtml = @"
         <input type="text" id="param3-1" class="parameter-input">
 
         <label for="param4-1">SSH key path & file name:</label>
-        <input type="text" id="param4-1" class="parameter-input" placeholder="D:\Scripts\opensshkey.key">
+        <input type="text" id="param4-1" class="parameter-input">
 
         <label for="restoreAV">Restore:</label>
         <input type="checkbox" id="restoreAV-1" value="true" data-restore="false">
