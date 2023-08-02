@@ -169,11 +169,14 @@ if ($infectedFilesLine.Count -eq "") {
         if ($Restore -and $selectedRp.GetPlatform() -eq "EVmware"){
         Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - YaMT Secure Restore" -ToOriginalLocation -StoragePolicyAction Default"
         $infectionFound = $false
-        Unpublish-VBRBackupContent -Session $session 
         }  
    }
 
 }
+
+# Unpublish the backup session
+Unpublish-VBRBackupContent -Session $session 
+
 # Increment the restorePointID only if infection is found
   if ($infectionFound) {
       $restorePointID++
