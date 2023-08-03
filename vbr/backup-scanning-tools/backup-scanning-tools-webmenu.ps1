@@ -504,7 +504,7 @@ $menuHtml = @"
         <input type="text" id="param3-1" class="parameter-input">
 
         <label for="param4-1">SSH key path & file name:</label>
-        <input type="text" id="param4-1" class="parameter-input">
+        <input type="text" id="param4-1" class="parameter-input" placeholder="D:\Scripts\opensshkey.key">
 
         <label for="restoreAV">Restore:</label>
         <input type="checkbox" id="restoreAV-1" value="true" data-restore="false">
@@ -811,7 +811,7 @@ $menuHtml = @"
             var dialog3 = document.getElementById('parameterDialog3');
             var dialog4 = document.getElementById('parameterDialog4');
             var dialog5 = document.getElementById('parameterDialog5');
-            var dialog5 = document.getElementById('parameterDialog6');
+            var dialog6 = document.getElementById('parameterDialog6');
     
             dialog1.style.display = 'none';
             dialog2.style.display = 'none';
