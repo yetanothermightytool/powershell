@@ -19,8 +19,8 @@ This script connects to a Veeam Backup & Replication server to retrieve Active D
 
 Customize the following variables in the Variables section of the script:
 
-$baselineJsonFilePath: Location where to store the baseline json files.
-$resultJsonFilePath:   Location where to store the result json files.
+`$baselineJsonFilePath` Location where to store the baseline json files.
+`$resultJsonFilePath`   Location where to store the result json files.
 
 ## Parameters
  
