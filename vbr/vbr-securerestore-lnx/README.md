@@ -18,6 +18,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 ## Purpose
 
 This script scans the selected system before performing the restore (restore for VMs only). It uses the Veeam Data Integration API and presents the backup on the Linux server with ClamAV installed. If a virus is found, the desired restore process is not executed.
+
 ## Parameters
  
   `Mounthost`
@@ -27,7 +28,7 @@ _(mandatory)_ Name of the Linux server with ClamAV installed
 _(mandatory)_ Name of the Linux VM to be scanned and restored
 
   `Jobname`
-_(mandatory)_ Name of the Veeam Backup Job protecting the Linux VM
+_(mandatory)_ Name of the Veeam Backup Job
 
   `Keyfile`
 _(mandatory)_ Path to the key file
