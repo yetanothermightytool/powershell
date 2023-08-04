@@ -252,10 +252,10 @@ $infected_file = $infected_file_candidate.Trim()
 
 if ($commandresult -match "Infected files: 0") {
         Write-Host "No infected files found." -ForegroundColor White
-        BackupScan-Logentry -Message "Info - Secure Restore - Data Integration API via iSCSI - No threads were found."
+        BackupScan-Logentry -Message "Info - Secure Restore - Data Integration API via iSCSI - No threads were found. Restore Point $restorePointCreationTime"
         
         if ($Restore -and $selectedRp.GetPlatform() -eq "EVmware"){
-        Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Clean Restore - Secure Restore - Data Integration API via iSCSI" -ToOriginalLocation -StoragePolicyAction Default"
+        Write-Host "Start-VBRRestoreVM -RestorePoint $restorePoint -Reason "Secure Restore - Data Integration API via iSCSI" -ToOriginalLocation -StoragePolicyAction Default"
         }
         } else {
 
@@ -263,7 +263,7 @@ if ($commandresult -match "Infected files: 0") {
         Write-Host "Infected file(s) detected" -ForegroundColor Yellow
         Write-Host ""
         Write-Host $infected_file "" -ForegroundColor Yellow
-        BackupScan-Logentry -Message "Warning - Secure Restore - Data Integration API via iSCSI - Scanning ended - Result: $infected_file"
+        BackupScan-Logentry -Message "Warning - Secure Restore - Data Integration API via iSCSI - Scanning ended - Result: $infected_file - Restore Point $restorePointCreationTime"
         }
 
 # Start cleaning up
