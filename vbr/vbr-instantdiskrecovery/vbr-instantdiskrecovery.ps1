@@ -13,7 +13,7 @@ Param(
     
 Clear-Host
 # Variables
-$host.ui.RawUI.WindowTitle = "VBR Instant Disk Recovery"
+$host.ui.RawUI.WindowTitle = "VBR Instant VM Disk Recovery"
 
 # Connect VBR Server
 Connect-VBRServer -Server localhost
@@ -22,11 +22,10 @@ Connect-VBRServer -Server localhost
 function BackupScan-Logentry {
     param (
         [string]$Message
-    )
-
+        )
     $timestamp = Get-Date -Format "dd-MM-yyyy HH:mm:ss"
-    $logEntry = "$timestamp - $Message"
-    Add-Content -Path $LogFilePath -Value $logEntry
+    $logEntry = "$timestamp - $Message - Scanning Restore Point $Scanhost *** $($restorePointCreationTime.ToString("dd-MM-yyyy HH:mm:ss"))"
+    Add-Content -Path $logFilePath -Value $logEntry
 }
 
 # function to list restore points
@@ -71,6 +70,9 @@ do { [int]$restorePointID = Read-Host "Please select restore point (Id)" } until
 # Get the selected restore point
 $selectedRp        = $Result | Select-Object -Index $restorePointID
 
+# Store the restore point's creation time in a variable
+$restorePointCreationTime = $selectedRp.CreationTime
+
 # Prepare environment
 $mountVM           = Find-VBRViEntity -Name $Mounthost
 
@@ -81,7 +83,7 @@ $virtualDevice     = Get-VBRViVirtualDevice -RestorePoint $selectedRp
 #$virtualDevice     = Set-VBRViVirtualDevice -VirtualDevice $virtualDevice -ControllerNumber 0 -Type SCSI -VirtualDeviceNode 5
 
 # Start Instant VM Disk Recovery
-BackupScan-Logentry -Message "Info - Instant Disk Recovery - Scanning started"
+BackupScan-Logentry -Message "Info - Instant VM Disk Recovery - Scanning started"
 $instantRecovery   = Start-VBRViInstantVMDiskRecovery -RestorePoint $selectedRp -TargetVM $mountVM -TargetVirtualDevice $virtualDevice -Reason "Backup Scanning Tools Scan"
 
 # Connect to vCenter Server 
@@ -90,9 +92,6 @@ Connect-VIServer -Server $vCenter | Out-Null
 # Start VM
 start-vm -VM $Mounthost | Out-Null
 
-# Disconnect from vCenter Server
-Disconnect-VIServer -Confirm:$false
-
 # Wait for scan completion
 $input = $(Write-Host "Please start the scan in the VM. After completion press Enter to continue..." -NoNewLine -ForegroundColor White ; Read-Host)
 Write-Host ""
@@ -100,13 +99,19 @@ Write-Host "Was malware detected during the manual scan? (Y/N)?" -ForegroundColo
       $confirm   = Read-Host
       $confirmed = ($confirm -eq "Y" -or $confirm -eq "y")
           if ($confirmed) {
-             BackupScan-Logentry -Message "Warning - Instant Disk Recovery - Scanning ended - Threads found - Manually confirmed"
+             BackupScan-Logentry -Message "Warning - Instant VM Disk Recovery - Scanning ended - Threads found - Manually confirmed"
           } else {
-             BackupScan-Logentry -Message "Info - Instant Disk Recovery - Scanning ended - No threads were found"
+             BackupScan-Logentry -Message "Info - Instant VM Disk Recovery - Scanning ended - No threads were found"
           }
 
 # Stop Instant VM Disk Recovery Session
 Stop-VBRViInstantVMDiskRecovery -InstantRecovery $instantRecovery -Force
+
+# Stop VM
+Stop-VM -VM $Mounthost -Confirm:$false | Out-Null
+
+# Disconnect from vCenter Server
+Disconnect-VIServer -Confirm:$false
 
 # Disconnect from VBR Server
 Disconnect-VBRServer
