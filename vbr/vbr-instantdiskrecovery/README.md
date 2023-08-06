@@ -2,7 +2,7 @@
 
 ## Version Information
 ~~~~
-Version: 1.1 (July 30th 2023)
+Version: 1.2 (August 6th 2023)
 Requires: Veeam Backup & Replication v12 
 Author: Stephan "Steve" Herzig 
 GitHub: [https://www.github.com/yetanothermightytool](https://www.github.com/yetanothermightytool)
@@ -31,7 +31,7 @@ The script accepts the following parameters:
 
 ## Usage
 
-Execute the script with the required parameters:
+Execute the script using the required parameters:
 
 ```powershell
 .\InstantVMRecovery.ps1 -Mounthost "TargetVM" -Scanhost "VMtoScan" -Jobname "BackupJob" -vCenter "vCenterServer" -LogfilePath D:\Temp
@@ -44,6 +44,10 @@ Replace the values with your specific VM names, backup job name, vCenter Server 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+* 1.2
+    * New logging format / used restore point is logged
+    * Stopping VM when stopping the script
+    * Corrected typos
 * 1.1
     * Logging function to log the activities
     * Manual confirmation if malware was found after the manual scan was performed
