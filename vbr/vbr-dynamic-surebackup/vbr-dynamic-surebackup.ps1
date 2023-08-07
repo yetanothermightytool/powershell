@@ -29,6 +29,8 @@ $VBRserver                      = "localhost"
  
 # Variables for function selectUntestedVMs
 [string]$VeeamBackupCounterFile = "<your path here>\VMtable.xml"
+# How many VMs should be tested at once?
+[int]$NumberofVMs = 1
  
 # Functions
 Function selectUntestedVMs
