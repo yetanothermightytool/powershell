@@ -167,7 +167,7 @@ Write-Host "Total clean files:     $cleanFilesCount" -ForegroundColor White
 Write-Host "End scanning" -ForegroundColor White
 }
 
-if ($foundHashes -eq 0){
+if ($foundHashes -eq 0 -or [string]::IsNullOrEmpty($foundHashes)){
 BackupScan-Logentry -Message "Info - VBR FLR - Hash Scanner - Scanning ended - No hash matches"
 }
 else{
