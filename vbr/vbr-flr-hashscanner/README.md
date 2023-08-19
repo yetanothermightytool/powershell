@@ -2,7 +2,7 @@
 
 ## Version Information
 ~~~~
-Version: 1.0 (August 2023)
+Version: 1.0 (August 19th 2023)
 Requires: Veeam Backup & Replication v12
 Author: Stephan "Steve" Herzig
 ~~~~
