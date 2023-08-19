@@ -57,7 +57,7 @@ _(mandatory)_ Days back for checking for the last successful backup
 `MaxBackupScans`
 _(mandatory)_ Number of simultaneous scans. A reserve of 30 seconds is added between scans.
 
-**Important: Do not run too many scan jobs at the same time. The list consumes quite a bit of memoryImportant: Do not run too many scan jobs at the same time** 
+**Important: Do not run too many scan jobs at the same time. The list consumes quite a bit of memory** 
 
   `Logname`
 _(optional)_ Log file location
