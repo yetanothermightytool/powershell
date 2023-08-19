@@ -18,7 +18,7 @@ The following subdirectories in the Users folder are scanned
 - AppData\Local\Google\Chrome\User Data\Default\Cache
 - AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
 
-The vbr-flr-auto-hashscanner.ps1 script automates the process of automatically scanning the Windows VMs included in a VM backup job. The number of VMs to be scanned simultaneously can be specified. The script tracks whether the VM from the job has already been scanned and tests the remaining VMs that have not yet been scanned (function from the dynamic SureBackup Job Script). If all VMs have been scanned, the script starts again from the beginning.
+The vbr-flr-auto-hashscanner.ps1 script automates the process of automatically scanning the Windows VMs included in a VM backup job. The number of VMs to be scanned simultaneously can be specified. It tracks whether the VM from the job has already been scanned and tests the remaining VMs that have not yet been scanned (function from the dynamic SureBackup Job Script). If all VMs have been scanned, the script starts again from the beginning.
 
 ## Prerequisites
 - Veeam Backup & Replication V12 Windows VM Backup
