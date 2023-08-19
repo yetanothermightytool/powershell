@@ -6,7 +6,7 @@ param (
 # Variables
 $refreshInMs               = "{0}000" -f $RefreshInterval
 $scanningToolsPath         = "D:\Scripts\vbr\scanningtools"
-$lineBreaks                = '<br>' * 10
+$lineBreaks                = '<br>' * 8
 $host.ui.RawUI.WindowTitle = "Backup Sanning Tools Webmenu"
 
 # Function to get the Warning Events from the Log file
@@ -24,68 +24,53 @@ function Get-Last10WarningEntries {
                 LogEntry = $logEntry
             }
         }
-
         $warningLines = $warningLines | Sort-Object { $_.DateTime }
-
         # Select the last 10 entries across multiple dates
         $warningLines = $warningLines | Select-Object -Last 10 | Sort-Object { $_.DateTime } -Descending
     }
-
-    $tableRows = @()
+    $tableRows        = @()
     $isGrayBackground = $true
 
     foreach ($warningLine in $warningLines) {
-        $warningEntry = $warningLine.LogEntry.ToString().Replace("<", "&lt;").Replace(">", "&gt;").Replace("&", "&amp;").Replace('"', "&quot;").Replace("'", "&#39;")
-        # Limit each line to 50 characters
-        $warningEntry = $warningEntry.Substring(0, [Math]::Min(200, $warningEntry.Length))
-
-        $backgroundColor = if ($isGrayBackground) { "lightgray" } else { "white" }
+        $warningEntry     = $warningLine.LogEntry.ToString().Replace("<", "&lt;").Replace(">", "&gt;").Replace("&", "&amp;").Replace('"', "&quot;").Replace("'", "&#39;")
+        # Limit each line to 200 characters
+        $warningEntry     = $warningEntry.Substring(0, [Math]::Min(200, $warningEntry.Length))
+        
+        $backgroundColor  = if ($isGrayBackground) { "lightgray" } else { "white" }
         $isGrayBackground = !$isGrayBackground
-
-        $tableRow = "<tr style='background-color: $backgroundColor;'><td>$warningEntry</td></tr>"
-        $tableRows += $tableRow
+        $tableRow         = "<tr style='background-color: $backgroundColor;'><td>$warningEntry</td></tr>"
+        $tableRows       += $tableRow
     }
-
     $table = "<table style='width: 100%;'><tbody>$($tableRows -join '')</tbody></table>"
     return $table
 }
 $warningLines = Get-Last10WarningEntries
 
-
-
-
 # Function get Info Events
 function Show-ScanEvents {
     $searchText            = "Scanning started"
-        
     $fileContent           = Get-Content -Path $logFilePath
-
     $currentTime           = Get-Date
-
     $filteredEntries       = $fileContent | Where-Object {
         $timestampString   = ($_ -split ' - ')[0]
         $entryTime         = [DateTime]::ParseExact($timestampString, "dd-MM-yyyy HH:mm:ss", $null)
         $currentTime.Subtract($entryTime).TotalHours -lt 168
     }
-
     $scanEventsCount       = ($filteredEntries | Select-String -Pattern $searchText -AllMatches).Matches.Count
 
     return $scanEventsCount
 }
+
 # Function get Warning Events
 function Show-ScanWarningEvents {
     $searchText = "Warning - "
-        
     $fileContent           = Get-Content -Path $logFilePath
-
     $currentTime           = Get-Date
-
     $filteredEntries       = $fileContent | Where-Object {
         $timestampString   = ($_ -split ' - ')[0]
         $entryTime         = [DateTime]::ParseExact($timestampString, "dd-MM-yyyy HH:mm:ss", $null)
         $currentTime.Subtract($entryTime).TotalHours -lt 168
     }
-
     $scanEventsCount       = ($filteredEntries | Select-String -Pattern $searchText -AllMatches).Matches.Count
 
     return $scanEventsCount
@@ -98,34 +83,27 @@ function Get-SuspiciousBackup {
         [string]$Depth,
         [Parameter(Mandatory = $false)]
         [string]$Growth
-    )
-
-    # Variables
+        )
     $suspiciousIncrBackups = @()
-    $bkpJobs = Get-VBRJob -WarningAction SilentlyContinue | Where-Object { $_.JobType -eq "Backup" }
+    $bkpJobs               = Get-VBRJob -WarningAction SilentlyContinue | Where-Object { $_.JobType -eq "Backup" }
 
     foreach ($bkpJob in $bkpJobs) {
         $bkpSession = Get-VBRBackupSession | Where-Object { $_.jobId -eq $bkpJob.Id.Guid } | Where-Object { $_.sessioninfo.SessionAlgorithm -eq "Increment" } | Sort-Object EndTimeUTC -Descending
 
         ### Backup Size Calculation ###
-        if ($Growth) {
-            # Put the information together
             $finalResult = @()
             for ($i = 0; $i -lt $bkpSession.Count; $i++) {
                 $sessDetails = $bkpSession[$i]
                 $finalResult += New-Object psobject -Property @{
                     TransferedSize = $sessDetails.sessioninfo.Progress.TransferedSize
-                    DurationSec    = $sessDetails.sessioninfo.Progress.Duration.TotalSeconds
+                    DurationSec    = $sessDetails.sessioninfo.Progress.Duration.TotalSeconds #Keeping this for the future
                     JobName        = $bkpJob.Name
                 }   
             }
-
             # Get the last x values (Depth) from the array
             $lastValues = $finalResult.TransferedSize[0..($Depth - 1)]
-
             # Calculate the average of the last x backups
             $average = ($lastValues | Measure-Object -Average).Average
-
             # Check if any of the last x backups are more than y% larger than the average
             if (($lastValues | Where-Object { $_ -gt $average * $Growth }).Count -gt 0) {
                 $suspiciousIncrBackups += New-Object psobject -Property @{
@@ -134,9 +112,42 @@ function Get-SuspiciousBackup {
                 }
             }
         }
-    }
-
     return $suspiciousIncrBackups
+}
+
+# function to just get the suspicious backup job names
+function Get-SuspiciousBackupJobNames {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Depth,
+        [Parameter(Mandatory = $false)]
+        [string]$Growth
+        )
+    $jobNames = @()
+    $bkpJobs  = Get-VBRJob -WarningAction SilentlyContinue | Where-Object { $_.JobType -eq "Backup" }
+
+    foreach ($bkpJob in $bkpJobs) {
+        $bkpSession = Get-VBRBackupSession | Where-Object { $_.jobId -eq $bkpJob.Id.Guid } | Where-Object { $_.sessioninfo.SessionAlgorithm -eq "Increment" } | Sort-Object EndTimeUTC -Descending
+
+        ### Backup Size Calculation ###
+            $finalResult = @()
+            for ($i = 0; $i -lt $bkpSession.Count; $i++) {
+                $sessDetails = $bkpSession[$i]
+                $finalResult += New-Object psobject -Property @{
+                    TransferedSize = $sessDetails.sessioninfo.Progress.TransferedSize
+                    JobName        = $bkpJob.Name
+                }   
+            }
+            # Get the last x values (Depth) from the array
+            $lastValues = $finalResult.TransferedSize[0..($Depth - 1)]
+            # Calculate the average of the last x backups
+            $average = ($lastValues | Measure-Object -Average).Average
+            # Check if any of the last x backups are more than y% larger than the average
+            if (($lastValues | Where-Object { $_ -gt $average * $Growth }).Count -gt 0) {
+                $jobNames += $bkpJob.Name
+            }
+        }
+     return $jobNames
 }
 
 # Function to log messages to the scaning tool log file
@@ -150,14 +161,7 @@ function Log-Message {
     Add-Content -Path $logFilePath -Value $logEntry
 }
 
-# Start http listener
-$listener = New-Object System.Net.HttpListener
-$listener.Prefixes.Add("http://localhost:$Port/")
-$listener.Start()
-Clear-Host
-Write-Host "Starting Backup Scanning Tools Web Server..."
-Write-Host "Web Server started. Listening for incoming requests on port $Port. Refresh interval $RefreshInterval"
-
+# Function for the different button actions
 function Process-MenuChoice {
     param (
         [string]$choice,
@@ -186,9 +190,10 @@ function Process-MenuChoice {
         [string]$param23,
         [string]$param24,
         [string]$param25,
-        [string]$param26
-    )
-   
+        [string]$param26,
+        [string]$param27,
+        [string]$param28
+        )
     switch ($choice) {
         # Secure Restore - AV scan
         1 {
@@ -197,12 +202,11 @@ function Process-MenuChoice {
         # Check if the tickbox (Restore) is checked
         if ($param20 -eq "true") {
             $arguments = "-Mounthost", $param1, "-Scanhost", $param2, "-Jobname", $param3, "-Keyfile", $param4, "-AVScan", "-Restore"
-        } else {
+                } else {
             $arguments = "-Mounthost", $param1, "-Scanhost", $param2, "-Jobname", $param3, "-Keyfile", $param4, "-AVScan"
-        }
-
-        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $arguments" -Wait
-        }
+            }
+            Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $arguments" -Wait
+          }
         # NAS AV Scan
         2 {
             $scriptPath = "$scanningToolsPath\vbr-nas-avscanner.ps1"
@@ -214,37 +218,49 @@ function Process-MenuChoice {
             $scriptPath = "$scanningToolsPath\vbr-securerestore.ps1"
             $arguments  = "-Mounthost", $param5, "-Scanhost", $param6, "-Jobname", $param7, "-Keyfile", $param8, "-YARAScan"
             Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $arguments" -Wait
-        }
+          }
         # Instant VM Disk Recovery - Scan from booted ISO Image 
         4 {
             $scriptPath = "$scanningToolsPath\vbr-instantdiskrecovery.ps1"
             $arguments  = "-Mounthost", $param10, "-Scanhost", $param11, "-Jobname", $param12, "-vCenter", $param13
             Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $arguments" -Wait
-        }
+          }
         # Staged VM Restore
         5 {
             $scriptPath = "$scanningToolsPath\vbr-staged-restore.ps1"
             $arguments  = "-ESXiServer", $param14, "-VMName", $param15, "-Jobname", $param16, "-VirtualLab", $param17, "-StagingScript", $param18, "-Credentials", $param19
             Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $arguments" -Wait
-        }
+          }
         # Clean Restore - AV scan
         6 {
         $scriptPath = "$scanningToolsPath\vbr-cleanrestore.ps1"
-
         # Check if the tickbox (Restore) is checked
         if ($param26 -eq "true") {
             $arguments = "-Mounthost", $param21, "-Scanhost", $param22, "-Jobname", $param23, "-Keyfile", $param24, "-MaxIterations", $param25, "-AVScan", "-Restore"
-        } else {
+            } else {
             $arguments = "-Mounthost", $param21, "-Scanhost", $param22, "-Jobname", $param23, "-Keyfile", $param24, "-MaxIterations", $param25, "-AVScan"
-        }
-
-        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $arguments" -Wait
-        }
-
-        default { return "Invalid choice." }
-    }
+            }
+            Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $arguments" -Wait
+          }
+        # FLR Hashscanner
+        7 {
+            $scriptPath = "$scanningToolsPath\vbr-flr-hashscanner.ps1"
+            $arguments  = "-VM", $param27, "-JobName", $param28
+            Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $arguments" -Wait
+          }
+           default { return "Invalid choice." }
+          }
 }
 
+# Start http listener
+$listener = New-Object System.Net.HttpListener
+$listener.Prefixes.Add("http://localhost:$Port/")
+$listener.Start()
+Clear-Host
+Write-Host "Starting Backup Scanning Tools Web Server..."
+Write-Host "Web Server started. Listening for incoming requests on port $Port. Refresh interval $RefreshInterval"
+
+# The HTML Website is defined down below
 $menuHtml = @"
 <!DOCTYPE html>
 <html>
@@ -307,25 +323,43 @@ $menuHtml = @"
                justify-content: space-between;
             }
             .suspicious-backup-container {
-               position: absolute;
-               width: 220px; 
-               height: 75px;
-               bottom: 50px;
-               left: 540px;
-               background-color: #E1E1E3;
-               color: #5132EE;
-               padding: 8px 16px;
-               border-radius: 15px;
-               font-size: 16px;
-               font-weight: bold;
-               display: flex;
-               flex-direction: column;
-               align-items: center; 
-               justify-content: space-between;
+                position: absolute;
+                width: 220px;
+                height: 75px;
+                bottom: 50px;
+                left: 540px;
+                background-color: #E1E1E3;
+                color: #5132EE;
+                padding: 8px 16px;
+                border-radius: 15px;
+                font-size: 16px;
+                font-weight: bold;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-between;
             }
-            .scan-count,
-            .scan-warning-count,
             .suspicious-backup-count {
+                font-size: 24px;
+                font-weight: bold;
+                color: #5132EE;
+            }
+            .suspicious-backup-data {
+                display: none;
+                font-size: 16px;
+                background-color: #333;
+                color: #fff;
+                padding: 5px;
+                position: absolute;
+                bottom: 100%;
+                left: 0;
+                width: 100%;
+                width: 500px;
+                white-space: pre-wrap; 
+            }
+
+            .scan-count,
+            .scan-warning-count {
                 font-size: 24px;
                 font-weight: bold;
                 color: #5132EE;
@@ -353,6 +387,7 @@ $menuHtml = @"
                 color: #fff;
                 border-radius: 5px;
                 font-size: 16px;
+                z-index: 1;
             }
             .header:hover .help-tooltip {
                 display: block; 
@@ -439,6 +474,26 @@ $menuHtml = @"
             .parameter-submit:active {
                 background-color: #3e8e41;
             }
+            .scrolling-text-container {
+            background-color:#E1E1E3;
+            overflow: hidden;
+            backface-visibility: hidden;
+            will-change: transform;
+            }
+            .scrolling-text {
+            color: #4CAF50;
+            font-size: 20px;
+            white-space: nowrap;
+            animation: marquee 30s linear infinite;
+            }
+            @keyframes marquee {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+              }
+           }
             .timestamp {
                 position: fixed;
                 bottom: 0;
@@ -457,17 +512,18 @@ $menuHtml = @"
         <div class="help-tooltip">
             <p>A collection of all the available backup scanning tools from the YAMT repository.</p>
             <p>It allows the user to choose from a number of options, each corresponding to a specific type of backup scan.</p>
-            <p>Click a buttons to perform a scan.</p>
+            <p>Click on a button to perform a scan.</p>
         </div>
         </div>
         </div>
-         <div class="button-container">
+        <div class="button-container">
             <button class="button" onclick="showParameterDialog(1)">Secure Restore - AV scan</button>
             <button class="button" onclick="showParameterDialog(6)">Clean Restore - AV scan</button>
             <button class="button" onclick="showParameterDialog(3)">YARA Backup Scan</button>
             <button class="button" onclick="showParameterDialog(2)">NAS Backup AV Scan</button>
             <button class="button" onclick="showParameterDialog(4)">Instant VM Disk Recovery</button>
             <button class="button" onclick="showParameterDialog(5)">Staged VM Restore</button>
+            <button class="button" onclick="showParameterDialog(7)">FLR Hashscanner</button>
         </div>
         $lineBreaks
         <h2>Last 10 Scan Warnings</h2>
@@ -482,13 +538,13 @@ $menuHtml = @"
         </div>
         <div class="suspicious-backup-container">
             <span>Suspicious Incr VM Backups</span>
-            <span class="scan-warning-count" id="SuspiciousBackupCount">Loading...</span>
+            <span class="suspicious-backup-count" id="SuspiciousBackupCount">Loading...</span>
+            <span class="suspicious-backup-data" id="SuspiciousBackupData"></span>
         </div>
-            <div class="timestamp">
-            V1.0 - Last refresh: $((Get-Date).ToString("dd-MM-yyyy HH:mm:ss")) 
+        <div class="timestamp">
+            V1.1 - Last refresh: $((Get-Date).ToString("dd-MM-yyyy HH:mm:ss")) 
         </div>
         
-                
 <!-- Parameter Dialog for Secure Restore - AV scan (Hidden by default) -->
 <div id="parameterDialog1" class="parameter-dialog">
     <div class="parameter-dialog-content">
@@ -635,6 +691,24 @@ $menuHtml = @"
     </div>
 </div>
 
+<!-- Parameter Dialog for FLR hashscanner (Hidden by default) -->
+<div id="parameterDialog7" class="parameter-dialog">
+    <div class="parameter-dialog-content">
+        <p style="font-weight: bold;">FLR Hashscanner</p>
+        <p>This Powershell script scans specific subfolders within a Veeam File Level Recovery session and checks if any of the scanned files match a SHA256 value by comparing the values to a list of known hash values. </p>
+        <label for="param27-1">Windows VM to scan:</label>
+        <input type="text" id="param27-1" class="parameter-input">
+
+        <label for="param28-1">Backup Job Name:</label>
+        <input type="text" id="param28-1" class="parameter-input">
+        
+        <!-- Submit and cancel buttons -->
+        <button class="parameter-submit" onclick="sendChoice(7)">Submit</button>
+        <button class="parameter-submit" onclick="closeParameterDialog()">Cancel</button>
+    </div>
+</div>
+
+
 <script>
         function updateTextColor(element) {
                     if (parseInt(element.innerText) > 0) {
@@ -682,27 +756,7 @@ $menuHtml = @"
             fetchWarningEventCount();
         });
 
-        function fetchSuspiciousBackupCount() {
-        fetch("http://localhost:8080/SuspiciousBackupCount")
-            .then(response => response.text())
-            .then(SuspiciousBackupCount => {
-                var warningEventCountElement = document.getElementById("SuspiciousBackupCount");
-                warningEventCountElement.textContent = SuspiciousBackupCount;
-                updateTextColor(warningEventCountElement);
-                
-            })
-            .catch(error => {
-                alert("Failed to fetch data. Please try again later.");
-                console.error(error);
-            });
-        }
-
-        // Fetch the warning event count when the page is loaded
-        window.addEventListener("load", function () {
-            fetchSuspiciousBackupCount();
-        });
-
-      function updateLast10Warnings() {
+       function updateLast10Warnings() {
             fetch("http://localhost:8080/last10WarningEntries")
               .then(response => response.text())
               .then(tableHtml => {
@@ -719,8 +773,57 @@ $menuHtml = @"
           window.addEventListener("load", function () {
             updateLast10Warnings();
           });
+    
+        let isDataFetched = false; // Keep track of whether data has been fetched
 
-                
+        function fetchSuspiciousBackupCount() {
+            fetch("http://localhost:8080/SuspiciousBackupCount")
+                .then(response => response.text())
+                .then(SuspiciousBackupCount => {
+                    const countElement = document.getElementById("SuspiciousBackupCount");
+                    countElement.textContent = SuspiciousBackupCount;
+                    updateTextColor(countElement);
+                })
+                .catch(error => {
+                    alert("Failed to fetch data. Please try again later.");
+                    console.error(error);
+                });
+        }
+
+        function fetchSuspiciousBackupData() {
+            fetch("http://localhost:8080/SuspiciousBackupJobNames")
+                .then(response => response.text())
+                .then(data => {
+                    const customText = "Job Name(s): ";
+                    const jobNames = data.trim().split('\n');
+
+                    const dataElement = document.getElementById("SuspiciousBackupData");
+                    dataElement.innerText = customText + jobNames.join(" // ");
+                })
+                .catch(error => {
+                    alert("Failed to fetch data. Please try again later.");
+                    console.error(error);
+                });
+        }
+
+        fetchSuspiciousBackupCount();
+
+        // Hovering fetch
+        const container = document.querySelector(".suspicious-backup-container");
+        const dataElement = document.getElementById("SuspiciousBackupData");
+
+        container.addEventListener("mouseenter", () => {
+            if (!isDataFetched) {
+                fetchSuspiciousBackupData();
+                isDataFetched = true;
+            }
+            dataElement.style.display = "block";
+        });
+
+        container.addEventListener("mouseleave", () => {
+            dataElement.style.display = "none";
+        });
+
         function showParameterDialog(choice) {
             var dialog1 = document.getElementById('parameterDialog1');
             var dialog2 = document.getElementById('parameterDialog2');
@@ -728,6 +831,7 @@ $menuHtml = @"
             var dialog4 = document.getElementById('parameterDialog4');
             var dialog5 = document.getElementById('parameterDialog5');
             var dialog6 = document.getElementById('parameterDialog6');
+            var dialog7 = document.getElementById('parameterDialog7');
         if (choice === 1) {
             dialog1.style.display = 'block';
             dialog2.style.display = 'none';
@@ -735,6 +839,8 @@ $menuHtml = @"
             dialog4.style.display = 'none';
             dialog5.style.display = 'none';
             dialog6.style.display = 'none';
+            dialog7.style.display = 'none';
+            
             // Reset the input fields for Secure Restore - AV scan
             document.getElementById('param1-1').value = '';
             document.getElementById('param2-1').value = '';
@@ -748,6 +854,7 @@ $menuHtml = @"
             dialog4.style.display = 'none';
             dialog5.style.display = 'none';
             dialog6.style.display = 'none';
+            dialog7.style.display = 'none';
             // Reset the input fields for NAS AV Scan
             document.getElementById('param9-2').value = '';
         } else if (choice === 3) {
@@ -757,6 +864,7 @@ $menuHtml = @"
             dialog4.style.display = 'none';
             dialog5.style.display = 'none';
             dialog6.style.display = 'none';
+            dialog7.style.display = 'none';
         // Reset the input fields for Secure Restore - YARA Scan
             document.getElementById('param5-1').value = '';
             document.getElementById('param6-1').value = '';
@@ -769,6 +877,7 @@ $menuHtml = @"
             dialog4.style.display = 'block';
             dialog5.style.display = 'none';
             dialog6.style.display = 'none';
+            dialog7.style.display = 'none';
         // Reset the input fields for Instant Disk Recovery
             document.getElementById('param10-1').value = '';
             document.getElementById('param11-1').value = '';
@@ -781,6 +890,7 @@ $menuHtml = @"
             dialog4.style.display = 'none';
             dialog5.style.display = 'block';
             dialog6.style.display = 'none';
+            dialog7.style.display = 'none';
         // Reset the input fields for Staged VM Restore
             document.getElementById('param14-1').value = '';
             document.getElementById('param15-1').value = '';
@@ -795,6 +905,7 @@ $menuHtml = @"
             dialog4.style.display = 'none';
             dialog5.style.display = 'none';
             dialog6.style.display = 'block';
+            dialog7.style.display = 'none';
         // Reset the input fields for Clean Restore
             document.getElementById('param21-1').value = '';
             document.getElementById('param22-1').value = '';
@@ -802,9 +913,21 @@ $menuHtml = @"
             document.getElementById('param24-1').value = '';
             document.getElementById('param25-1').value = '';
             document.getElementById('cleanRestore-1').checked = false;
+        }  else if (choice === 7) {
+            dialog1.style.display = 'none';
+            dialog2.style.display = 'none';
+            dialog3.style.display = 'none';
+            dialog4.style.display = 'none';
+            dialog5.style.display = 'none';
+            dialog6.style.display = 'none';
+            dialog7.style.display = 'block';
+        // Reset the input fields for Clean Restore
+            document.getElementById('param27-1').value = '';
+            document.getElementById('param28-1').value = '';
         }
-}
 
+
+}
         function closeParameterDialog() {
             var dialog1 = document.getElementById('parameterDialog1');
             var dialog2 = document.getElementById('parameterDialog2');
@@ -812,6 +935,7 @@ $menuHtml = @"
             var dialog4 = document.getElementById('parameterDialog4');
             var dialog5 = document.getElementById('parameterDialog5');
             var dialog6 = document.getElementById('parameterDialog6');
+            var dialog7 = document.getElementById('parameterDialog7');
     
             dialog1.style.display = 'none';
             dialog2.style.display = 'none';
@@ -819,10 +943,11 @@ $menuHtml = @"
             dialog4.style.display = 'none';
             dialog5.style.display = 'none';
             dialog6.style.display = 'none';
+            dialog7.style.display = 'none';
         }
 
     function sendChoice(choice) {
-        var param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16, param17, param18, param19, param20, param21, param22, param23, param24, param25, param26;
+        var param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16, param17, param18, param19, param20, param21, param22, param23, param24, param25, param26, param27, param28;
         var xhr = new XMLHttpRequest();
 
         if (choice === 1) {
@@ -843,7 +968,7 @@ $menuHtml = @"
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         alert("Script executed successfully!");
-                        console.log(xhr.responseText); // Log the response from the server - just for truuubleshuuting
+                        console.log(xhr.responseText); 
                         closeParameterDialog();
                     } else {
                         alert("Failed to execute the script. Please try again later.");
@@ -863,11 +988,11 @@ $menuHtml = @"
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         alert("Script executed successfully!");
-                        console.log(xhr.responseText); // Log the response from the server - Truubleshuuting
+                        console.log(xhr.responseText);
                         closeParameterDialog();
                     } else {
                         alert("Failed to execute the script. Please try again later.");
-                        console.error(xhr.responseText); // Log any error response from the server
+                        console.error(xhr.responseText);
                     }
                 }
             };
@@ -886,11 +1011,11 @@ $menuHtml = @"
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         alert("Script executed successfully!");
-                        console.log(xhr.responseText); // Log the response from the server
+                        console.log(xhr.responseText); 
                         closeParameterDialog();
                     } else {
                         alert("Failed to execute the script. Please try again later.");
-                        console.error(xhr.responseText); // Log any error 
+                        console.error(xhr.responseText); 
                     }
                 }
             };
@@ -934,11 +1059,11 @@ $menuHtml = @"
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         alert("Script executed successfully!");
-                        console.log(xhr.responseText); // Log the response from the server
+                        console.log(xhr.responseText);
                         closeParameterDialog();
                     } else {
                         alert("Failed to execute the script. Please try again later.");
-                        console.error(xhr.responseText); // Log any error 
+                        console.error(xhr.responseText);
                     }
                 }
             };
@@ -961,6 +1086,28 @@ $menuHtml = @"
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         alert("Script executed successfully!");
+                        console.log(xhr.responseText);
+                        closeParameterDialog();
+                    } else {
+                        alert("Failed to execute the script. Please try again later.");
+                        console.error(xhr.responseText);
+                    }
+                }
+            };
+
+          } else if (choice === 7) {
+            param27 = document.getElementById('param27-1').value;
+            param28 = document.getElementById('param28-1').value;
+            
+            if (!param27 || !param28) {
+                alert("Please fill in all parameters.");
+                return;
+            }
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        alert("Script executed successfully!");
                         console.log(xhr.responseText); // Log the response from the server - just for truuubleshuuting
                         closeParameterDialog();
                     } else {
@@ -969,12 +1116,9 @@ $menuHtml = @"
                     }
                 }
             };
-
-
-
+            
         }   xhr.open("POST", "http://localhost:8080/processChoice", true);
             xhr.setRequestHeader("Content-Type", "application/json");
-
         var data = {
             choice: choice,
             param1: param1,
@@ -1002,12 +1146,12 @@ $menuHtml = @"
             param23: param23,
             param24: param24,
             param25: param25,
-            param26: param26
+            param26: param26,
+            param27: param27,
+            param28: param28
         };
-
         xhr.send(JSON.stringify(data));
     }
-
     </script>
   </body>
 </html>
@@ -1030,34 +1174,42 @@ while ($true) {
             $response.OutputStream.Write($buffer, 0, $buffer.Length)
             $response.Close()
         } elseif ($url -eq "/eventCount") {
-            # Return the event count
             $response.Headers.Add("Content-Type", "text/plain; charset=utf-8")
             $eventCount = Show-ScanEvents
             $buffer = [System.Text.Encoding]::UTF8.GetBytes($eventCount.ToString())
             $response.OutputStream.Write($buffer, 0, $buffer.Length)
             $response.Close()
         } elseif ($url -eq "/warningEventCount") {
-            # Return the warning event count
             $response.Headers.Add("Content-Type", "text/plain; charset=utf-8")
             $eventCount = Show-ScanWarningEvents
             $buffer = [System.Text.Encoding]::UTF8.GetBytes($eventCount.ToString())
             $response.OutputStream.Write($buffer, 0, $buffer.Length)
             $response.Close()
         } elseif ($url -eq "/SuspiciousBackupCount") {
-            # Return the suspicious incremental backup count
             $response.Headers.Add("Content-Type", "text/plain; charset=utf-8")
+            # Depth and Growth can be adjusted here
             $eventCount = Get-SuspiciousBackup -Depth 5 -Growth 1.8
             $buffer = [System.Text.Encoding]::UTF8.GetBytes($eventCount.Count.ToString())
             $response.OutputStream.Write($buffer, 0, $buffer.Length)
             $response.Close()
-        } elseif ($url -eq "/last10WarningEntries") {
+        } elseif ($url -eq "/SuspiciousBackupJobNames") {
+            $response.Headers.Add("Content-Type", "text/plain; charset=utf-8")
+            # Depth and Growth can be adjusted here
+            $jobNames = Get-SuspiciousBackupJobNames -Depth 5 -Growth 1.8
+            if ($jobNames -ne $null -and $jobNames.Length -gt 0) {
+                $buffer = [System.Text.Encoding]::UTF8.GetBytes($jobNames -join "`n")  # Join with line breaks
+                $response.OutputStream.Write($buffer, 0, $buffer.Length)
+            } else {
+                $response.OutputStream.Write([System.Text.Encoding]::UTF8.GetBytes(""), 0, 0)
+            }
+            $response.Close()
+       } elseif ($url -eq "/last10WarningEntries") {
             $response.Headers.Add("Content-Type", "text/html; charset=utf-8")
             $last10Warnings = Get-Last10WarningEntries
             $buffer = [System.Text.Encoding]::UTF8.GetBytes($last10Warnings)
             $response.OutputStream.Write($buffer, 0, $buffer.Length)
             $response.Close()
         } elseif ($request.Url.LocalPath -eq '/scanner.png') {
-            # Respond with the image file
             $imagePath = "D:\Scripts\vbr\scanningtools\scanner.png"
             $imageBuffer = [System.IO.File]::ReadAllBytes($imagePath)
             $response.ContentType = "image/png"
@@ -1104,12 +1256,12 @@ while ($true) {
         $param24 = $formDataObj.param24
         $param25 = $formDataObj.param25
         $param26 = $formDataObj.param26
-        $menuResult = Process-MenuChoice -choice $choice -param1 $param1 -param2 $param2 -param3 $param3 -param4 $param4 -param5 $param5 -param6 $param6 -param7 $param7 -param8 $param8 -param9 $param9 -param10 $param10 -param11 $param11 -param12 $param12 -param13 $param13 -param14 $param14 -param15 $param15 -param16 $param16 -param17 $param17 -param18 $param18 -param19 $param19 -param20 $param20 -param21 $param21 -param22 $param22 -param23 $param23 -param24 $param24 -param25 $param25 -param26 $param26
-
+        $param27 = $formDataObj.param27
+        $param28 = $formDataObj.param28
+        $menuResult = Process-MenuChoice -choice $choice -param1 $param1 -param2 $param2 -param3 $param3 -param4 $param4 -param5 $param5 -param6 $param6 -param7 $param7 -param8 $param8 -param9 $param9 -param10 $param10 -param11 $param11 -param12 $param12 -param13 $param13 -param14 $param14 -param15 $param15 -param16 $param16 -param17 $param17 -param18 $param18 -param19 $param19 -param20 $param20 -param21 $param21 -param22 $param22 -param23 $param23 -param24 $param24 -param25 $param25 -param26 $param26 -param27 $param27 -param28 $param28
         if ([string]::IsNullOrEmpty($menuResult)) {
         $menuResult = "No data available."
         }
-        
         $response.Headers.Add("Content-Type", "text/plain; charset=utf-8")
         $buffer = [System.Text.Encoding]::UTF8.GetBytes($menuResult) 
         $response.OutputStream.Write($buffer, 0, $buffer.Length)
