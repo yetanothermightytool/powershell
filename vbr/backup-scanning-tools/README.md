@@ -2,7 +2,7 @@
 
 ## Version Information
 ~~~~
-Version: 1.0 (August 1st 2023)
+Version: 1.1 (August 19th 2023)
 Requires: Veeam Backup & Replication v12 / Scanning Tools downloaded (see Prerequisites)
 Author: Stephan "Steve" Herzig
 ~~~~
@@ -86,6 +86,8 @@ The web console presents the user with a menu of backup scanning options (Just c
 
 6. **Staged VM Restore**: This option triggers a staged VM recovery on a specified ESXi server. The script will then run the provided staging script. If the script runs successfully, the VM is restored into production. Users need to input details such as the target ESXi server, VM name, backup job name, virtual lab name, staging script (full path), and credentials for the script.
 
+7. **FLR Hashscanner**: This option triggers a File Level Restore of a specific Windows VM. The script then scans specific subfolders within this Veeam File Level Recovery session and checks if any of the scanned files match a SHA256 value by comparing the values to a list of known hash values (This list needs to be downloaded in advance).
+
 Please also refer to the information in the README document of the corresponding scan script.
 
 ![alt text](https://github.com/yetanothermightytool/powershell/blob/master/vbr/backup-scanning-tools/pictures/backup-scanning-tools-webconsole.png)
@@ -102,5 +104,8 @@ The user needs to run the script, and the menu with the listed options will be d
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+* 1.1
+    * Added the FLR Hashscanner script
+    * Updatied the installer to get the newly added scanning tools.	 
 * 1.0
     * Initial Release Web Console
