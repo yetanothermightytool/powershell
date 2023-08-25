@@ -1,18 +1,18 @@
 # Veeam Backup for Microsoft 365 Exchange Online Mailbox Recovery Tool
-A Powershell script to recover items from specified mailboxes from the lastest VB365 Exchange Online Restore point to another Microsoft organization.
+A Powershell script to recover items from specified mailboxes from the lastest VB365 Exchange Online Restore point to another Microsoft organization or to a local Exchange server.
 
 
 ## Description
 ~~~~
-Version : 1.1 (January 23, 2023)
-Requires: Veeam Backup for Microsoft 365 v6 or later
+Version : 1.2 (August 25th, 2023)
+Requires: Veeam Backup for Microsoft 365 v6 or later, Destination M365 Organization or a local Exchange server
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
 ~~~~
 
 ## Prerequisites
 
-- The mailboxes to be restored must be provided in a CSV file and present on the destination tenant - See CSV File Structure
+- The mailboxes to be restored must be provided in a CSV file and present on the destination tenant or the destination Exchange server- See CSV File Structure
 - An configured Azure AD application at the destination M365 tenant with the appropriate rights
   See https://helpcenter.veeam.com/docs/vbo365/guide/ad_app_permissions_sd.html
 - The exported certificate (.pfx) of the Azure AD application
@@ -28,22 +28,36 @@ SourceMbx | DestMbxName | DestOrg
 `SrcVB365Org`
 _(mandatory)_ Source VB365 Organization name
 
+`RestoreList`
+_(mandatory)_ Path and file name .csv file.
+
+`RestoreLocal`
+_(mandatory)_ Switch to restore to a local Exchange Server
+
+`LocalExchangeSrv`
+_(mandatory)_ Hostname or IP address of Exchange Server with Client Access Server (CAS) role. 
+
+`RestoreM365`
+_(mandatory)_ Switch to restore to another M365 Organization
+
 `DstAppId`
 _(mandatory)_ Destination Microsoft Azure tenant Application (client)ID
 
 `DstAppCertFile`
 _(mandatory)_ Path and file name .pfx file (Application certificate)
-
-`RestoreList`
-_(mandatory)_ Path and file name .csv file.
   
 ## Example
+```powershell
+.\vb365-exo-recovery.ps1 -SrcVB365Org Organization -RestoreList C:\Temp\migrator.csv -RestoreM365 -DstAppId <your-id> -DstAppCertFile C:\temp\cert.pfx  
+```
 
-`PS> .\vb365-exo-recovery.ps1 -SrcVB365Org Organization -DstAppId <your-id> -DstAppCertFile C:\temp\cert.pfx -RestoreList C:\Temp\migrator.csv`  
+```powershell
+.\vb365-exo-recovery.ps1 -SrcVB365Org Organization -RestoreList C:\Temp\migrator.csv -RestoreLocal -LocalExchangeSrv cas.yourdomain.tld
+```
 
-Note: After you have executed the command, you must enter the certificate password!
+Note: After you have executed the command, you must enter the certificate password or the user and password for accessing the CAS server!
 
-## Output - Example with Backup Data on Object Storage Repository
+## Example output
 
 | Processed Mailboxes | Created Items | Skipped Items  | Failed Items
 | :---:               | :---:         | :---:          | :---: 
@@ -61,11 +75,11 @@ Failed Items  = Something went wrong. Please check the Exchange Explorer Log Fil
 ## Notes
 
 This script has been tested with the following versions of Veeam Backup for Office 365:
-  - v6.0 (latest)
-  - v7.0 (BETA)
+  - v7.0 (latest)
 
 ## Version History
-
+* 1.2
+    * Adding LocalRestore option
 * 1.1
     * Use modern authentication only
         
