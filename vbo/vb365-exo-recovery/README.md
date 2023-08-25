@@ -24,6 +24,8 @@ SourceMbx | DestMbxName | DestOrg
 "Joe Doe" | joed@M365x123456.onmicrosoft.com | M365x123456.onmicrosoft.com
 "Monitoring" | monitoring@M365x123456.onmicrosoft.com |M365x123456.onmicrosoft.com
 
+Note: DestOrg only used for Restore into Microsoft 365
+
 ## Parameters
 `SrcVB365Org`
 _(mandatory)_ Source VB365 Organization name
