@@ -1,5 +1,5 @@
 # Veeam Backup for Microsoft 365 Exchange Online Mailbox Recovery Tool
-A Powershell script to recover items from specified mailboxes from the lastest VB365 Exchange Online Restore point to another Microsoft organization or to a local Exchange server.
+A Powershell script to restore items from specific mailboxes from the last VB365 Exchange Online restore point in another Microsoft organization or on a local Exchange server.
 
 
 ## Description
