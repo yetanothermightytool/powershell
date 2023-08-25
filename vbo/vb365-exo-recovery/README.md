@@ -5,7 +5,7 @@ A Powershell script to recover items from specified mailboxes from the lastest V
 ## Description
 ~~~~
 Version : 1.2 (August 25th, 2023)
-Requires: Veeam Backup for Microsoft 365 v6 or later, Destination M365 Organization or a local Exchange server
+Requires: Veeam Backup for Microsoft 365 v6 or later, Destination M365 Organization or a local Exchange (CAS) server
 Author  : Steve Herzig
 GitHub  : https://www.github.com/yetanothermightytool
 ~~~~
@@ -16,8 +16,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 - An configured Azure AD application at the destination M365 tenant with the appropriate rights
   See https://helpcenter.veeam.com/docs/vbo365/guide/ad_app_permissions_sd.html
 - The exported certificate (.pfx) of the Azure AD application
-- Proper permissions [https://helpcenter.veeam.com/docs/backup/explorers/vex_required_permissions.html]
-
+- Proper permissions https://helpcenter.veeam.com/docs/backup/explorers/vex_required_permissions.html
 
 ## CSV File Structure - Example with two entries
 SourceMbx | DestMbxName | DestOrg
