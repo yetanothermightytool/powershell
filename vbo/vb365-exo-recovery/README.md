@@ -16,6 +16,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 - An configured Azure AD application at the destination M365 tenant with the appropriate rights
   See https://helpcenter.veeam.com/docs/vbo365/guide/ad_app_permissions_sd.html
 - The exported certificate (.pfx) of the Azure AD application
+- Proper permissions [https://helpcenter.veeam.com/docs/backup/explorers/vex_required_permissions.html]
 
 
 ## CSV File Structure - Example with two entries
