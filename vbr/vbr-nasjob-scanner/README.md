@@ -22,7 +22,7 @@ The vbr-nasjob-scanner-post-script.ps1 directly logs the information into your V
 _(mandatory)_ Backup Job name - Only necessary for the vbr-job-scanner.ps1 script
 
   `Depth`
-_(mandatory)_ The number of incremental backups to be used for the analysis
+_(mandatory)_ The number of backups job sessions to be used for the analysis
 
   `Growth`
 _(optional)_ Percentage as decimal number. Example: 1.7 equals 70 %
@@ -30,7 +30,7 @@ _(optional)_ Percentage as decimal number. Example: 1.7 equals 70 %
  
 ## Examples
 
-Check if any of the last 5 incremental backups of Backup Job "demo_nas_job" transferred 50 % more files than the average.
+Check if any of the last 5 backups of Backup Job "demo_nas_job" transferred 50 % more files than the average.
 
 `PS>.\vbr-nasjob-scanner.ps1 -JobName "demo_nas_job" -Depth 5 -Growth 1.5`
 
