@@ -34,7 +34,7 @@ Author: Stephan "Steve" Herzig
 The script accepts the following parameters:
 
 - `Export`              : Exports data related to Users, Groups, Applications, and Roles, rotates and renames existing export folders, and saves the exported data in JSON format.
-- `AuditExport`         : Exports audit logs, particularly Azure AD audit logs, for the last 24 hours and saves them in JSON format.
+- `AuditExport`         : (Optional) Exports audit logs, particularly Azure AD audit logs, for the last 24 hours and saves them in JSON format.
 						  Parameter must be given together with -Export
 - `Users`               : Displays export user data (such as UserPrincipalName, DisplayName) from the latest export
 - `Groups`              : Displays group data, and if a specific group is selected, it also displays its members.
