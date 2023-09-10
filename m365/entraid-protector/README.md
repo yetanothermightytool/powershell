@@ -42,7 +42,7 @@ The script accepts the following parameters:
 - `CompareUsers`        : Compares user data between different export folders and identifies missing user data.
 - `Roles`               : Displays role data, and if a specific role is selected, it also displays its members.
 - `GetRecycleBin`       : Retrieves information about deleted users in the recycle bin. It allows restoring deleted users.
-- `CompareSpecificUser` : Searches for a user by UserPrincipalName, compares their data between different export folders, and displays the differences.
+- `CompareSpecificUser` : Searches for a user by UserPrincipalName, compares their data between different the latest export folder, and a given export folder (-ExportNo) and displays the differences.
 - `ExportNo`            : Display data for a specific export folder. The export folders are numbered at the end of the folder name where 1 is the most recent export after the last export. Works with Users, Groups, Applications, and Roles parameter
 - `InstallModules`      : Checks for the existence of certain PowerShell modules (EntraExporter, MSOnline, and AzureADPreview) and installs them if not found.
 
