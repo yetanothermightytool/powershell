@@ -10,7 +10,7 @@ Author: Stephan "Steve" Herzig
 
 ## Features
 
-- **Data Export**: Export user, group, application, and role data from your Microsoft 365 environment to maintain backups or perform data analysis. The Data Export uses the Entra Exporter Powershell Module
+- **Data Export**: Export user, group, application, and role data from your Microsoft 365 environment to maintain backups or perform data analysis. The Data Export uses the Entra Exporter Powershell Module.
 
 - **Audit Log Export**: Retrieve and export audit logs for monitoring and compliance purposes.
 
@@ -20,14 +20,14 @@ Author: Stephan "Steve" Herzig
 
 ## Requirements
 
-- PowerShell 5.1 or higher
+- PowerShell 5.1 or higher.
 
 - Microsoft 365 admin credentials with appropriate permissions for the actions you intend to perform.
 
   Permission details coming soon.
 
 ## Variables to be modified
-- `$exportRootFolder ` : Specifies the path to the directory containing the exports
+- `$exportRootFolder ` : Specifies the path to the directory containing the exports.
 - `$maxExportCount`    : The maximum number of export folders. This number ensures that the number of export folders in the $exportRootFolder does not exceed a specified maximum count. If the maximum export count is reached, a function removes the oldest folder to make space for a new one.
 
 ## Parameters
@@ -62,9 +62,9 @@ Get all the exported user information from Export number 3
 
 ## Notes
 
-The MSOnline Powershell module is used for getting the deleted users in the Recycle bin (Get-MsolUser)
+The MSOnline Powershell module is used for getting the deleted users in the Recycle bin (Get-MsolUser).
 
-The AzureADPreview Powershell module is used for getting the Audit Directory & Audit Sign In Logs (Get-AzureADAuditDirectoryLogs & Get-AzureADAuditSignInLogs)
+The AzureADPreview Powershell module is used for getting the Audit Directory & Audit Sign In Logs (Get-AzureADAuditDirectoryLogs & Get-AzureADAuditSignInLogs).
 
 ## Acknowledgments
 
