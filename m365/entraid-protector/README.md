@@ -45,7 +45,7 @@ The script accepts the following parameters:
 - `GetRecycleBin`       : Retrieves information about deleted users in the recycle bin. It allows restoring deleted users.
 folder, and a given export folder (-ExportNo) and displays the differences.
 - `ExportNo`            : Display data for a specific export folder. The export folders are numbered at the end of the folder name where 1 is the most recent export after the last export. Works with Users, Groups, Applications, and Roles parameter
-- `InstallModules`      : Checks for the existence of certain PowerShell modules (EntraExporter, MSOnline, and AzureADPreview) and installs them if not found.
+- `InstallModules`      : Checks for the existence of certain PowerShell modules (EntraExporter, and AzureADPreview) and installs them if not found.
 
 Examples:
 
@@ -62,8 +62,6 @@ Get all the exported user information from Export number 3
 
 ## Notes
 
-The MSOnline Powershell module is used for getting the deleted users in the Recycle bin (Get-MsolUser).
-
 The AzureADPreview Powershell module is used for getting the Audit Directory & Audit Sign In Logs (Get-AzureADAuditDirectoryLogs & Get-AzureADAuditSignInLogs).
 
 ## Acknowledgments
@@ -71,5 +69,7 @@ The AzureADPreview Powershell module is used for getting the Audit Directory & A
 Special thanks to the Powershell community for their valuable contributions and inspiration.
 
 ## Version History
+* 1.1
+    * Replacing MSOnline command with MS Graph Command
 * 1.0
     * Initial Release 
