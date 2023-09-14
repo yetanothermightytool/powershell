@@ -2,7 +2,7 @@
 
 ## Version Information
 ~~~~
-Version: 1.0 (September 10th 2023)
+Version: 1.1 (September 13th 2023)
 Author: Stephan "Steve" Herzig
 ~~~~
 
