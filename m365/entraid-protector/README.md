@@ -2,7 +2,7 @@
 
 ## Version Information
 ~~~~
-Version: 1.1 (September 13th 2023)
+Version: 1.1 (September 15th 2023)
 Author: Stephan "Steve" Herzig
 ~~~~
 
@@ -29,6 +29,7 @@ Author: Stephan "Steve" Herzig
 ## Variables to be modified
 - `$exportRootFolder ` : Specifies the path to the directory containing the exports.
 - `$maxExportCount`    : The maximum number of export folders. This number ensures that the number of export folders in the $exportRootFolder does not exceed a specified maximum count. If the maximum export count is reached, a function removes the oldest folder to make space for a new one.
+- `$LogFilePath`       : Path of the log file where some of the activities are logged.
 
 ## Parameters
 The script accepts the following parameters:
@@ -46,6 +47,7 @@ The script accepts the following parameters:
 folder, and a given export folder (-ExportNo) and displays the differences.
 - `ExportNo`            : Display data for a specific export folder. The export folders are numbered at the end of the folder name where 1 is the most recent export after the last export. Works with Users, Groups, Applications, and Roles parameter
 - `InstallModules`      : Checks for the existence of certain PowerShell modules (EntraExporter, and AzureADPreview) and installs them if not found.
+- `LogFilePath`         : (Optional) Path to the log file. Default C:\Temp\entra-id-protector-log.txt"
 
 Examples:
 
@@ -64,6 +66,9 @@ Get all the exported user information from Export number 3
 
 The AzureADPreview Powershell module is used for getting the Audit Directory & Audit Sign In Logs (Get-AzureADAuditDirectoryLogs & Get-AzureADAuditSignInLogs).
 
+## Known Issues
+If a smaller $maxExportCount value is specified after the script has already created exports, the older export directories may not be deleted.
+
 ## Acknowledgments
 
 Special thanks to the Powershell community for their valuable contributions and inspiration.
@@ -71,5 +76,7 @@ Special thanks to the Powershell community for their valuable contributions and 
 ## Version History
 * 1.1
     * Replacing MSOnline command with MS Graph Command
+    * Adding known issues
+    * Logging function
 * 1.0
     * Initial Release 
