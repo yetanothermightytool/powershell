@@ -42,7 +42,7 @@ The script accepts the following parameters:
 - `Applications`        : Displays application data, including certificate expiration dates if available.
 - `Roles`               : Displays role data, and if a specific role is selected, it also displays its members.
 - `CompareUserCount`    : Compares user count between latest export and older export folders.
-- `CompareSpecificUser` : Searches for a user by UserPrincipalName, compares the data between the last and the specified export
+- `CompareSpecificUser` : Searches for a user by UserPrincipalName, compares the data between the last and the specified export.
 - `GetRecycleBin`       : Retrieves information about deleted users in the recycle bin. It allows restoring deleted users.
 folder, and a given export folder (-ExportNo) and displays the differences.
 - `ExportNo`            : Display data for a specific export folder. The export folders are numbered at the end of the folder name where 1 is the most recent export after the last export. Works with Users, Groups, Applications, and Roles parameter
