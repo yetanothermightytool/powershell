@@ -357,7 +357,6 @@ $menuHtml = @"
                 width: 500px;
                 white-space: pre-wrap; 
             }
-
             .scan-count,
             .scan-warning-count {
                 font-size: 24px;
@@ -474,26 +473,6 @@ $menuHtml = @"
             .parameter-submit:active {
                 background-color: #3e8e41;
             }
-            .scrolling-text-container {
-            background-color:#E1E1E3;
-            overflow: hidden;
-            backface-visibility: hidden;
-            will-change: transform;
-            }
-            .scrolling-text {
-            color: #4CAF50;
-            font-size: 20px;
-            white-space: nowrap;
-            animation: marquee 30s linear infinite;
-            }
-            @keyframes marquee {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-              }
-           }
             .timestamp {
                 position: fixed;
                 bottom: 0;
