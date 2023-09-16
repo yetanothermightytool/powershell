@@ -39,7 +39,7 @@ The script accepts the following parameters:
 						  Parameter must be given together with -Export
 - `Users`               : Displays export user data (such as UserPrincipalName, DisplayName) from the latest export
 - `Groups`              : Displays group data, and if a specific group is selected, it also displays its members.
-- `Applications`        : Displays application data, including certificate expiration dates if available.
+- `Applications`        : Displays application registration data, including certificate expiration dates if available.
 - `Roles`               : Displays role data, and if a specific role is selected, it also displays its members.
 - `CompareUserCount`    : Compares user count between latest export and older export folders.
 - `CompareSpecificUser` : Searches for a user by UserPrincipalName, compares the data between the last and the specified export.
