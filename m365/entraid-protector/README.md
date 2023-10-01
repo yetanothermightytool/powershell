@@ -2,7 +2,7 @@
 
 ## Version Information
 ~~~~
-Version: 1.1 (September 15th 2023)
+Version: 1.2 (October 1st 2023)
 Author: Stephan "Steve" Herzig
 ~~~~
 
@@ -47,7 +47,7 @@ The script accepts the following parameters:
 - `GetRecycleBin`       : Retrieves information about deleted users in the recycle bin. It allows restoring deleted users.
 folder, and a given export folder (-ExportNo) and displays the differences.
 - `ExportNo`            : Display data for a specific export folder. The export folders are numbered at the end of the folder name where 1 is the most recent export after the last export. Works with Users, Groups, SecurityGroups, Applications, and Roles parameter.
-- `InstallModules`      : Checks for the existence of certain PowerShell modules (EntraExporter, and AzureADPreview) and installs them if not found.
+- `InstallModules`      : Checks for the existence of certain PowerShell modules (EntraExporter, and MSGraph) and installs them if not found.
 - `LogFilePath`         : (Optional) Path to the log file. Default C:\Temp\entra-id-protector-log.txt"
 
 Examples:
@@ -63,10 +63,6 @@ Get all the exported user information from Export number 3
    PS C:\> .\entraid-protector.ps1 -Users -ExportNo 3
    ```
 
-## Notes
-
-The AzureADPreview Powershell module is used for getting the Audit Directory & Audit Sign In Logs (Get-AzureADAuditDirectoryLogs & Get-AzureADAuditSignInLogs).
-
 ## Known Issues
 If a smaller $maxExportCount value is specified after the script has already created exports, the older export directories may not be deleted.
 
@@ -78,6 +74,10 @@ There is an option to import back the selected Security Group incl. their assign
 Special thanks to the Powershell community for their valuable contributions and inspiration.
 
 ## Version History
+* 1.2
+    * Replacing AzureADPreview commands with the equivalent Get-Mg command
+    * Updating Check Module section
+    * Adding Permission Check
 * 1.1
     * SecurityGroups option, incl. import function (experimental)
     * Replacing MSOnline command with MS Graph Command
