@@ -30,8 +30,9 @@ The entraid-protector-webmenu.ps1 script offers a nice UI for using all the func
   Permission details coming soon.
 
 ## Variables to be modified
-- `$exportRootFolder ` : Specifies the path to the directory containing the exports.
-- `$maxExportCount`    : The maximum number of export folders. This number ensures that the number of export folders in the $exportRootFolder does not exceed a specified maximum count. If the maximum export count is reached, a function removes the oldest folder to make space for a new one.
+- `$exportRootFolder` : Specifies the path to the directory containing the exports.
+- `auditExportFolder` : Path to the directory containing the audit log exports.
+- `$maxExportCount`    : The maximum number of export folders. This number ensures that the number of export folders in the $exportRootFolder does not exceed a specified maximum count. If the maximum export count is reached, a function removes the oldest folder to make space for a new one. (Retention)
 - `$LogFilePath`       : Path of the log file where some of the activities are logged.
 
 ## Parameters
