@@ -18,9 +18,12 @@ Author: Stephan "Steve" Herzig
 
 - **Users Recycle Bin Management**: Manage deleted users in the Microsoft 365 Recycle Bin, allowing for easy restoration when needed.
 
+## Webmenu
+The entraid-protector-webmenu.ps1 script offers a nice UI for using all the functions provided by the script.
+
 ## Requirements
 
-- PowerShell 5.1 or higher.
+- PowerShell 5.1 or higher. (Test with version 7.x ongoing)
 
 - Microsoft 365 admin credentials with appropriate permissions for the actions you intend to perform.
 
