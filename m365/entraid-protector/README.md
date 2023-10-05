@@ -70,6 +70,8 @@ Get all the exported user information from Export number 3
 ## Known Issues
 If a smaller $maxExportCount value is specified after the script has already created exports, the older export directories may not be deleted.
 
+When using the CompareSpecificUser function, no error message appears if an incorrect UPN is specified. Will be fixed in a later release.
+
 ## Experimental 
 There is an option to import back the selected Security Group incl. their assigned members and owner configuration (-SecurityGroup). Here I need a more in-depth analysis and an exchange with experts to grasp the considerations and limitations.
 
