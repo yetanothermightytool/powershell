@@ -2,7 +2,7 @@
 
 ## Version Information
 ~~~~
-Version: 1.2 (October 1st 2023)
+Version: 1.2 (October 6th 2023)
 Author: Stephan "Steve" Herzig
 ~~~~
 
@@ -18,7 +18,9 @@ Author: Stephan "Steve" Herzig
 
 - **Users Recycle Bin Management**: Manage deleted users in the Microsoft 365 Recycle Bin, allowing for easy restoration when needed.
 
-## Webmenu
+- **MORE**: See Experimental.
+
+## Entra ID Protector Webmenu
 The entraid-protector-webmenu.ps1 script offers a nice UI for using all the functions provided by the script.
 
 Modify the following variables within the script
@@ -30,12 +32,55 @@ Modify the following variables within the script
 ## Requirements
 
 - PowerShell 5.1 or higher. (Test with version 7.x ongoing)
+- Microsoft.Graph & EntraExporter Powershell Modules
+- Permissions set on the MIcrosfot Graph Command Line Tools application (see permissions).
 
-- Microsoft 365 admin credentials with appropriate permissions for the actions you intend to perform.
+## Permissions
 
-  Permission details coming soon.
+For communication with Microsoft Graph, the user uses the Microsoft Graph Command Line Tools application in the tenant.
 
-## Variables to be modified
+The following permissions are required to export the data. Entra ID asks for the permission the first time you run the script:
+
+`Directory.Read.All`
+`Policy.Read.All`
+`IdentityProvider.Read.All`
+`Organization.Read.All` 
+`User.Read.All`
+`EntitlementManagement.Read.All` `
+`UserAuthenticationMethod.Read.All`
+`IdentityUserFlow.Read.All` 
+`APIConnectors.Read.All`
+`AccessReview.Read.All`
+`Agreement.Read.All`
+`Policy.Read.PermissionGrant` 
+`PrivilegedAccess.Read.AzureResources` 
+`PrivilegedAccess.Read.AzureAD` 
+`Application.Read.All`
+ These permissions get set, while adding consent: 
+`openid`
+`profil`
+`offline_access`
+
+The following permissions are required for additional functionalities given by the script. You can add them using the command #Connect-MgGraph -Scopes "<permission here>,<another permission if needed here>":
+
+Required to export the AuditLogs:
+`AuditLog.Read.All`
+`Directory.Read.All`
+
+Required for Recycle Bin operations (restore)
+`AdministrativeUnit.ReadWrite.All`
+`Application.ReadWrite.All`
+`Group.ReadWrite.All`
+`User.ReadWrite.All`
+
+Required for Group Import functions
+`Directory.ReadWrite.All` 
+`Group.Create`            
+`Group.ReadWrite.All`
+
+
+
+## Variables to be modified within the entraid-protector.ps1 script
 - `$exportRootFolder` : Specifies the path to the directory containing the exports.
 - `auditExportFolder` : Path to the directory containing the audit log exports.
 - `$maxExportCount`    : The maximum number of export folders. This number ensures that the number of export folders in the $exportRootFolder does not exceed a specified maximum count. If the maximum export count is reached, a function removes the oldest folder to make space for a new one. (Retention)
