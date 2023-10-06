@@ -21,6 +21,12 @@ Author: Stephan "Steve" Herzig
 ## Webmenu
 The entraid-protector-webmenu.ps1 script offers a nice UI for using all the functions provided by the script.
 
+Modify the following variables within the script
+
+- `$scriptPath`        : Path where the entraid-protector.ps1 script is located.
+- `$exportRootFolder`  : Path where the exports get stored.
+- `$LogFilePath`       : Path of the log file where some of the activities are logged.
+
 ## Requirements
 
 - PowerShell 5.1 or higher. (Test with version 7.x ongoing)
@@ -83,7 +89,6 @@ Special thanks to the Powershell community for their valuable contributions and 
 * 1.2
     * Replacing AzureADPreview commands with the equivalent Get-Mg command
     * Updating Check Module section
-    * Adding Permission Check
 * 1.1
     * SecurityGroups option, incl. import function (experimental)
     * Replacing MSOnline command with MS Graph Command
