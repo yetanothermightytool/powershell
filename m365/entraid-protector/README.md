@@ -62,20 +62,35 @@ The following permissions are required to export the data. Entra ID asks for the
 | `profile`                                  | Required for authentication                  |
 | `offline_access`                           | Required for authentication                  |
 
- 
+The following permissions are required for additional functionalities given by the script. You can add them using the command. Example Adding `Directory.Read.All` permission
 
-
-The following permissions are required for additional functionalities given by the script. You can add them using the command 
+```powershell
+Connect-MgGraph -Scopes "Directory.Read.All"
+```
 
 Required to export the AuditLogs:
 
+| Permission                                 | Description                                   |
+|--------------------------------------------|-----------------------------------------------|
+| `AuditLog.Read.All`                        | Required to export AuditLogs                 |
+| `Directory.Read.All`                       | Required to export AuditLogs                 |
 
 Required for Recycle Bin operations (restore)
 
+| Permission                                 | Description                                   |
+|--------------------------------------------|-----------------------------------------------|
+| `AdministrativeUnit.ReadWrite.All`         | Required for Recycle Bin operations (restore) |
+| `Application.ReadWrite.All`                | Required for Recycle Bin operations (restore) |
+| `Group.ReadWrite.All`                      | Required for Recycle Bin operations (restore) |
+| `User.ReadWrite.All`                       | Required for Recycle Bin operations (restore) |
 
 Required for Group Import functions
 
-
+| Permission                                 | Description                                   |
+|--------------------------------------------|-----------------------------------------------|
+| `Directory.ReadWrite.All`                  | Required for Group Import functions           |
+| `Group.Create`                             | Required for Group Import functions           |
+| `Group.ReadWrite.All`                      | Required for Group Import functions           |
 
 
 ## Variables to be modified within the entraid-protector.ps1 script
