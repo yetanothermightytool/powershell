@@ -80,8 +80,6 @@ Required for Recycle Bin operations (restore)
 | Permission                                 | Description                                   |
 |--------------------------------------------|-----------------------------------------------|
 | `AdministrativeUnit.ReadWrite.All`         | Required for Recycle Bin operations (restore) |
-| `Application.ReadWrite.All`                | Required for Recycle Bin operations (restore) |
-| `Group.ReadWrite.All`                      | Required for Recycle Bin operations (restore) |
 | `User.ReadWrite.All`                       | Required for Recycle Bin operations (restore) |
 
 Required for Group Import functions
