@@ -93,6 +93,12 @@ Required for Group Import functions
 | `Group.ReadWrite.All`                      | Required for Group Import functions           |
 
 
+**Restricting Access to the Microsoft Graph Powershell enterprise Application**
+The Microsoft Graph Powershell enterprise application always has an application identifier of 14d82eec-204b-4c2f-b7e8-296a70dab67e. 
+To restrict access to the app to selected users, edit the applications properties and then access the Users and groups tab to assign the users you want to be able to login interactively to the application. Also toggle the Assignment required slider from No (Default) to Yes. This makes sure that only accounts in Entra ID with direct assignments for the app can use it.
+
+More details to come. Feedback welcome!
+
 ## Variables to be modified within the entraid-protector.ps1 script
 - `$exportRootFolder` : Specifies the path to the directory containing the exports.
 - `auditExportFolder` : Path to the directory containing the audit log exports.
