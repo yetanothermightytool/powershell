@@ -90,10 +90,7 @@ Required for Group Import functions
 | `Group.ReadWrite.All`                      | Required for Group Import functions           |
 
 
-**Restricting Access to the Microsoft Graph Powershell enterprise Application**
-The Microsoft Graph Powershell enterprise application always has an application identifier of 14d82eec-204b-4c2f-b7e8-296a70dab67e. 
-To restrict access to the app to selected users, edit the applications properties and then access the Users and groups tab to assign the users you want to be able to login interactively to the application. Also toggle the Assignment required slider from No (Default) to Yes. This makes sure that only accounts in Entra ID with direct assignments for the app can use it.
-
+**Restricting Access to the Microsoft Graph Powershell enterprise application**
 More details to come. Feedback welcome!
 
 ## Variables to be modified within the entraid-protector.ps1 script
@@ -139,6 +136,8 @@ If a smaller $maxExportCount value is specified after the script has already cre
 
 When using the CompareSpecificUser function, no error message appears if an incorrect UPN is specified. Will be fixed in a later release.
 
+When using the Webmenu and a command doesn't find any information, the Powershell window closes without any information.
+
 ## Experimental 
 There is an option to import back the selected Security Group incl. their assigned members and owner configuration (-SecurityGroup). Here I need a more in-depth analysis and an exchange with experts to grasp the considerations and limitations.
 
@@ -150,6 +149,7 @@ Special thanks to the Powershell community for their valuable contributions and 
 * 1.2
     * Replacing AzureADPreview commands with the equivalent Get-Mg command
     * Updating Check Module section
+   *  Proper disconnect from MgGraph
 * 1.1
     * SecurityGroups option, incl. import function (experimental)
     * Replacing MSOnline command with MS Graph Command
