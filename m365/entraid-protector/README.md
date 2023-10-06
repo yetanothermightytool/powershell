@@ -46,7 +46,7 @@ The following permissions are required to export the data. Entra ID asks for the
 `IdentityProvider.Read.All`
 `Organization.Read.All` 
 `User.Read.All`
-`EntitlementManagement.Read.All` `
+`EntitlementManagement.Read.All`
 `UserAuthenticationMethod.Read.All`
 `IdentityUserFlow.Read.All` 
 `APIConnectors.Read.All`
@@ -56,6 +56,7 @@ The following permissions are required to export the data. Entra ID asks for the
 `PrivilegedAccess.Read.AzureResources` 
 `PrivilegedAccess.Read.AzureAD` 
 `Application.Read.All`
+ 
  These permissions get set, while adding consent: 
 `openid`
 `profil`
