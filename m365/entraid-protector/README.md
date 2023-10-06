@@ -89,7 +89,6 @@ Required for Group Import functions
 | Permission                                 | Description                                   |
 |--------------------------------------------|-----------------------------------------------|
 | `Directory.ReadWrite.All`                  | Required for Group Import functions           |
-| `Group.Create`                             | Required for Group Import functions           |
 | `Group.ReadWrite.All`                      | Required for Group Import functions           |
 
 
