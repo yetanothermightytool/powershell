@@ -37,47 +37,44 @@ Modify the following variables within the script
 
 ## Permissions
 
-For communication with Microsoft Graph, the user uses the Microsoft Graph Command Line Tools application in the tenant.
+For communication with Microsoft Graph, the user uses the Microsoft Graph Command Line Tools enterprise application in the tenant.
 
 The following permissions are required to export the data. Entra ID asks for the permission the first time you run the script:
 
-`Directory.Read.All`
-`Policy.Read.All`
-`IdentityProvider.Read.All`
-`Organization.Read.All` 
-`User.Read.All`
-`EntitlementManagement.Read.All`
-`UserAuthenticationMethod.Read.All`
-`IdentityUserFlow.Read.All` 
-`APIConnectors.Read.All`
-`AccessReview.Read.All`
-`Agreement.Read.All`
-`Policy.Read.PermissionGrant` 
-`PrivilegedAccess.Read.AzureResources` 
-`PrivilegedAccess.Read.AzureAD` 
-`Application.Read.All`
- 
- These permissions get set, while adding consent: 
-`openid`
-`profil`
-`offline_access`
+| Permission                                 | Description                                   |
+|--------------------------------------------|-----------------------------------------------|
+| `Directory.Read.All`                       | Required to export data                      |
+| `Policy.Read.All`                          | Required to export data                      |
+| `IdentityProvider.Read.All`                | Required to export data                      |
+| `Organization.Read.All`                    | Required to export data                      |
+| `User.Read.All`                            | Required to export data                      |
+| `EntitlementManagement.Read.All`            | Required to export data                      |
+| `UserAuthenticationMethod.Read.All`        | Required to export data                      |
+| `IdentityUserFlow.Read.All`                | Required to export data                      |
+| `APIConnectors.Read.All`                   | Required to export data                      |
+| `AccessReview.Read.All`                    | Required to export data                      |
+| `Agreement.Read.All`                       | Required to export data                      |
+| `Policy.Read.PermissionGrant`              | Required to export data                      |
+| `PrivilegedAccess.Read.AzureResources`     | Required to export data                      |
+| `PrivilegedAccess.Read.AzureAD`            | Required to export data                      |
+| `Application.Read.All`                     | Required to export data                      |
+| `openid`                                   | Required for authentication                  |
+| `profile`                                  | Required for authentication                  |
+| `offline_access`                           | Required for authentication                  |
 
-The following permissions are required for additional functionalities given by the script. You can add them using the command #Connect-MgGraph -Scopes "<permission here>,<another permission if needed here>":
+ 
+
+
+The following permissions are required for additional functionalities given by the script. You can add them using the command 
 
 Required to export the AuditLogs:
-`AuditLog.Read.All`
-`Directory.Read.All`
+
 
 Required for Recycle Bin operations (restore)
-`AdministrativeUnit.ReadWrite.All`
-`Application.ReadWrite.All`
-`Group.ReadWrite.All`
-`User.ReadWrite.All`
+
 
 Required for Group Import functions
-`Directory.ReadWrite.All` 
-`Group.Create`            
-`Group.ReadWrite.All`
+
 
 
 
