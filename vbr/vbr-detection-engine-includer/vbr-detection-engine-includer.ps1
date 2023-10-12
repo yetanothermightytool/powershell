@@ -23,6 +23,7 @@ Param(
 # Variables for script
 $VBRserver                      = "localhost"
 $csvFilePath                    = "D:\Scripts\vbr\object_status.csv"
+$currentDateTime                = Get-Date -Format "yyyy-MM-dd at HH:mm:ss"
 
 # Connect VBR Server
 Connect-VBRServer -Server $VBRserver
@@ -80,7 +81,7 @@ foreach ($object in $objectStatus) {
         
         Write-Host "Readding $($object.ObjectName)"
         $readd = Find-VBRViEntity -Name $($object.ObjectName)
-        Add-VBRMalwareDetectionExclusion -Entity $readd
+        Add-VBRMalwareDetectionExclusion -Entity $readd -Note "Readded by script - $currentDateTime"
         $object.Readded = 1
     }
 }
@@ -89,4 +90,3 @@ foreach ($object in $objectStatus) {
 $objectStatus | Export-Csv -Path $csvFilePath -NoTypeInformation
 
 Disconnect-VBRServer
-
