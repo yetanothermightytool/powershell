@@ -23,7 +23,7 @@ Param(
 # Variables for script
 $VBRserver                      = "localhost"
 $csvFilePath                    = "D:\Scripts\vbr\object_status.csv"
-$currentDateTime                = Get-Date -Format "yyyy-MM-dd at HH:mm:ss"
+$currentDateTime                = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
 # Connect VBR Server
 Connect-VBRServer -Server $VBRserver
