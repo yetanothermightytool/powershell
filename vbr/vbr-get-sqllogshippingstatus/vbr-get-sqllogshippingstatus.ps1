@@ -2,7 +2,7 @@ Param(
     [Parameter(Mandatory=$true)]
     [string]$VBRServer
     )
-
+Clear-Host
 # Variables
 $sqlJobNames = @()
 
@@ -23,11 +23,17 @@ foreach ($vbrJob in $vbrJobs) {
 
 foreach ($sqlJobName in $sqlJobNames){
 
-$job     = Get-VBRJob -name $sqlJobName
-$sqlJob  = $Job.FindChildSqlLogBackupJob()
-$Session = [Veeam.Backup.Core.CBackupSession]::GetByJob($sqlJob.Id) | sort creationtimeutc -Descending | select -First 10
-Write-Host
-Write-Host "Last 10 SQL log shipping session entries for Backup Job $sqlJobName"
-$session
+$job                 = Get-VBRJob -name $sqlJobName
+$sqlJob              = $Job.FindChildSqlLogBackupJob()
+$session             = $sqlJob.FindLastSession()
+$taskSession         = Get-VBRTaskSession -Session $session
+$logBackupLogs       = $taskSession.Logger.GetLog().UpdatedRecords
+$lastSessionStartLog = $logBackupLogs | ? { $_.Title.Contains("New transaction log backup interval started") } | Select -Last 1
+$lastSessionEndLog   = $logBackupLogs | ? { $_.Title.Contains("Transaction log backup completed") } | Select -Last 1
+
+Write-Output $sqlJobName
+Write-Output "Start Time Last Log Session: $lastSessionStartLog.StartTime
+Write-Output "Stop Time Last Log Session :" $lastSessionEndLog.StartTime
 }
 Disconnect-VBRServer
+
