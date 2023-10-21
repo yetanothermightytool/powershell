@@ -33,7 +33,7 @@ $lastSessionEndLog   = $logBackupLogs | Where-Object { $_.Title.Contains("Transa
 
 Write-Output $sqlJobName
 Write-Output "Start Time Last Log Session:" $lastSessionStartLog.StartTime
-Write-Output "Stop Time Last Log Session" $lastSessionEndLog.StartTime
+Write-Output "Stop Time Last Log Session:" $lastSessionEndLog.StartTime
 }
 
 Disconnect-VBRServer
