@@ -28,12 +28,12 @@ $sqlJob              = $Job.FindChildSqlLogBackupJob()
 $session             = $sqlJob.FindLastSession()
 $taskSession         = Get-VBRTaskSession -Session $session
 $logBackupLogs       = $taskSession.Logger.GetLog().UpdatedRecords
-$lastSessionStartLog = $logBackupLogs | ? { $_.Title.Contains("New transaction log backup interval started") } | Select -Last 1
-$lastSessionEndLog   = $logBackupLogs | ? { $_.Title.Contains("Transaction log backup completed") } | Select -Last 1
+$lastSessionStartLog = $logBackupLogs | Where-Object { $_.Title.Contains("New transaction log backup interval started") } | Select -Last 1
+$lastSessionEndLog   = $logBackupLogs | Where-Object { $_.Title.Contains("Transaction log backup completed") } | Select -Last 1
 
 Write-Output $sqlJobName
-Write-Output "Start Time Last Log Session: $lastSessionStartLog.StartTime
-Write-Output "Stop Time Last Log Session :" $lastSessionEndLog.StartTime
+Write-Output "Start Time Last Log Session:" $lastSessionStartLog.StartTime
+Write-Output "Stop Time Last Log Session" $lastSessionEndLog.StartTime
 }
-Disconnect-VBRServer
 
+Disconnect-VBRServer
