@@ -8,8 +8,6 @@ param(
 # Variables
 $apiVersion = "v5"
 
-
-Clear-Host
 # Function for getting the Bearer Token
 function Connect-VeeamRestAPI {
     [CmdletBinding()]
@@ -57,8 +55,9 @@ function Get-VeeamRestAPI {
 }
 
 # Get VBAzure credentials - The ones you need to login to the Console
+Clear-Host
 $veeamAPI = "https://$VBAzurehost"
-$cred     = Get-Credential -Message "Please enter your Veeam Backup for Microsoft Azure credentials"
+$cred     = Get-Credential -Message "Please enter your Veeam Backup for Microsoft Azure credentials" -UserName veeamse
 
 # Ignore any self-signed certificate
 add-type @"
@@ -94,19 +93,23 @@ $result             = foreach ($jobSessionId in $jobSessions.results.id) {
 
     foreach ($jobsessionInfoDetails in $jobSessionInfo.results) {
                      [PSCustomObject]@{
-                     "Name"               = $jobsessionInfoDetails.resource.name
-                     "StartTime"          = $jobsessionInfoDetails.runs.startTime
-                     "EndTime"            = $jobsessionInfoDetails.runs.endTime
-                     "totalDataBytes"     = $jobsessionInfoDetails.runs.rates.totalDataBytes
-                     "transferredBytes"   = $jobsessionInfoDetails.runs.rates.transferredDataBytes
+                     "Name"                   = $jobsessionInfoDetails.resource.name
+                     "Start Time"             = $jobsessionInfoDetails.runs.startTime
+                     "End Time"               = $jobsessionInfoDetails.runs.endTime
+                     "Total Data (GB)"        = [math]::round(($jobsessionInfoDetails.runs.rates.totalDataBytes) / 1Gb, 2)
+                     "Transferred Data (MB)"  = [math]::round(($jobsessionInfoDetails.runs.rates.transferredDataBytes) / 1Mb, 2)
         }
     }
 }
 
+Write-Host "Backup session information for the past $Depth backup jobs" -ForegroundColor White
 $result | Format-Table
 
 # Get Suspicious Growth (Number is percentage)
 if ($Growth) {
+    Write-Host "Checking backups..." -ForegroundColor White
+    Write-Host ""
+
     $allVMNames = @()
 
     foreach ($jobSessionId in $jobSessions.results.id) {
@@ -139,12 +142,12 @@ if ($Growth) {
             $growthCheck = $transferredBytes | Where-Object { $_ -gt ($average * (1 + ($Growth / 100))) }
 
             if ($growthCheck.Count -gt 0) {
-                Write-Host "Suspicious growth detected in $VMName backups!"
+                Write-Host "Suspicious growth detected in $VMName backups!" -ForegroundColor Yellow
             } else {
-                Write-Host "No unexpected growth detected in $VMName backups."
+                Write-Host "No unexpected growth detected in $VMName backups." -ForegroundColor Cyan
             }
         } else {
-            Write-Host "No transferred data bytes found for $VMName."
+            Write-Host "No transferred data found for $VMName."
         }
     }
 }
