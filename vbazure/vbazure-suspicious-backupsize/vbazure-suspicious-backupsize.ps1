@@ -2,7 +2,7 @@ param(
     [String] $VBAzurehost,
     [Parameter(Mandatory=$true)]
     [string]$Depth,
-     [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory=$false)]
     [string]$Growth
     )
 # Variables
@@ -110,44 +110,38 @@ if ($Growth) {
     Write-Host "Checking backups..." -ForegroundColor White
     Write-Host ""
 
-    $allVMNames = @()
+    $allVMData = @()
 
     foreach ($jobSessionId in $jobSessions.results.id) {
         $appURI         = "/api/$apiVersion/jobSessions/$jobSessionId/protectedItems"
         $jobSessionInfo = Get-VeeamRestAPI -AppUri $appURI -Token $token
 
         foreach ($jobsessionInfoDetails in $jobSessionInfo.results) {
-            $allVMNames += $jobsessionInfoDetails.resource.name
-        }
+            $VMData = [PSCustomObject]@{
+                Name              = $jobsessionInfoDetails.resource.name
+                TransferredData   = $jobsessionInfoDetails.runs.rates.transferredDataBytes / 1MB
+                EndTime           = [datetime]$jobsessionInfoDetails.runs.endTime
+                }
+            $allVMData += $VMData
+         }
     }
 
-    $uniqueNames = $allVMNames | Select-Object -Unique
+    $uniqueVMs = $allVMData | Group-Object Name | ForEach-Object {
+        $_.Group | Sort-Object EndTime -Descending | Select-Object -First 1
+    }
 
-    foreach ($VMName in $uniqueNames) {
-        $transferredBytes = @()
+    foreach ($VMData in $uniqueVMs) {
+        $average     = ($allVMData | Where-Object { $_.Name -eq $VMData.Name } | Measure-Object -Property TransferredData -Average).Average
+        $growthCheck = [Math]::Round(($VMData.TransferredData / $average - 1) * 100, 2)
 
-        foreach ($jobSessionId in $jobSessions.results.id) {
-            $appURI         = "/api/$apiVersion/jobSessions/$jobSessionId/protectedItems"
-            $jobSessionInfo = Get-VeeamRestAPI -AppUri $appURI -Token $token
+        if ($growthCheck -gt $Growth) {
+            Write-Host "Suspicious growth detected in $($VMData.Name) backups! Growth: $($growthCheck)%." -ForegroundColor Yellow
 
-            foreach ($jobsessionInfoDetails in $jobSessionInfo.results) {
-                if ($jobsessionInfoDetails.resource.name -eq $VMName) {
-                    $transferredBytes += $jobsessionInfoDetails.runs.rates.transferredDataBytes
-                }
-            }
-        }
+        } elseif ($growthCheck -lt -$Growth) {
+            Write-Host "Unexpected reduction detected in $($VMData.Name) backups! Reduction: $($growthCheck)%." -ForegroundColor Yellow
 
-        if ($transferredBytes.Count -gt 0) {
-            $average     = ($transferredBytes | Measure-Object -Average).Average
-            $growthCheck = $transferredBytes | Where-Object { $_ -gt ($average * (1 + ($Growth / 100))) }
-
-            if ($growthCheck.Count -gt 0) {
-                Write-Host "Suspicious growth detected in $VMName backups!" -ForegroundColor Yellow
-            } else {
-                Write-Host "No unexpected growth detected in $VMName backups." -ForegroundColor Cyan
-            }
         } else {
-            Write-Host "No transferred data found for $VMName."
+            Write-Host "No unexpected growth or reduction detected in $($VMData.Name) backups." -ForegroundColor Cyan
         }
     }
 }
