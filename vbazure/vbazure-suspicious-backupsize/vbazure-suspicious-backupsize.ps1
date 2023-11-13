@@ -57,7 +57,7 @@ function Get-VeeamRestAPI {
 # Get VBAzure credentials - The ones you need to login to the Console
 Clear-Host
 $veeamAPI = "https://$VBAzurehost"
-$cred     = Get-Credential -Message "Please enter your Veeam Backup for Microsoft Azure credentials" -UserName veeamse
+$cred     = Get-Credential -Message "Please enter your Veeam Backup for Microsoft Azure credentials"
 
 # Ignore any self-signed certificate
 add-type @"
