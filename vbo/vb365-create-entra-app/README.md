@@ -86,9 +86,9 @@ Create an application named "VB365 Backup Application" with the required permiss
 
 ## Version History
 * 2.0.0
-  * Adding additional GraphAPI permissions
-	* Use Microsoft.Graph Powershell Module
-	* Optimize output
+    * Adding additional GraphAPI permissions
+    * Use Microsoft.Graph Powershell Module
+    * Optimize output
 * 1.0.3
     * Original script by Stefan Zimmermann
 	
