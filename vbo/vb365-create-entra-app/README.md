@@ -68,7 +68,8 @@ _(optional)_ Keylength for generated RSA key pair (Default: 4096)
 Create an application named "VB365 Backup Application" with the required permissions for backing up Exchange Online data. The key is valid for 1 year and will be stored in the default directory (where the script resides).
 
 ```powershell
-.\Create-VeeamEntraApp.ps1 -entraTenantId <YourEntraTenantId> -appName "VB365 Backup Application" -limitUsageTo "Backup" -limitServiceTo "Exchange" -certificateFilePath -keyLifeTimeDays 365 
+.\Create-VeeamEntraApp.ps1 -entraTenantId <YourEntraTenantId> -appName "VB365 Backup Application" -limitUsageTo "Backup" -limitServiceTo "Exchange" -certificateFilePath -keyLifeTimeDays 365
+```
 
 ## Notes
 
