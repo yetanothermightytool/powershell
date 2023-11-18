@@ -72,6 +72,8 @@ Create an application named "VB365 Backup Application" with the required permiss
 ```
 
 ## Notes
+- The authorizations correspond to the requirements for authorizations for Modern App-Only Authentication. [Veeam Helpcenter](https://helpcenter.veeam.com/docs/vbo365/guide/ad_app_permissions_sd.html)
+- Requirements based on version 7.0 of Veeam Bakcup for Microsoft 365
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
