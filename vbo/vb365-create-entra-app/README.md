@@ -20,6 +20,13 @@ GitHub  : https://www.github.com/yetanothermightytool
 
 For a detailed list of permissions used in this script, please check [Veeam Helpcenter](https://helpcenter.veeam.com/docs/vbo365/guide/azure_ad_applications.html).
 
+## Important
+After executing the script, manual actions must still be performed in the Entra Admin Center. This information is also displayed after the script has been executed.
+
+- Check the API permissions of the app in the Entra admin center and grant admin consent." (mandatory)
+- Starting from version 7 CP4, Veeam Backup for Microsoft 365 supports backup of public folder and discovery search mailboxes. To back up these objects, Veeam Backup for Microsoft 365 needs access to Exchange Online PowerShell. (optional, if those needs to be protected)
+- Manually enable the 'Allow public client flows' on the 'Authentication' page of the app details for interactive restores" (optional)
+
 ## Prerequisites
 
 - Microsoft.Graph PowerShell Module (Tested with version 2.5.0 and 2.9.0)
