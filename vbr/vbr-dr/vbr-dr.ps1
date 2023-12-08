@@ -5,8 +5,8 @@ param (
     [String]$cfgBackupPath      = "<path to the cfg .bco files>",
     [String]$unattendedXmlPath  = "<path to unattended.xml>",
     [String]$securePasswordPath = "<path to secure.txt>",
-	[String]$srcBkpAdmin        = "Administrator"
-	[String]$dstBkpAdmin        = "Administrator"
+    [String]$srcBkpAdmin        = "Administrator"
+    [String]$dstBkpAdmin        = "Administrator"
 )
 # General Script Settings
 $vbrInstallDir     = "C:\Program Files\Veeam\Backup and Replication\Backup"
