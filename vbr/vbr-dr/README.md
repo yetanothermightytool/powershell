@@ -38,21 +38,20 @@ The script accepts the following parameters:
 
 - `ServiceCheck`		Checks if only the necessary Veeam Services for the configuration database restore are running
 - `Restore`				Restores the configuration database (Restore Mode is migration)      
-- `DBUpdate`       
+- `DBUpdate`         Updates the user and user SID on the standby VBR server (only when [`MFA`](https://forums.veeam.com/veeam-backup-replication-f2/issue-with-restoring-config-on-consoles-with-mfa-enabled-t89167.html) is enabled)
 
 Optional parameters, whereby the default value can also be hard-coded in the script.
 
-- `cfgBackupPath`		 : Path to the configuration backups on the standby server (where the .bco files reside)
-- `unattendedXmlPath`	 : Path to the unattended response file
-- `$decryptPasswordPath` : Path to the password file for decrypting the configuration backup
-- `$dbPasswordPath` 	 : Path to the password file for accessing the PostgreSQL database
-- `srcBkpAdmin`			 : Backup administrator on the primary VBR server.
-- `dstBkpAdmin`			 : Backup administrator on the DR VBR server
+- `cfgBackupPath`		 Path to the configuration backups on the standby server (where the .bco files reside)
+- `unattendedXmlPath` Path to the unattended response file
+- `$decryptPasswordPath` Path to the password file for decrypting the configuration backup
+- `$dbPasswordPath` 	 Path to the password file for accessing the PostgreSQL database
+- `srcBkpAdmin`		 Backup administrator on the primary VBR server.
+- `dstBkpAdmin`		 Backup administrator on the DR VBR server
 
 ## Examples
 
 Example 1 - Check if only the needed Veeam services for the configuration database restore are running:
-
 ```powershell
 .\vbr-dr.ps1 -ServiceCheck
 ```
@@ -66,17 +65,27 @@ Example 3 - Restore/Migrate the Configuration Database and update the necessary 
 ```
 
 ## Configuration Database Restore details
-This script uses the migration mode for restoring the configuration database
-[https://helpcenter.veeam.com/docs/backup/vsphere/restore_vbr_mode.html]
+This script uses the migration mode for restoring the configuration database.
+[`See Helpcenter`](https://helpcenter.veeam.com/docs/backup/vsphere/restore_vbr_mode.html)
 
 The script also checks whether the unattended.xml file contains the required values so that the restore can take place on a regular base without starting the backup services themselves.
 
-These values are set. Adjustments can be made 
+These values are checked and set if necessary. Adjustments can be made (simply add the corresponding node with the attribute).
 
+`BACKUP_PASSWORD`
+`SQLSERVER_ENGINE`
+`DATABASE_SERVER`
+`CONFIGURATION_FILE`
+`SWITCH_TO_RESTORE_MODE` 0
+`RESTORE_BACKUPS` 1
+`RESTORE_SESSIONS` 1
+`BACKUP_EXISTING_DATABASE` 0 
+`SERVICES_AUTOSTART` 0
+`OVERWRITE_EXISTING_DATABASE` 1
+`STOP_PROCESSES` 1 
 
 ## Notes
 Please do not run the script on the productive server. Use at your own risk.
-
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
