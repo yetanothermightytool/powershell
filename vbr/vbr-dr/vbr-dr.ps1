@@ -2,18 +2,21 @@ param (
     [switch]$ServiceCheck,
     [switch]$Restore,
     [switch]$DBUpdate,
-    [String]$cfgBackupPath      = "<path to the cfg .bco files>",
-    [String]$unattendedXmlPath  = "<path to unattended.xml>",
-    [String]$securePasswordPath = "<path to secure.txt>",
-    [String]$srcBkpAdmin        = "Administrator"
-    [String]$dstBkpAdmin        = "Administrator"
+    [String]$cfgBackupPath       = "<path to the cfg .bco files>",
+    [String]$unattendedXmlPath   = "<path to unattended.xml>",
+    [String]$decryptPasswordPath = "<path to encryption password.txt>",
+    [String]$dbPasswordPath      = "<path to db password.txt>:",
+    [String]$srcBkpAdmin         = "Administrator"
+    [String]$dstBkpAdmin         = "Administrator"
 )
 # General Script Settings
-$vbrInstallDir     = "C:\Program Files\Veeam\Backup and Replication\Backup"
-$bcoFile           = Get-ChildItem -Path $cfgBackupPath -Filter *.bco | Select-Object -Last 1
-[xml]$xmlContent   = Get-Content -Path $unattendedXmlPath
-$password          = Get-Content $securePasswordPath | ConvertTo-SecureString
-$plainPassword     = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password))
+$vbrInstallDir        = "C:\Program Files\Veeam\Backup and Replication\Backup"
+$bcoFile              = Get-ChildItem -Path $cfgBackupPath -Filter *.bco | Select-Object -Last 1
+[xml]$xmlContent      = Get-Content -Path $unattendedXmlPath
+$decryptPassword      = Get-Content $decryptPasswordPath | ConvertTo-SecureString
+$plaindecryptPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($decryptPassword))
+$dbPassword           = Get-Content $dbPasswordPath | ConvertTo-SecureString
+$plaindbPassword      = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($dbPassword))
 
 # PostgreSQL DB update parameters
 $psqlPath          = "C:\Program Files\PostgreSQL\15\bin"
@@ -21,7 +24,7 @@ $psqlHost          = "localhost"
 $serverName        = hostname
 $database          = "VeeamBackup"
 $dbUser            = "postgres"
-$env:PGPASSWORD    = $plainPassword
+$env:PGPASSWORD    = $plaindbPassword
 $table             = "backup.security.accounts"
 $userSID           = (Get-WmiObject Win32_UserAccount -Filter "name='$dstBkpAdmin'").sid
 
@@ -83,7 +86,7 @@ $unattendedElement = $xmlContent.SelectSingleNode('//unattendedConfigurationRest
 
     $encPassword = $xmlContent.SelectNodes('//property[@name="BACKUP_PASSWORD"]')
 	    if ($encPassword -ne $null) {
-		    $encPassword.SetAttribute('value', $plainPassword)
+		    $encPassword.SetAttribute('value', $plaindecryptPassword)
 	    }
     
     $dbEngine = $xmlContent.SelectNodes('//property[@name="SQLSERVER_ENGINE"]')
@@ -193,4 +196,3 @@ Write-Host "#         Update Database         #" -ForegroundColor White
 Write-Host "###################################" -ForegroundColor White
 dbUpdate
 }
-
