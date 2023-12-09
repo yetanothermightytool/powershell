@@ -13,8 +13,8 @@ Let's prepare for the scenario where the primary Veeam Backup & Replication serv
 ## Prerequisites
 - Veeam Backup & Replication v12.1
 - Configuration database running on PostgreSQL
-- Configuration Backup  [https://helpcenter.veeam.com/docs/backup/vsphere/vbr_config_schedule.html]
-- File Copy Job         [https://helpcenter.veeam.com/docs/backup/vsphere/performing_file_copy.html]
+- Configuration Backup with encryption [`See Helcenter`](https://helpcenter.veeam.com/docs/backup/vsphere/vbr_config_schedule.html)
+- File Copy Job [`See Helcenter`](https://helpcenter.veeam.com/docs/backup/vsphere/performing_file_copy.html)
 - Exported configuration restore file (see Export Configuration Answer File)
 - Stored passwords as a secure string in a txt file (see Store Passwords)
 
@@ -72,17 +72,17 @@ The script also checks whether the unattended.xml file contains the required val
 
 These values are checked and set if necessary. Adjustments can be made (simply add the corresponding node with the attribute).
 
-`BACKUP_PASSWORD`
-`SQLSERVER_ENGINE`
-`DATABASE_SERVER`
-`CONFIGURATION_FILE`
-`SWITCH_TO_RESTORE_MODE` 0
-`RESTORE_BACKUPS` 1
-`RESTORE_SESSIONS` 1
-`BACKUP_EXISTING_DATABASE` 0 
-`SERVICES_AUTOSTART` 0
-`OVERWRITE_EXISTING_DATABASE` 1
-`STOP_PROCESSES` 1 
+- `BACKUP_PASSWORD` Set while script is running. After the script ended, a dummy value will be set
+- `SQLSERVER_ENGINE` PostgreSQL will be used
+- `DATABASE_SERVER`  localhost:5432 is used
+- `CONFIGURATION_FILE` The latest backup will added
+- `SWITCH_TO_RESTORE_MODE` Set to 0 (no)
+- `RESTORE_BACKUPS` Set to 1 (yes)
+- `RESTORE_SESSIONS` Set to 1 (yes)
+- `OVERWRITE_EXISTING_DATABASE` Set to 1 (yes) The existing database will be overwritten!!
+- `BACKUP_EXISTING_DATABASE` Set to 0 (no)
+- `SERVICES_AUTOSTART` Set to 0 (no)
+- `STOP_PROCESSES` Set to 1 (yes) Use the option "ServiceCheck" when executing the script
 
 ## Notes
 Please do not run the script on the productive server. Use at your own risk.
