@@ -32,7 +32,7 @@ Modify the following variables within the script
 ## Requirements
 
 - PowerShell 5.1 or higher. (Test with version 7.x ongoing)
-- Microsoft.Graph & EntraExporter Powershell Modules
+- Microsoft.Graph & EntraExporter Powershell Modules - Tested with Microsoft.Graph 2.10.0 and EntraExporter 2.0.5 and 2.0.7 (December 2023)
 - Permissions set on the MIcrosfot Graph Command Line Tools application (see permissions).
 
 ## Permissions
@@ -48,7 +48,7 @@ The following permissions are required to export the data. Entra ID asks for the
 | `IdentityProvider.Read.All`                | Required to export data                      |
 | `Organization.Read.All`                    | Required to export data                      |
 | `User.Read.All`                            | Required to export data                      |
-| `EntitlementManagement.Read.All`            | Required to export data                      |
+| `EntitlementManagement.Read.All`           | Required to export data                      |
 | `UserAuthenticationMethod.Read.All`        | Required to export data                      |
 | `IdentityUserFlow.Read.All`                | Required to export data                      |
 | `APIConnectors.Read.All`                   | Required to export data                      |
