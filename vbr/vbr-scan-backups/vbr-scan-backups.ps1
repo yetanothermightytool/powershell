@@ -55,12 +55,12 @@ if ($bkpObjects.Count -eq 0) {
                 exit
             }
         } else {
-            Write-Host "No YARA rule selected. Using all YARArules." -ForegroundColor Yellow
+            Write-Host "You pressed Enter! Let's use all YARA rules." -ForegroundColor Yellow
             $selectedYaraRules = $yaraRules
         }
     } else {
         
-        Write-Host "You pressed Enter! Let's use all YARA rules." -ForegroundColor Yellow
+        Write-Host "No YARA rule selected. Using all YARA rules." -ForegroundColor Yellow
         $selectedYaraRules = $yaraRules
        }
 
