@@ -21,9 +21,6 @@ This PowerShell script is designed for Veeam Backup & Replication to manage susp
 - Import custom settings into Veeam Backup & Replication
 
 ## Parameters
-
-
-
 - `List`
 List all entries in the C:\Program Files\Veeam\Backup and Replication\Backup\SuspiciousFiles.xml file
 - `Search`
@@ -58,7 +55,7 @@ Add *.thisisnotOK into the suspicious files list
 
 ## Version History
 - 1.0
-  - Intial version
+  - Initial version
 
 ## Disclaimer
 This script is not officially supported by Veeam Software. Use it at your own risk.
