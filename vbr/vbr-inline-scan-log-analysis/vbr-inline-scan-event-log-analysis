@@ -7,7 +7,7 @@
  .NOTES  
     File Name  : vbr-inline-scan-event-log-analysis
     Author     : Stephan "Steve" Herzig
-    Requires   : PowerShell, Veeam Backup & Replication v12.1.pt-library-67/vbr-securerestore-lnx-ps1-secure-restore-for-linux-vm-4617
+    Requires   : PowerShell, Veeam Backup & Replication v12.1.
 .VERSION
 1.0
 #>
