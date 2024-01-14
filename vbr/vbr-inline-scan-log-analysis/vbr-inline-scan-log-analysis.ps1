@@ -46,7 +46,7 @@ foreach ($line in $logContent) {
             InPlaceEncryptionMagic  = $inPlaceEncryptionMagic
             HiEncryption            = $hiEncryption
             LoEncryption            = $loEncryption
-            Text                    = $text
+            RansomwareNotes         = $text
         }
                 
         $capturingMetrics = $false
