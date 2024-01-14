@@ -1,0 +1,51 @@
+<# 
+.NAME
+    Veeam Backup & Replication - Inline Scan Log Windows Event Log Analysis
+.DESCRIPTION
+    This Powershell script retrieves and formats specific event log entries related to potential malware activity from the 'Veeam Backup' Windows event log. 
+    It extracts information such as the date, VM name and the associated rule.
+ .NOTES  
+    File Name  : vbr-inline-scan-event-log-analysis
+    Author     : Stephan "Steve" Herzig
+    Requires   : PowerShell, Veeam Backup & Replication v12.1.pt-library-67/vbr-securerestore-lnx-ps1-secure-restore-for-linux-vm-4617
+.VERSION
+1.0
+#>
+Clear-Host
+# Variables
+$eventList = @()
+
+# Get event with ID 41600 (Malware activity detected) from the last 30 days
+$events = Get-WinEvent -FilterHashtable @{
+    LogName   = 'Veeam Backup'
+    ID        = 41600
+    StartTime = (Get-Date).AddDays(-30)
+}
+
+# Start extracting the information
+foreach ($event in $events) {
+    # Some events store the data in multiple lines
+    $message = $event.Message -replace "`r`n", " "
+        
+    if ($message -match "Potential malware activity detected.*for OIB: .* \(([^)]+)\), rule: ([^,]+).*by user: ([^\.]+)\.") {
+        $vmName = $matches[1]
+        $rule   = $matches[2]
+                
+        $eventList += [PSCustomObject]@{
+            Date    = $event.TimeCreated
+            VMName  = $vmName
+            Rule    = $rule
+        }
+    }
+}
+
+if ($eventList.Count -gt 0) {
+    Write-Host "Detected malware activites in the last 30 days" -ForegroundColor Cyan
+    #$eventList | Format-Table -AutoSize
+    $tableString = $eventList | Format-Table -AutoSize | Out-String
+    Write-Host $tableString -ForegroundColor White
+}
+
+else {
+    Write-Host "No malware activitiy events (Event-ID 41600) found." -ForegroundColor Yellow
+}
