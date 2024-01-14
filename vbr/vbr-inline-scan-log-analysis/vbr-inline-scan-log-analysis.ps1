@@ -2,12 +2,12 @@
 .NAME
     Veeam Backup & Replication - Inline Scan Log Analysis
 .DESCRIPTION
-    This PowerShell script reads the Svc.VeeamDataAnalyzer.log file containing entries related to the inline scan.
+    This Powershell script reads the Svc.VeeamDataAnalyzer.log file containing entries related to the inline scan.
     The script displays which metrics were identified during the analysis in a tabular format.
  .NOTES  
     File Name  : vbr-inline-scan-log-analysis
     Author     : Stephan "Steve" Herzig
-    Requires   : PowerShell, Veeam Backup & Replication v12.1.pt-library-67/vbr-securerestore-lnx-ps1-secure-restore-for-linux-vm-4617
+    Requires   : PowerShell, Veeam Backup & Replication v12.1.
 .VERSION
 1.0
 #>
