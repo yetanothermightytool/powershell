@@ -3,7 +3,7 @@ param(
     [String] $JobName
 )
 
-Connect-VBRServer -Server localhost
+Connect-VBRServer -Server hq-vbr1.demolab.local
 
 # Get backup job sessions
 $vbrBkpSessions = Get-VBRBackupSession -Name "*$JobName*" -WarningAction Ignore
@@ -17,6 +17,7 @@ $matchedEntries  = foreach ($rp in $vbrRp) {
     
     if ($matchingJob) {
         [PSCustomObject]@{
+            Id               = $rp.Id
             JobName          = $matchingJob.Name
             VMName           = $rp.Name
             EndTimeUTC       = $matchingJob.EndTimeUTC
