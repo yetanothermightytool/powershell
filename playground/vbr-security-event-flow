@@ -1,0 +1,56 @@
+Clear-Host
+
+# Variables
+$startDate = (Get-Date).AddDays(-7)
+
+# Get Veeam Security related Event-ID 41600 - More IDs can be added
+Write-Host "Checking for Event-ID 41600..." -ForegroundColor Cyan
+$securityActivityEvents = Get-WinEvent -FilterHashtable @{
+    LogName    = 'Veeam Backup'
+    ID         = 41600
+    StartTime  = $startDate
+} | Where-Object { 
+    ($_.ID -eq 41600 )
+} | Sort-Object TimeCreated -Descending
+
+# Uncomment if you want to display the entries for the last 7 days
+#$securityActivityEvents | Select-Object TimeCreated, Id, @{Name='Message'; Expression={$_.Message -replace "`r`n", "`n"}} | Format-List
+
+if ($securityActivityEvents.Count -gt 0) {
+    Write-Host "Event-ID 41600 entries found..." -ForegroundColor Cyan
+    Write-Host "Getting restore point(s) marked as Suspicious or Infected..." -ForegroundColor Cyan
+    # Start VBR Part
+    Connect-VBRServer -Server localhost
+
+    # Get backup job sessions
+    $vbrBkpSessions = Get-VBRBackupSession  -WarningAction Ignore
+
+    # Get restore points
+    $vbrRp          = Get-VBRRestorePoint 
+
+    # Filter
+    $matchedEntries  = foreach ($rp in $vbrRp) {
+        $matchingJob = $vbrBkpSessions | Where-Object { $_.Id -eq $rp.JobRunId -and $rp.GetRansomwareStatus().Status -ne "Clean" }
+   
+        if ($matchingJob) {
+            [PSCustomObject]@{
+                JobName          = $matchingJob.Name
+                Id               = $rp.Id
+                VMName           = $rp.Name
+                EndTimeUTC       = $matchingJob.EndTimeUTC
+                RansomwareStatus = $rp.GetRansomwareStatus().Status
+            }
+        }
+    }
+
+    $sortedEntries = $matchedEntries | Sort-Object -Property EndTimeUTC -Descending
+    $sortedEntries | Format-Table -AutoSize
+
+    Disconnect-VBRServer
+ }
+
+ # Nothing to do
+else {
+    Write-Host "No Event ID 41600 found"
+    exit
+}
