@@ -3,7 +3,7 @@ param(
     [String] $JobName
 )
 
-Connect-VBRServer -Server hq-vbr1.demolab.local
+Connect-VBRServer -Server localhost
 
 # Get backup job sessions
 $vbrBkpSessions = Get-VBRBackupSession -Name "*$JobName*" -WarningAction Ignore
