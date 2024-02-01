@@ -2,7 +2,7 @@
 $vbrJobDetails = @()
 
 # Connect to VBR server
-Connect-VBRServer -Server hq-vbr1.demolab.local
+Connect-VBRServer -Server localhost
 
 # Get all VM Backup Jobs
 $vbrJobs = Get-VBRJob -WarningAction Ignore | Where-Object { $_.JobType -eq 'Backup' }
