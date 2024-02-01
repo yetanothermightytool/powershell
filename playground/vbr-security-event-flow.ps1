@@ -1,10 +1,11 @@
 Clear-Host
-
 # Variables
-$startDate = (Get-Date).AddDays(-7)
+$startDate          = (Get-Date).AddDays(-7)
+$winEventLogEntries = @()
 
-# Get Veeam Security related Event-ID 41600 - More IDs can be added
+# Get Veeam Security related Event-ID 41600 
 Write-Host "Checking for Event-ID 41600..." -ForegroundColor Cyan
+
 $securityActivityEvents = Get-WinEvent -FilterHashtable @{
     LogName    = 'Veeam Backup'
     ID         = 41600
@@ -13,12 +14,10 @@ $securityActivityEvents = Get-WinEvent -FilterHashtable @{
     ($_.ID -eq 41600 )
 } | Sort-Object TimeCreated -Descending
 
-# Uncomment if you want to display the entries for the last 7 days
-#$securityActivityEvents | Select-Object TimeCreated, Id, @{Name='Message'; Expression={$_.Message -replace "`r`n", "`n"}} | Format-List
-
 if ($securityActivityEvents.Count -gt 0) {
     Write-Host "Event-ID 41600 entries found..." -ForegroundColor Cyan
     Write-Host "Getting restore point(s) marked as Suspicious or Infected..." -ForegroundColor Cyan
+
     # Start VBR Part
     Connect-VBRServer -Server localhost
 
@@ -47,7 +46,25 @@ if ($securityActivityEvents.Count -gt 0) {
     $sortedEntries | Format-Table -AutoSize
 
     Disconnect-VBRServer
- }
+
+    # Display the Event ID 41600 entries, the Hostname and the message
+    foreach ($event in $securityActivityEvents) {
+        
+        # Use a regex to extract hostname from parentheses ()
+        $extractedHostname = [regex]::Match($event.Message, '\(([^)]+)\)').Groups[1].Value
+
+        # Add the modified entry to the array
+        $winEventLogEntries += [PSCustomObject]@{
+            TimeCreated       = $event.TimeCreated
+            EventId           = $event.Id           
+            Hostname          = $extractedHostname
+            Message           = $event.Message -replace "`r`n", "`n"
+        }
+    }
+     
+    $winEventLogEntries | Format-Table
+   
+}
 
  # Nothing to do
 else {
