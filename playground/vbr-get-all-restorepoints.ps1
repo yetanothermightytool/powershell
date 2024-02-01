@@ -19,6 +19,7 @@ $matchedEntries  = foreach ($rp in $vbrRp) {
     if ($matchingJob) {
         [PSCustomObject]@{
             JobName          = $matchingJob.Name
+            BackupId         = $rp.Id
             VMName           = $rp.Name
             EndTimeUTC       = $matchingJob.EndTimeUTC
             RansomwareStatus = $rp.GetRansomwareStatus().Status
