@@ -21,6 +21,7 @@ $matchedEntries  = foreach ($rp in $vbrRp) {
             JobName          = $matchingJob.Name
             BackupId         = $rp.Id
             VMName           = $rp.Name
+            StartTimeUTC     = $matchingJob.CreationTimeUTC
             EndTimeUTC       = $matchingJob.EndTimeUTC
             RansomwareStatus = $rp.GetRansomwareStatus().Status
         }
