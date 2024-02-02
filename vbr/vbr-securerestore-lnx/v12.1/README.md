@@ -8,7 +8,7 @@ Author  : Stephan "Steve" Herzig
 
 ## Purpose
 
-This script presents all restore points from a Linux, Windows VM or Agent backups to a Linux host, scans the specified restore point and marks it as infected if anything gets found. The script utilizes the Veeam Data Integration API and integrates with ClamAV for antivirus scans or YARA rules installed on the Linux host. 
+This script presents all restore points from a Linux, Windows VM or Agent backup and then mounts the selected restore point to a Linux host, scans and marks it as infected if anything gets found. The script utilizes the Veeam Data Integration API and integrates with ClamAV for antivirus scans or YARA rules installed on the Linux host. 
 
 The script displays all existing restore points for the selected host and starts the scan automatically after 15 seconds, using the last restore point.
 
