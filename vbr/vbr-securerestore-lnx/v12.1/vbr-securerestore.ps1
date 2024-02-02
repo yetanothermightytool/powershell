@@ -1,6 +1,6 @@
 <# 
 .NAME
-    Veeam Backup & Replication - Restore Point Scan Linux, Windows VM and Agent Backups - Veeam Data Platform v12.1 
+    Veeam Backup & Replication - Restore Point Scan for Linux, Windows VM and Agent Backups - Veeam Data Platform v12.1 
 .DESCRIPTION
     This script presents all restore points from a Linux, Windows VM or Agent backup and then mounts the selected restore point to a Linux host,
     scans and marks it as infected if anything gets found. The script utilizes the Veeam Data Integration API and integrates with ClamAV for 
