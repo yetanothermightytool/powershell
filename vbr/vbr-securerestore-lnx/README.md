@@ -14,6 +14,7 @@ GitHub  : https://www.github.com/yetanothermightytool
 - Generate a public/private key pair using PuTTYgen (More details https://community.veeam.com/script-library-67/vbr-securerestore-lnx-ps1-secure-restore-for-linux-vm-4617)
 - A Linux server with ClamAV installed. This Linux server needs to be added to Veeam (https://helpcenter.veeam.com/docs/backup/vsphere/add_linux_server.html)
 - A Backup Job protecting the Linux VM as well as a restore point (the script uses the latest for the Restore)
+- A Linux server with the yara package installed and the yara rule stored in the home directory of the given user under ./yara-rules/rules/
 
 ## Purpose
 
@@ -22,10 +23,10 @@ This script scans the selected system before performing the restore (restore for
 ## Parameters
  
   `Mounthost`
-_(mandatory)_ Name of the Linux server with ClamAV installed
+_(mandatory)_ Name of the Linux server with ClamAV and YARA installed
 
   `Scanhost`
-_(mandatory)_ Name of the Linux VM to be scanned and restored
+_(mandatory)_ Name of the system whose backups are to be scanned
 
   `Jobname`
 _(mandatory)_ Name of the Veeam Backup Job
