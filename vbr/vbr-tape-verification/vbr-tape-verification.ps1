@@ -1,10 +1,22 @@
+<# 
+.NAME
+    Veeam Backup & Replication - Tape Verification in Veeam Backup & Replication
+.DESCRIPTION
+    This script helps you to regularly check the status of tape backups, marks them as checked with time stamps and
+    checks the tapes again after a certain time (default 270 days).
+.NOTES  
+    File Name  : vbr-tape-verification.ps1
+    Author     : Stephan "Steve" Herzig
+.VERSION
+    1.0
+#>
 Param(
     [Parameter(Mandatory=$true)]
     $MediaPool,
     [Parameter(Mandatory=$false)]
     [int]$NumberofTapes = 1,
     [Parameter(Mandatory=$false)]
-    [int]$CheckInterval = 90
+    [int]$CheckInterval = 270
 )
 Clear-Host
 Connect-VBRServer -Server localhost
@@ -126,4 +138,3 @@ if ($tapesToVerify.Count -eq 0) {
 }
 
 Disconnect-VBRServer
-
