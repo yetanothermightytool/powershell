@@ -21,6 +21,10 @@ This script automates the process of verifying tape backups in Veeam Backup & Re
 
 ```powershell
 .\vbr-tape-verification.ps1 -MediaPool "Standard Media Pool 01" -NumberofTapes 2
+```
+
+## Notes
+Tested with Veeam Backup & Replication v12.1. 
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
