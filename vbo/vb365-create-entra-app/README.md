@@ -1,5 +1,7 @@
 # Veeam Backup for Microsoft 365 - Entra Application Creation Script
 
+**Update February 2024 - Please note: The script does not work with the current release of the Microsoft.Graph Powershell Module v2.13.0/1. The last tested version with which the script works is v2.9.0**
+
 This PowerShell script is designed to create an Entra/Azure application for authentication, backup, and recovery from Veeam's Backup for Microsoft 365. It is intended for use by a security or Entra administrator to provide the necessary Entra application for Veeam Backup for Microsoft 365.
 
 **Note:** Use this script only if you cannot use the product's built-in functionality to create the application. 
@@ -79,6 +81,9 @@ Create an application named "VB365 Backup Application" with the required permiss
 ```
 
 ## Notes
+
+**Update February 2024 - Please note: The script does not work with the current release of the Microsoft.Graph Powershell Module v2.13.0/1. The last tested version with which the script works is v2.9.0**
+
 - The authorizations correspond to the requirements for authorizations for Modern App-Only Authentication. [Veeam Helpcenter](https://helpcenter.veeam.com/docs/vbo365/guide/ad_app_permissions_sd.html)
 - Requirements based on version 7.0 of Veeam Bakcup for Microsoft 365
 
