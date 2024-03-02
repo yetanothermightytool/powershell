@@ -41,6 +41,7 @@ This script has been tested with the following versions of Veeam Backup for Offi
 * 1.1
     * Fixing Defender Output when no threads have been found
     * Current version only restores data from the latest restore point
+    * Checks if a retore session is already running. If yes, the scan will not start.
     * General fixes / Code cleanup       
 * 1.0
     * Inital version using basic authentication
