@@ -2,10 +2,9 @@
 
 ## Description
 ~~~~
-Version : 1.3 (July 30th 2023)
+Version : 1.4 (March 1st 2024)
 Requires: Veeam Backup & Replication
 Author  : Stephan "Steve" Herzig
-GitHub  : https://www.github.com/yetanothermightytool
 ~~~~
 
 ## Prerequisites
@@ -36,12 +35,14 @@ _(optional)_ Default is C:\Temp\log.txt
 ## Notes
 
 This script has been tested with the following versions of Veeam Backup & Replication
-- v11 latest
-- v12 latest
+- v12.1.1
 
 **Please note this script is unofficial and is not created nor supported by Veeam Software.**
 
 ## Version History
+* 1.4
+    * New logger
+    * Using new Powershell cmdlets for V12 (Get-VBRUnstructured*)
 * 1.3
     * New function to log the activities - Parameter LogFilePath. Default C:\Temp\log.txt
     * Automatically selects restore point 0 after 30 seconds
