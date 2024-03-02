@@ -18,10 +18,12 @@ The script connects to the local Veeam Backup for Microsoft 365 server, restores
 _(mandatory)_ Username User name from which the data is to be restored
 
 `MaxFiles`
-_(optional)_ Maximum number of files to be restored. Default C:\Scripts\vb365\scanner\
+_(mandatory)_ Maximum number of files to be restored. Default C:\Scripts\vb365\scanner\
+
+`ScanPath`
+_(optional)_ Restore path. Default C:\Scripts\vb365\scanner\
 
 **Make sure that there is sufficient disk space in the directory where the files are to be restored. Also use an empty directory to save the data, as the script cleans everything up after execution**
-
 
 ## Example - Restore 100 files from the backup data of John Doe  :
 
