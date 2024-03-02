@@ -12,7 +12,7 @@
     Author     : Stephan Herzig, Veeam Software  (stephan.herzig@veeam.com)
     Requires   : PowerShell 
 .VERSION
-    1.3
+    1.4 
 #>
 param(
     [Parameter(mandatory=$true)]
@@ -33,8 +33,8 @@ function BackupScan-Logentry {
     )
 
     $timestamp = Get-Date -Format "dd-MM-yyyy HH:mm:ss"
-    $logEntry = "$timestamp - $Message"
-    Add-Content -Path $LogFilePath -Value $logEntry
+    $logEntry = "$timestamp - $Message - Scanning Restore Point $Scanhost *** $($restorePointCreationTime.ToString("dd-MM-yyyy HH:mm:ss"))"
+    Add-Content -Path $logFilePath -Value $logEntry
 }
 function rpLister {
 Param (
@@ -64,10 +64,10 @@ $Output = $Result
 Clear-Host
 
 # Get NAS Backup Job informations
-$nasbackup          = Get-VBRNASBackup -Name $Jobname
+$nasbackup          = Get-VBRUnstructuredBackup -Name $Jobname
 
 # Get the latest restore point
-$restorepoint       = Get-VBRNASBackupRestorePoint -NASBackup $nasbackup | Sort-Object -Property CreationTime -Descending
+$restorepoint       = Get-VBRUnstructuredBackupRestorePoint -Backup $nasbackup | Sort-Object -Property CreationTime -Descending
 
 # If no restore points have been found
 if ($restorepoint.Count -eq 0) {
@@ -77,7 +77,7 @@ if ($restorepoint.Count -eq 0) {
 # Present the result using the function rpLister
    rpLister $restorepoint
 }
-$stopTime = [datetime]::Now.AddSeconds(30)
+$stopTime       = [datetime]::Now.AddSeconds(30)
 $restorePointID = 0
 
 Write-Host -NoNewline "Please select restore point (Id) - Automatic selection of restore point 0 after 30 seconds:"
@@ -101,9 +101,11 @@ Write-Host ""
 # Get the selected restore point
 $selectedRp               = $restorepoint | Select-Object -Index $restorePointID 
 
+# Store the restore point's creation time in a variable
+$restorePointCreationTime = $selectedRp.CreationTime
 
 # Set the permissions - Permissions can be adjusted
-$permissions        = New-VBRNASPermissionSet -RestorePoint $restorepoint -Owner "Administrator" -AllowSelected -PermissionScope ("Administrator")
+$permissions        = New-VBRNASPermissionSet -RestorePoint $selectedRp -Owner "Administrator" -AllowSelected -PermissionScope ("Administrator")
 
 # Start the Instant NAS Recovery session - Reason can be changed
 $restoresession     = Start-VBRNASInstantRecovery -RestorePoint $selectedRp -Permissions $permissions -Reason "Security Scan"
