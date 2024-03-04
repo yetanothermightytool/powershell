@@ -4,7 +4,7 @@
 .DESCRIPTION
     This script restores the specified number file(s) from the latest OneDrive Restore Point and scans them using Microsoft Defender Antivirus
 .NOTES  
-    File Name  : vb365-od-single-scan.ps1
+    File Name  : vb365-odb-single-scan.ps1
     Author     : Stephan "Steve" Herzig
     Requires   : PowerShell, Veeam Backup for Microsoft 365
 .VERSION
