@@ -1,4 +1,4 @@
-# Veeam Backup for Microsoft 365 - OneDrive Backup Scanner
+# Veeam Backup for Microsoft 365 - OneDrive for Business Backup Scanner
 
 
 ## Version
@@ -9,7 +9,7 @@ Author  : Steve Herzig
 ~~~~
 
 ## Description
-This Powershell script restores files from the lastest One Drive for Business restore point and scans them for threats using Windows Defender. It requires parameters such as the target user and maximum number of files to scan. 
+This Powershell script restores files from the lastest OneDrive for Business restore point and scans them for threats using Windows Defender. It requires parameters such as the target user and maximum number of files to scan. 
 
 The script connects to the local Veeam Backup for Microsoft 365 server, restores files for the specified user, scans them for threats using Windows Defender, and provides detailed threat information if any are found. Finally, it cleans up the scanned files and disconnects 
 
