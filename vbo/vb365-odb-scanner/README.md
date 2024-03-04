@@ -28,7 +28,7 @@ _(optional)_ Restore path. Default C:\Scripts\vb365\scanner\
 ## Example - Restore 100 files from the backup data of John Doe  :
 
 ```powershell
-.\vb365-od-single-scan.ps1 -User "John Doe" -MaxFiles 100
+.\vb365-odb-single-scan.ps1 -User "John Doe" -MaxFiles 100
 ```
 
 ## Notes
