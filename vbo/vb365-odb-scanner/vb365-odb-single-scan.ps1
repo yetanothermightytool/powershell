@@ -1,21 +1,22 @@
 <# 
 .NAME
-    Veeam Backup for Microsoft 365 - OneDrive Backup Scanner
+    Veeam Backup for Microsoft 365 - OneDrive for Business Backup Scanner
 .DESCRIPTION
-    This script restores the specified number file(s) from the latest OneDrive Restore Point and scans them using Microsoft Defender Antivirus
+    This script restores the specified number file(s) from the latest OneDrive for Business Restore Point and scans them using Microsoft Defender Antivirus
 .NOTES  
     File Name  : vb365-odb-single-scan.ps1
     Author     : Stephan "Steve" Herzig
     Requires   : PowerShell, Veeam Backup for Microsoft 365
 .VERSION
-    1.1
+    1.2
 #>
 param(
         [Parameter(Mandatory = $true)]
         [String] $User,
         [Parameter(Mandatory = $true)]
         [String] $MaxFiles,
-        [String] $ScanPath   = "C:\Scripts\vb365\scanner\"
+        [String] $File,
+        [String] $ScanPath   = "D:\Scripts\vb365\scanner\"
         )
 Clear-Host
 Connect-VBOServer -Server localhost
@@ -37,12 +38,22 @@ $session        = Get-VEODRestoreSession
 # Get specific User
 $username       = Get-VEODUser -Session $session -Name $User
 
-# Get information about all files
-$allFiles       = Get-VEODDocument -User $username -Recurse
-Write-Host "Total files found in restore point" $allFiles.Count -ForegroundColor Cyan
+if ($File) 
+    {
+    $allfiles         = Get-VEODDocument -User $username -Name $File -Recurse
+    }
+elseif ([string]::IsNullOrEmpty($File))
+    { 
+    $allFiles       = Get-VEODDocument -User $username -Recurse
+    Write-Host "Total files found in restore point" $allFiles.Count -ForegroundColor Cyan
+    }
 
 # Store the selected maximum number of files
-$filteredFiles  = $AllFiles[0..($MaxFiles - 1)]
+if ($AllFiles.Count -lt $MaxFiles) {
+    $filteredFiles  = $AllFiles
+} else {
+    $filteredFiles  = $AllFiles[0..($MaxFiles - 1)]
+}
 
 # Save file(s) in the ScanPath
 Save-VEODDocument -Document $filteredFiles -Path $ScanPath | Out-Null
@@ -108,13 +119,18 @@ if ($threatCount -eq 0) {
         }
     }
 
-    $eventObjects | Format-Table -Property TimeCreated, Names, Category, Path -AutoSize
+    foreach ($obj in $eventObjects) {
+    Write-Host $obj.TimeCreated -ForegroundColor White -NoNewline; Write-Host "`t" -NoNewline;
+    Write-Host $obj.Names       -ForegroundColor White -NoNewline; Write-Host "`t" -NoNewline;
+    Write-Host $obj.Category    -ForegroundColor White -NoNewline; Write-Host "`t" -NoNewline;
+    Write-Host $obj.Path        -ForegroundColor White;
+}
 }
 
 # Cleaning Up
 Write-Host "Removing downloaded files..." -ForegroundColor Cyan
 Remove-Item -Path $ScanPath\* -Recurse -Force
 
-#Stop Exchange Restore Session and disconnect from VB365 server
+# Stop Restore session and disconnect from VB365 server
 Stop-VEODRestoreSession -Session $session
 Disconnect-VBOServer
