@@ -21,14 +21,14 @@ _(mandatory)_ Username User name from which the data is to be restored
 _(mandatory)_ Maximum number of files to be restored. Default C:\Scripts\vb365\scanner\
 
 `File`
-_(optional)_ File name or file extension (e. g. .exe) for single or specific files scan.
+_(optional)_ File name or file extension (e. g. *.exe) for single or specific files scan.
 
 `ScanPath`
 _(optional)_ Restore path. Default C:\Scripts\vb365\scanner\
 
 **Make sure that there is sufficient disk space in the directory where the files are to be restored. Also use an empty directory to save the data, as the script cleans everything up after execution**
 
-## Example - Restore 100 files from the backup data of John Doe  :
+## Example - Restore 100 files from the backup data of John Doe:
 
 ```powershell
 .\vb365-odb-single-scan.ps1 -User "John Doe" -MaxFiles 100
@@ -44,6 +44,7 @@ This script has been tested with the following versions of Veeam Backup for Offi
 * 1.2
     * Single File or specific file extension scan
     * Colorized output
+    * Corrected typos wrong product names
 * 1.1
     * Fixing Defender Output when no threads have been found
     * Current version only restores data from the latest restore point
