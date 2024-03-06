@@ -3,7 +3,7 @@
 
 ## Version
 ~~~~
-Version : 1.1 (March 1st, 2024)
+Version : 1.2 (March 6th, 2024)
 Requires: Veeam Backup for Microsoft 365 v7 or later
 Author  : Steve Herzig
 ~~~~
@@ -19,6 +19,9 @@ _(mandatory)_ Username User name from which the data is to be restored
 
 `MaxFiles`
 _(mandatory)_ Maximum number of files to be restored. Default C:\Scripts\vb365\scanner\
+
+`File`
+_(optional)_ File name or file extension (e. g. .exe) for single or specific files scan.
 
 `ScanPath`
 _(optional)_ Restore path. Default C:\Scripts\vb365\scanner\
@@ -38,6 +41,9 @@ This script has been tested with the following versions of Veeam Backup for Offi
   - v7.0 (latest)
 
 ## Version History
+* 1.2
+    * Single File or specific file extension scan
+    * Colorized output
 * 1.1
     * Fixing Defender Output when no threads have been found
     * Current version only restores data from the latest restore point
