@@ -12,7 +12,7 @@
     Author     : Stephan "Steve" Herzig
     Requires   : PowerShell, Veeam Backup & Replication v12.1, Linux host with ClamAV installed, OpenSSH Keyfile
 .VERSION
-1.0
+1.1
 #>
 Param(
     [Parameter(Mandatory=$true)]
@@ -52,7 +52,8 @@ $Output = $Result
         $RestoreTable = @{ Expression={ $Global:n;$Global:n++ };Label="Id";Width=5;Align="center" }, `
         @{ Expression={ $_.VmName };Label="Server Name";Width=25;Align="left" }, `
         @{ Expression={ $_.CreationTime };Label="Creation Time";Width=25;Align="left" }, `
-        @{ Expression={ $_.Type };Label="Type";Width=10;Align="left" }
+        @{ Expression={ $_.Type };Label="Type";Width=10;Align="left" },
+        @{ Expression={ $_.GetRansomwareStatus().Status };Label="Malware";Width=10;Align="left" }
     }
     end {
  
