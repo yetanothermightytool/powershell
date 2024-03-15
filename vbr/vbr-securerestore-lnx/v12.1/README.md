@@ -1,7 +1,7 @@
 # Veeam Backup & Replication - Restore Point Scan for Linux, Windows VM and Agent Backups - Veeam Data Platform v12.1 
 
 ~~~~
-Version : 1.0 (February 2nd 2024)
+Version : 1.1 (March 15th 2024)
 Requires: Veeam Backup & Replication v12.1
 Author  : Stephan "Steve" Herzig
 ~~~~
@@ -65,5 +65,7 @@ This script has been tested with the following versions of Veeam Backup & Replic
 
 
 ## Version History
+* 1.1
+   * Malware Status (Infected/Clean) displayed in Restore Point selection menu 
 * 1.0
    * Initial Release
