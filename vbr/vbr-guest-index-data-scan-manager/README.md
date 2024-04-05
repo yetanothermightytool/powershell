@@ -3,7 +3,7 @@
 
 ## Description
 ~~~~
-Version : 1.0 (January 11th 2024)
+Version : 1.1 (April 5th 2024)
 Requires: Veeam Backup & Replication v12.1
 Author  : Stephan "Steve" Herzig
 ~~~~
@@ -54,6 +54,8 @@ Add *.thisisnotOK into the suspicious files list
 ```
 
 ## Version History
+- 1.1
+   - Bug-Fixes
 - 1.0
   - Initial version
 
