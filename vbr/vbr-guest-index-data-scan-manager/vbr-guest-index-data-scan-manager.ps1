@@ -10,7 +10,7 @@
     Author     : Stephan "Steve" Herzig
     Requires   : PowerShell, Veeam Backup & Replication v12.1,ary-67/vbr-securerestore-lnx-ps1-secure-restore-for-linux-vm-4617
 .VERSION
-1.0
+1.1
 #>
 param (
     [switch]$List,
@@ -23,8 +23,9 @@ param (
     [Switch]$ExportCSV
 )
 Clear-Host
+Connect-VBRServer -Server localhost
 # XML file handling - Default VBR intallation directory is C: drive
-$suspiciousXMLFile   = "D:\Program Files\Veeam\Backup and Replication\Backup\SuspiciousFiles.xml"
+$suspiciousXMLFile   = "C:\Program Files\Veeam\Backup and Replication\Backup\SuspiciousFiles.xml"
 $xmlContent          = Get-Content -Path $suspiciousXMLFile -Raw
 $entries             = Select-String -InputObject $xmlContent -Pattern "<fileMask>.*?</fileMask>" -AllMatches | ForEach-Object { $_.Matches.Value }
 
@@ -117,4 +118,6 @@ if ($CustomExclude){
     Write-Host "Import into Veeam Backup & Replication" -ForegroundColor White
     Import-VBRMalwareDetectionExtensionList -Path $customXMLPath
 }
+
+Disconnect-VBRServer
 
