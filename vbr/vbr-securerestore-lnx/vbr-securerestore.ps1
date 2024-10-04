@@ -124,7 +124,7 @@ while ([datetime]::Now -lt $stopTime -and -not [console]::KeyAvailable) {
 
 if ([console]::KeyAvailable) {
     $restorePointID = [console]::ReadLine()
-    while (!($restorePointID -lt $Result.Count -and $restorePointID -ge 0)) {
+    while (($restorePointID -ge $Result.Count -or $restorePointID -lt 0)) {
         $restorePointID = [console]::ReadLine()
     }
 } 
