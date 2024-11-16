@@ -1,0 +1,1228 @@
+{
+  "v": 1,
+  "id": "d93e952f-0399-4834-8771-3fa1d1e54fff",
+  "rev": 1,
+  "name": "Veeam Data Platform Content Pack (Community Project)",
+  "summary": "This Graylog content package extracts and visualizes Veeam Data Platform syslog data. ",
+  "description": "# Veeam Data Platform Content Pack (Community Project)\n<br><br>\nThis content pack lets you monitor various security-related activities in your Veeam infrastructure. The Veeam Security Dashboard visualizes security-relevant Syslog messages from Veeam Backup & Replication. The content pack contains:\n<br>\n- The Veeam Security Dashboard<br>\n- Graylog TCP Syslog Input with configured extractors<br>\n- A Pipeline with assigned Pipeline Rules for assigning the criticality to the ingested data<br>\n- A dedicated Stream with the Pipeline assigned<br>\n<br>\n\nFor more details, see [README.md](https://github.com/yetanothermightytool/powershell/blob/master/vbr/syslog/graylog/README.md) on GitHub.\n<br><br>\n**Please note that this Graylog content pack is community driven and is not created nor supported by Veeam Software.**",
+  "vendor": "Veeam Community Project",
+  "url": "https://github.com/yetanothermightytool/powershell/tree/master/vbr/syslog/graylog",
+  "parameters": [
+    {
+      "name": "syslog_port",
+      "title": "Syslog Port",
+      "description": "The TCP port on which the Syslog listener should be running. Default is 1514.",
+      "type": "integer",
+      "default_value": 1514
+    }
+  ],
+  "entities": [
+    {
+      "v": "1",
+      "type": {
+        "name": "pipeline_rule",
+        "version": "1"
+      },
+      "id": "b69db87d-9291-40a5-9f97-9e26f4cc65cf",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "assign_criticality_medium"
+        },
+        "description": {
+          "@type": "string",
+          "@value": ""
+        },
+        "source": {
+          "@type": "string",
+          "@value": "rule \"assign_criticality_medium\"\nwhen\n    has_field(\"instanceId\") &&\n    (\n        to_string($message.instanceId) == \"24040\" ||\n        to_string($message.instanceId) == \"24060\" ||\n        to_string($message.instanceId) == \"24070\" ||\n        to_string($message.instanceId) == \"26100\" ||\n        to_string($message.instanceId) == \"26110\" ||\n        to_string($message.instanceId) == \"28100\" ||\n        to_string($message.instanceId) == \"28970\" ||\n        to_string($message.instanceId) == \"29800\" ||\n        to_string($message.instanceId) == \"31210\" ||\n        to_string($message.instanceId) == \"36013\" ||\n        to_string($message.instanceId) == \"40500\"\n    )\nthen\n    set_field(\"criticality\", \"Medium\");\nend\n"
+        }
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "pipeline_rule",
+        "version": "1"
+      },
+      "id": "ee5b767a-45c4-4c15-b271-28e60d3692ab",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "assign_criticality_information"
+        },
+        "description": {
+          "@type": "string",
+          "@value": ""
+        },
+        "source": {
+          "@type": "string",
+          "@value": "rule \"assign_criticality_information\"\nwhen\n    has_field(\"instanceId\") &&\n    (\n        to_string($message.instanceId) == \"24020\" ||\n        to_string($message.instanceId) == \"30400\" ||\n        to_string($message.instanceId) == \"30500\" ||\n        to_string($message.instanceId) == \"31500\" ||\n        to_string($message.instanceId) == \"31600\" ||\n        to_string($message.instanceId) == \"41610\" ||\n        to_string($message.instanceId) == \"42210\" ||\n        to_string($message.instanceId) == \"42230\" ||\n        to_string($message.instanceId) == \"42270\" ||\n        to_string($message.instanceId) == \"42404\" ||\n        to_string($message.instanceId) == \"42500\"\n    )\nthen\n    set_field(\"criticality\", \"Information\");\nend\n"
+        }
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "pipeline",
+        "version": "1"
+      },
+      "id": "b35b4fad-b36d-4f47-8e99-75c199fe5e9c",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "Veeam Backup & Replication Pipeline"
+        },
+        "description": {
+          "@type": "string",
+          "@value": ""
+        },
+        "source": {
+          "@type": "string",
+          "@value": "pipeline \"Veeam Backup & Replication Pipeline\"\nstage 0 match either\nrule \"assign_criticality_critical\"\nrule \"assign_criticality_high\"\nrule \"assign_criticality_information\"\nrule \"assign_criticality_medium\"\nend"
+        },
+        "connected_streams": [
+          {
+            "@type": "string",
+            "@value": "27626f16-213e-4abd-8ac8-e0f46d61f155"
+          }
+        ]
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "pipeline_rule",
+        "version": "1"
+      },
+      "id": "a2aca796-2e5c-4764-869a-4ff0d1727432",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "assign_criticality_high"
+        },
+        "description": {
+          "@type": "string",
+          "@value": ""
+        },
+        "source": {
+          "@type": "string",
+          "@value": "rule \"assign_criticality_high\"\nwhen\n    has_field(\"instanceId\") &&\n    (\n        to_string($message.instanceId) == \"115\" ||\n        to_string($message.instanceId) == \"23420\" ||\n        to_string($message.instanceId) == \"24030\" ||\n        to_string($message.instanceId) == \"24050\" ||\n        to_string($message.instanceId) == \"24080\" ||\n        to_string($message.instanceId) == \"27000\" ||\n        to_string($message.instanceId) == \"28500\" ||\n        to_string($message.instanceId) == \"28920\" ||\n        to_string($message.instanceId) == \"28950\" ||\n        to_string($message.instanceId) == \"29120\" ||\n        to_string($message.instanceId) == \"29150\" ||\n        to_string($message.instanceId) == \"30100\" ||\n        to_string($message.instanceId) == \"31200\" ||\n        to_string($message.instanceId) == \"31700\" ||\n        to_string($message.instanceId) == \"31900\" ||\n        to_string($message.instanceId) == \"32120\" ||\n        to_string($message.instanceId) == \"40205\" ||\n        to_string($message.instanceId) == \"40400\" ||\n        to_string($message.instanceId) == \"40600\" ||\n        to_string($message.instanceId) == \"42260\" ||\n        to_string($message.instanceId) == \"42280\" ||\n        to_string($message.instanceId) == \"42290\" ||\n        to_string($message.instanceId) == \"42302\" ||\n        to_string($message.instanceId) == \"42405\"\n    )\nthen\n    set_field(\"criticality\", \"High\");\nend\n"
+        }
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "dashboard",
+        "version": "2"
+      },
+      "id": "08a56992-61ff-4810-92f3-2b19b8ac0948",
+      "data": {
+        "summary": {
+          "@type": "string",
+          "@value": ""
+        },
+        "search": {
+          "queries": [
+            {
+              "id": "373273e0-52c2-4962-872a-a84831934fb1",
+              "timerange": {
+                "from": 300,
+                "type": "relative"
+              },
+              "filters": [],
+              "query": {
+                "type": "elasticsearch",
+                "query_string": ""
+              },
+              "search_types": [
+                {
+                  "query": {
+                    "type": "elasticsearch",
+                    "query_string": "instanceId:42401 OR instanceId:42402 OR instanceId:42404"
+                  },
+                  "name": "chart",
+                  "timerange": {
+                    "from": 86400,
+                    "type": "relative"
+                  },
+                  "column_limit": null,
+                  "streams": [
+                    "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                  ],
+                  "row_limit": null,
+                  "series": [
+                    {
+                      "type": "count",
+                      "id": "count(instanceId)",
+                      "field": "instanceId"
+                    }
+                  ],
+                  "filter": null,
+                  "rollup": true,
+                  "row_groups": [],
+                  "type": "pivot",
+                  "stream_categories": [],
+                  "id": "34f27144-1785-467a-a268-6c3d3bee33bb",
+                  "filters": [],
+                  "column_groups": [],
+                  "sort": []
+                },
+                {
+                  "query": {
+                    "type": "elasticsearch",
+                    "query_string": "instanceId:41600 OR instanceId:42220 OR instanceId:25500 OR instanceId:26100 OR instanceId:28100 OR instanceId:28970 OR instanceId:29800 OR instanceId:30100 OR instanceId:30400 OR instanceId:31500 OR instanceId:31600 OR instanceId:31700 OR instanceId:31800 OR instanceId:31900 OR instanceId:40204 OR instanceId:40400 OR instanceId:40500 OR instanceId:40600 OR instanceId:42260 OR instanceId:42270 OR instanceId:42302 OR instanceId:23090 OR instanceId:23420 OR instanceId:24080 OR instanceId:28200 OR instanceId:28500 OR instanceId:28920 OR instanceId:28950 OR instanceId:28980 OR instanceId:29120 OR instanceId:29150 OR instanceId:29900 OR instanceId:30200 OR instanceId:30500 OR instanceId:32120 OR instanceId:32200 OR instanceId:41402 OR instanceId:115 OR instanceId:31210 OR instanceId:31400 OR instanceId:40201 OR instanceId:40205 OR instanceId:40206 OR instanceId:41610 OR instanceId:41800 OR instanceId:41810 OR instanceId:42230 OR instanceId:42301 OR instanceId:42401 OR instanceId:42402 OR instanceId:42404 OR instanceId:42405 OR instanceId:21224 OR instanceId:26110 OR instanceId:31200 OR instanceId:36013 OR instanceId:42210 OR instanceId:42403 OR instanceId:42500 OR instanceId:27000 OR instanceId:24060 OR instanceId:24030 OR instanceId:24050 OR instanceId:24070 OR instanceId:24040 OR instanceId:42290\r\n"
+                  },
+                  "name": "chart",
+                  "timerange": {
+                    "from": 86400,
+                    "type": "relative"
+                  },
+                  "column_limit": null,
+                  "streams": [
+                    "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                  ],
+                  "row_limit": null,
+                  "series": [
+                    {
+                      "type": "count",
+                      "id": "count(instanceId)",
+                      "field": "instanceId"
+                    }
+                  ],
+                  "filter": null,
+                  "rollup": true,
+                  "row_groups": [],
+                  "type": "pivot",
+                  "stream_categories": [],
+                  "id": "ed979870-02ab-4913-979a-6e3e2915b323",
+                  "filters": [],
+                  "column_groups": [],
+                  "sort": []
+                },
+                {
+                  "query": {
+                    "type": "elasticsearch",
+                    "query_string": "criticality:Critical OR criticality:High"
+                  },
+                  "name": null,
+                  "timerange": {
+                    "from": 86400,
+                    "type": "relative"
+                  },
+                  "offset": 0,
+                  "streams": [
+                    "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                  ],
+                  "filter": null,
+                  "decorators": [],
+                  "type": "messages",
+                  "stream_categories": [],
+                  "id": "3219fcea-2660-43b5-bb5a-6b7d8fd66dfa",
+                  "limit": 150,
+                  "filters": []
+                },
+                {
+                  "query": {
+                    "type": "elasticsearch",
+                    "query_string": ""
+                  },
+                  "name": "chart",
+                  "timerange": {
+                    "from": 86400,
+                    "type": "relative"
+                  },
+                  "column_limit": null,
+                  "streams": [
+                    "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                  ],
+                  "row_limit": null,
+                  "series": [
+                    {
+                      "type": "count",
+                      "id": "count(criticality)",
+                      "field": "criticality"
+                    }
+                  ],
+                  "filter": null,
+                  "rollup": true,
+                  "row_groups": [
+                    {
+                      "type": "values",
+                      "fields": [
+                        "criticality"
+                      ],
+                      "limit": 4,
+                      "skip_empty_values": true
+                    }
+                  ],
+                  "type": "pivot",
+                  "stream_categories": [],
+                  "id": "e7b49b57-8d32-4cf8-915d-7d7000c77487",
+                  "filters": [],
+                  "column_groups": [],
+                  "sort": []
+                },
+                {
+                  "query": {
+                    "type": "elasticsearch",
+                    "query_string": "instanceId:41600"
+                  },
+                  "name": "chart",
+                  "timerange": {
+                    "from": 86400,
+                    "type": "relative"
+                  },
+                  "column_limit": null,
+                  "streams": [
+                    "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                  ],
+                  "row_limit": null,
+                  "series": [
+                    {
+                      "type": "count",
+                      "id": "count(instanceId)",
+                      "field": "instanceId"
+                    }
+                  ],
+                  "filter": null,
+                  "rollup": true,
+                  "row_groups": [],
+                  "type": "pivot",
+                  "stream_categories": [],
+                  "id": "bd0d0c77-afdf-4228-8d7e-bc2f1f0f0ac6",
+                  "filters": [],
+                  "column_groups": [],
+                  "sort": []
+                },
+                {
+                  "query": {
+                    "type": "elasticsearch",
+                    "query_string": "instanceId:42220"
+                  },
+                  "name": "chart",
+                  "timerange": {
+                    "from": 86400,
+                    "type": "relative"
+                  },
+                  "column_limit": null,
+                  "streams": [
+                    "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                  ],
+                  "row_limit": null,
+                  "series": [
+                    {
+                      "type": "count",
+                      "id": "count(instanceId)",
+                      "field": "instanceId"
+                    }
+                  ],
+                  "filter": null,
+                  "rollup": true,
+                  "row_groups": [],
+                  "type": "pivot",
+                  "stream_categories": [],
+                  "id": "bf670416-be75-48ba-9dc1-a6cab2ef9201",
+                  "filters": [],
+                  "column_groups": [],
+                  "sort": []
+                }
+              ]
+            }
+          ],
+          "parameters": [],
+          "requires": {},
+          "owner": "admin",
+          "created_at": "2024-11-14T20:33:39.220Z"
+        },
+        "created_at": "2024-11-14T11:54:43.798Z",
+        "requires": {},
+        "state": {
+          "373273e0-52c2-4962-872a-a84831934fb1": {
+            "selected_fields": null,
+            "static_message_list_id": null,
+            "titles": {
+              "widget": {
+                "d91e0515-b92d-4753-9835-18fa64ae8929": "All Security Activites",
+                "ef01e8a6-4ab6-4c55-959d-aa7c1e331120": "Veeam Backup & Replication Security Events",
+                "0ef5ae0f-0e8e-4d69-bf55-fe88102d52b9": "Marked as infected",
+                "43dc28c3-105d-4454-8088-02ace7768e8b": "Four-Eyes Authorization Events",
+                "b2710e47-fd21-4a1a-9d16-a74e3392a3df": "Marked as Suspicious",
+                "143a24fa-e428-48c9-923e-a88ac79d3830": "Critical and High Severity Events"
+              },
+              "tab": {
+                "title": "Veeam Security Dashboard"
+              }
+            },
+            "widgets": [
+              {
+                "config": {
+                  "fields": [
+                    "timestamp",
+                    "source",
+                    "message"
+                  ],
+                  "units": {},
+                  "show_message_row": true,
+                  "show_summary": true,
+                  "decorators": [],
+                  "sort": [
+                    {
+                      "type": "pivot",
+                      "field": "timestamp",
+                      "direction": "Descending"
+                    }
+                  ]
+                },
+                "query": {
+                  "type": "elasticsearch",
+                  "query_string": "criticality:Critical OR criticality:High"
+                },
+                "timerange": {
+                  "from": 86400,
+                  "type": "relative"
+                },
+                "streams": [
+                  "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                ],
+                "filter": null,
+                "type": "messages",
+                "stream_categories": [],
+                "id": "143a24fa-e428-48c9-923e-a88ac79d3830",
+                "filters": []
+              },
+              {
+                "config": {
+                  "visualization": "pie",
+                  "units": {},
+                  "column_limit": null,
+                  "event_annotation": false,
+                  "row_limit": 4,
+                  "row_pivots": [
+                    {
+                      "fields": [
+                        "criticality"
+                      ],
+                      "type": "values",
+                      "config": {
+                        "limit": 4,
+                        "skip_empty_values": true
+                      }
+                    }
+                  ],
+                  "series": [
+                    {
+                      "config": {
+                        "name": null
+                      },
+                      "function": "count(criticality)"
+                    }
+                  ],
+                  "rollup": false,
+                  "column_pivots": [],
+                  "visualization_config": null,
+                  "formatting_settings": null,
+                  "sort": []
+                },
+                "query": {
+                  "type": "elasticsearch",
+                  "query_string": ""
+                },
+                "timerange": {
+                  "from": 86400,
+                  "type": "relative"
+                },
+                "streams": [
+                  "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                ],
+                "filter": null,
+                "type": "aggregation",
+                "stream_categories": [],
+                "id": "ef01e8a6-4ab6-4c55-959d-aa7c1e331120",
+                "filters": []
+              },
+              {
+                "config": {
+                  "visualization": "numeric",
+                  "units": {},
+                  "column_limit": null,
+                  "event_annotation": false,
+                  "row_limit": null,
+                  "row_pivots": [],
+                  "series": [
+                    {
+                      "config": {
+                        "name": null
+                      },
+                      "function": "count(instanceId)"
+                    }
+                  ],
+                  "rollup": false,
+                  "column_pivots": [],
+                  "visualization_config": {
+                    "trend": false,
+                    "trend_preference": "NEUTRAL"
+                  },
+                  "formatting_settings": null,
+                  "sort": []
+                },
+                "query": {
+                  "type": "elasticsearch",
+                  "query_string": "instanceId:41600 OR instanceId:42220 OR instanceId:25500 OR instanceId:26100 OR instanceId:28100 OR instanceId:28970 OR instanceId:29800 OR instanceId:30100 OR instanceId:30400 OR instanceId:31500 OR instanceId:31600 OR instanceId:31700 OR instanceId:31800 OR instanceId:31900 OR instanceId:40204 OR instanceId:40400 OR instanceId:40500 OR instanceId:40600 OR instanceId:42260 OR instanceId:42270 OR instanceId:42302 OR instanceId:23090 OR instanceId:23420 OR instanceId:24080 OR instanceId:28200 OR instanceId:28500 OR instanceId:28920 OR instanceId:28950 OR instanceId:28980 OR instanceId:29120 OR instanceId:29150 OR instanceId:29900 OR instanceId:30200 OR instanceId:30500 OR instanceId:32120 OR instanceId:32200 OR instanceId:41402 OR instanceId:115 OR instanceId:31210 OR instanceId:31400 OR instanceId:40201 OR instanceId:40205 OR instanceId:40206 OR instanceId:41610 OR instanceId:41800 OR instanceId:41810 OR instanceId:42230 OR instanceId:42301 OR instanceId:42401 OR instanceId:42402 OR instanceId:42404 OR instanceId:42405 OR instanceId:21224 OR instanceId:26110 OR instanceId:31200 OR instanceId:36013 OR instanceId:42210 OR instanceId:42403 OR instanceId:42500 OR instanceId:27000 OR instanceId:24060 OR instanceId:24030 OR instanceId:24050 OR instanceId:24070 OR instanceId:24040 OR instanceId:42290\r\n"
+                },
+                "timerange": {
+                  "from": 86400,
+                  "type": "relative"
+                },
+                "streams": [
+                  "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                ],
+                "filter": null,
+                "type": "aggregation",
+                "stream_categories": [],
+                "id": "d91e0515-b92d-4753-9835-18fa64ae8929",
+                "filters": []
+              },
+              {
+                "config": {
+                  "visualization": "numeric",
+                  "units": {},
+                  "column_limit": null,
+                  "event_annotation": false,
+                  "row_limit": null,
+                  "row_pivots": [],
+                  "series": [
+                    {
+                      "config": {
+                        "name": null
+                      },
+                      "function": "count(instanceId)"
+                    }
+                  ],
+                  "rollup": false,
+                  "column_pivots": [],
+                  "visualization_config": {
+                    "trend": false,
+                    "trend_preference": "NEUTRAL"
+                  },
+                  "formatting_settings": null,
+                  "sort": []
+                },
+                "query": {
+                  "type": "elasticsearch",
+                  "query_string": "instanceId:42401 OR instanceId:42402 OR instanceId:42404"
+                },
+                "timerange": {
+                  "from": 86400,
+                  "type": "relative"
+                },
+                "streams": [
+                  "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                ],
+                "filter": null,
+                "type": "aggregation",
+                "stream_categories": [],
+                "id": "43dc28c3-105d-4454-8088-02ace7768e8b",
+                "filters": []
+              },
+              {
+                "config": {
+                  "visualization": "numeric",
+                  "units": {},
+                  "column_limit": null,
+                  "event_annotation": false,
+                  "row_limit": null,
+                  "row_pivots": [],
+                  "series": [
+                    {
+                      "config": {
+                        "name": null
+                      },
+                      "function": "count(instanceId)"
+                    }
+                  ],
+                  "rollup": false,
+                  "column_pivots": [],
+                  "visualization_config": {
+                    "trend": false,
+                    "trend_preference": "NEUTRAL"
+                  },
+                  "formatting_settings": null,
+                  "sort": []
+                },
+                "query": {
+                  "type": "elasticsearch",
+                  "query_string": "instanceId:41600"
+                },
+                "timerange": {
+                  "from": 86400,
+                  "type": "relative"
+                },
+                "streams": [
+                  "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                ],
+                "filter": null,
+                "type": "aggregation",
+                "stream_categories": [],
+                "id": "b2710e47-fd21-4a1a-9d16-a74e3392a3df",
+                "filters": []
+              },
+              {
+                "config": {
+                  "visualization": "numeric",
+                  "units": {},
+                  "column_limit": null,
+                  "event_annotation": false,
+                  "row_limit": null,
+                  "row_pivots": [],
+                  "series": [
+                    {
+                      "config": {
+                        "name": null
+                      },
+                      "function": "count(instanceId)"
+                    }
+                  ],
+                  "rollup": false,
+                  "column_pivots": [],
+                  "visualization_config": {
+                    "trend": false,
+                    "trend_preference": "NEUTRAL"
+                  },
+                  "formatting_settings": null,
+                  "sort": []
+                },
+                "query": {
+                  "type": "elasticsearch",
+                  "query_string": "instanceId:42220"
+                },
+                "timerange": {
+                  "from": 86400,
+                  "type": "relative"
+                },
+                "streams": [
+                  "27626f16-213e-4abd-8ac8-e0f46d61f155"
+                ],
+                "filter": null,
+                "type": "aggregation",
+                "stream_categories": [],
+                "id": "0ef5ae0f-0e8e-4d69-bf55-fe88102d52b9",
+                "filters": []
+              }
+            ],
+            "widget_mapping": {
+              "143a24fa-e428-48c9-923e-a88ac79d3830": [
+                "3219fcea-2660-43b5-bb5a-6b7d8fd66dfa"
+              ],
+              "43dc28c3-105d-4454-8088-02ace7768e8b": [
+                "34f27144-1785-467a-a268-6c3d3bee33bb"
+              ],
+              "ef01e8a6-4ab6-4c55-959d-aa7c1e331120": [
+                "e7b49b57-8d32-4cf8-915d-7d7000c77487"
+              ],
+              "b2710e47-fd21-4a1a-9d16-a74e3392a3df": [
+                "bd0d0c77-afdf-4228-8d7e-bc2f1f0f0ac6"
+              ],
+              "d91e0515-b92d-4753-9835-18fa64ae8929": [
+                "ed979870-02ab-4913-979a-6e3e2915b323"
+              ],
+              "0ef5ae0f-0e8e-4d69-bf55-fe88102d52b9": [
+                "bf670416-be75-48ba-9dc1-a6cab2ef9201"
+              ]
+            },
+            "positions": {
+              "143a24fa-e428-48c9-923e-a88ac79d3830": {
+                "col": 1,
+                "row": 7,
+                "height": 5,
+                "width": "Infinity"
+              },
+              "43dc28c3-105d-4454-8088-02ace7768e8b": {
+                "col": 5,
+                "row": 4,
+                "height": 3,
+                "width": 4
+              },
+              "ef01e8a6-4ab6-4c55-959d-aa7c1e331120": {
+                "col": 1,
+                "row": 1,
+                "height": 3,
+                "width": 8
+              },
+              "b2710e47-fd21-4a1a-9d16-a74e3392a3df": {
+                "col": 9,
+                "row": 4,
+                "height": 3,
+                "width": 4
+              },
+              "d91e0515-b92d-4753-9835-18fa64ae8929": {
+                "col": 9,
+                "row": 1,
+                "height": 3,
+                "width": 4
+              },
+              "0ef5ae0f-0e8e-4d69-bf55-fe88102d52b9": {
+                "col": 1,
+                "row": 4,
+                "height": 3,
+                "width": 4
+              }
+            },
+            "formatting": {
+              "highlighting": []
+            },
+            "display_mode_settings": {
+              "positions": {}
+            }
+          }
+        },
+        "properties": [],
+        "owner": "admin",
+        "title": {
+          "@type": "string",
+          "@value": "Veeam Dashboards"
+        },
+        "type": "DASHBOARD",
+        "description": {
+          "@type": "string",
+          "@value": ""
+        }
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "input",
+        "version": "1"
+      },
+      "id": "3bc3c603-3981-4114-acfd-a8c75db42650",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "TCP Syslog"
+        },
+        "configuration": {
+          "tls_key_file": {
+            "@type": "string",
+            "@value": ""
+          },
+          "port": {
+            "@type": "integer",
+            "@value": 1514
+          },
+          "tls_enable": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "use_null_delimiter": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "recv_buffer_size": {
+            "@type": "integer",
+            "@value": 1048576
+          },
+          "tcp_keepalive": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "force_rdns": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "allow_override_date": {
+            "@type": "boolean",
+            "@value": true
+          },
+          "tls_client_auth_cert_file": {
+            "@type": "string",
+            "@value": ""
+          },
+          "bind_address": {
+            "@type": "string",
+            "@value": "0.0.0.0"
+          },
+          "tls_cert_file": {
+            "@type": "string",
+            "@value": ""
+          },
+          "expand_structured_data": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "max_message_size": {
+            "@type": "integer",
+            "@value": 2097152
+          },
+          "store_full_message": {
+            "@type": "boolean",
+            "@value": false
+          },
+          "tls_client_auth": {
+            "@type": "string",
+            "@value": "disabled"
+          },
+          "timezone": {
+            "@type": "string",
+            "@value": "NotSet"
+          },
+          "charset_name": {
+            "@type": "string",
+            "@value": "UTF-8"
+          },
+          "number_worker_threads": {
+            "@type": "integer",
+            "@value": 4
+          },
+          "tls_key_password": {
+            "@type": "string",
+            "@value": ""
+          }
+        },
+        "static_fields": {},
+        "type": {
+          "@type": "string",
+          "@value": "org.graylog2.inputs.syslog.tcp.SyslogTCPInput"
+        },
+        "global": {
+          "@type": "boolean",
+          "@value": false
+        },
+        "extractors": [
+          {
+            "target_field": {
+              "@type": "string",
+              "@value": ""
+            },
+            "condition_value": {
+              "@type": "string",
+              "@value": ""
+            },
+            "order": {
+              "@type": "integer",
+              "@value": 0
+            },
+            "converters": [],
+            "configuration": {
+              "grok_pattern": {
+                "@type": "string",
+                "@value": " instanceId=%{NUMBER:instanceId} "
+              }
+            },
+            "source_field": {
+              "@type": "string",
+              "@value": "message"
+            },
+            "title": {
+              "@type": "string",
+              "@value": "vbr_instanceId"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "GROK"
+            },
+            "cursor_strategy": {
+              "@type": "string",
+              "@value": "COPY"
+            },
+            "condition_type": {
+              "@type": "string",
+              "@value": "NONE"
+            }
+          },
+          {
+            "target_field": {
+              "@type": "string",
+              "@value": ""
+            },
+            "condition_value": {
+              "@type": "string",
+              "@value": ""
+            },
+            "order": {
+              "@type": "integer",
+              "@value": 0
+            },
+            "converters": [],
+            "configuration": {
+              "grok_pattern": {
+                "@type": "string",
+                "@value": "JobResult=%{QUOTEDSTRING:JobResult}"
+              }
+            },
+            "source_field": {
+              "@type": "string",
+              "@value": "message"
+            },
+            "title": {
+              "@type": "string",
+              "@value": "vbr_JobResult"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "GROK"
+            },
+            "cursor_strategy": {
+              "@type": "string",
+              "@value": "COPY"
+            },
+            "condition_type": {
+              "@type": "string",
+              "@value": "NONE"
+            }
+          },
+          {
+            "target_field": {
+              "@type": "string",
+              "@value": ""
+            },
+            "condition_value": {
+              "@type": "string",
+              "@value": ""
+            },
+            "order": {
+              "@type": "integer",
+              "@value": 0
+            },
+            "converters": [],
+            "configuration": {
+              "grok_pattern": {
+                "@type": "string",
+                "@value": "JobType=%{QUOTEDSTRING:JobType}"
+              }
+            },
+            "source_field": {
+              "@type": "string",
+              "@value": "message"
+            },
+            "title": {
+              "@type": "string",
+              "@value": "vbr_JobType"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "GROK"
+            },
+            "cursor_strategy": {
+              "@type": "string",
+              "@value": "COPY"
+            },
+            "condition_type": {
+              "@type": "string",
+              "@value": "NONE"
+            }
+          },
+          {
+            "target_field": {
+              "@type": "string",
+              "@value": ""
+            },
+            "condition_value": {
+              "@type": "string",
+              "@value": ""
+            },
+            "order": {
+              "@type": "integer",
+              "@value": 0
+            },
+            "converters": [],
+            "configuration": {
+              "grok_pattern": {
+                "@type": "string",
+                "@value": "VbrHostName=%{QUOTEDSTRING:VbrHostName}"
+              }
+            },
+            "source_field": {
+              "@type": "string",
+              "@value": "message"
+            },
+            "title": {
+              "@type": "string",
+              "@value": "vbr_VbrHostName"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "GROK"
+            },
+            "cursor_strategy": {
+              "@type": "string",
+              "@value": "COPY"
+            },
+            "condition_type": {
+              "@type": "string",
+              "@value": "NONE"
+            }
+          },
+          {
+            "target_field": {
+              "@type": "string",
+              "@value": ""
+            },
+            "condition_value": {
+              "@type": "string",
+              "@value": ""
+            },
+            "order": {
+              "@type": "integer",
+              "@value": 0
+            },
+            "converters": [],
+            "configuration": {
+              "grok_pattern": {
+                "@type": "string",
+                "@value": "VbrVersion=%{QUOTEDSTRING:VbrVersion}"
+              }
+            },
+            "source_field": {
+              "@type": "string",
+              "@value": "message"
+            },
+            "title": {
+              "@type": "string",
+              "@value": "vbr_VbrVersion"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "GROK"
+            },
+            "cursor_strategy": {
+              "@type": "string",
+              "@value": "COPY"
+            },
+            "condition_type": {
+              "@type": "string",
+              "@value": "NONE"
+            }
+          },
+          {
+            "target_field": {
+              "@type": "string",
+              "@value": ""
+            },
+            "condition_value": {
+              "@type": "string",
+              "@value": ""
+            },
+            "order": {
+              "@type": "integer",
+              "@value": 0
+            },
+            "converters": [],
+            "configuration": {
+              "grok_pattern": {
+                "@type": "string",
+                "@value": "Description=%{QUOTEDSTRING:Description}"
+              }
+            },
+            "source_field": {
+              "@type": "string",
+              "@value": "message"
+            },
+            "title": {
+              "@type": "string",
+              "@value": "vbr_Description"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "GROK"
+            },
+            "cursor_strategy": {
+              "@type": "string",
+              "@value": "COPY"
+            },
+            "condition_type": {
+              "@type": "string",
+              "@value": "NONE"
+            }
+          }
+        ]
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "pipeline_rule",
+        "version": "1"
+      },
+      "id": "b069af80-5b02-447d-b4fb-506e939f77ea",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "assign_criticality_critical"
+        },
+        "description": {
+          "@type": "string",
+          "@value": ""
+        },
+        "source": {
+          "@type": "string",
+          "@value": "rule \"assign_criticality_critical\"\nwhen\n    has_field(\"instanceId\") &&\n    (\n        to_string($message.instanceId) == \"21224\" ||\n        to_string($message.instanceId) == \"23090\" ||\n        to_string($message.instanceId) == \"25500\" ||\n        to_string($message.instanceId) == \"28200\" ||\n        to_string($message.instanceId) == \"28980\" ||\n        to_string($message.instanceId) == \"29900\" ||\n        to_string($message.instanceId) == \"30200\" ||\n        to_string($message.instanceId) == \"31400\" ||\n        to_string($message.instanceId) == \"31800\" ||\n        to_string($message.instanceId) == \"32200\" ||\n        to_string($message.instanceId) == \"40201\" ||\n        to_string($message.instanceId) == \"40204\" ||\n        to_string($message.instanceId) == \"40206\" ||\n        to_string($message.instanceId) == \"41402\" ||\n        to_string($message.instanceId) == \"41600\" ||\n        to_string($message.instanceId) == \"41800\" ||\n        to_string($message.instanceId) == \"41810\" ||\n        to_string($message.instanceId) == \"42220\" ||\n        to_string($message.instanceId) == \"42301\" ||\n        to_string($message.instanceId) == \"42401\" ||\n        to_string($message.instanceId) == \"42402\"\n    )\nthen\n    set_field(\"criticality\", \"Critical\");\nend\n"
+        }
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "stream",
+        "version": "1"
+      },
+      "id": "27626f16-213e-4abd-8ac8-e0f46d61f155",
+      "data": {
+        "alarm_callbacks": [],
+        "outputs": [],
+        "remove_matches": {
+          "@type": "boolean",
+          "@value": false
+        },
+        "title": {
+          "@type": "string",
+          "@value": "Veeam Stream"
+        },
+        "stream_rules": [
+          {
+            "type": {
+              "@type": "string",
+              "@value": "EXACT"
+            },
+            "field": {
+              "@type": "string",
+              "@value": "application_name"
+            },
+            "value": {
+              "@type": "string",
+              "@value": "Veeam_MP"
+            },
+            "inverted": {
+              "@type": "boolean",
+              "@value": false
+            },
+            "description": {
+              "@type": "string",
+              "@value": ""
+            }
+          }
+        ],
+        "alert_conditions": [],
+        "matching_type": {
+          "@type": "string",
+          "@value": "AND"
+        },
+        "disabled": {
+          "@type": "boolean",
+          "@value": false
+        },
+        "description": {
+          "@type": "string",
+          "@value": ""
+        },
+        "default_stream": {
+          "@type": "boolean",
+          "@value": false
+        }
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "grok_pattern",
+        "version": "1"
+      },
+      "id": "7b013cda-752a-463a-bae2-23b4c6f03884",
+      "data": {
+        "name": "NUMBER",
+        "pattern": "(?:%{BASE10NUM})"
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "grok_pattern",
+        "version": "1"
+      },
+      "id": "eea70484-2e2c-4f5f-8906-072c9b67c54e",
+      "data": {
+        "name": "QUOTEDSTRING",
+        "pattern": "(?>(?<!\\\\)(?>\"(?>\\\\.|[^\\\\\"]+)+\"|\"\"|(?>'(?>\\\\.|[^\\\\']+)+')|''|(?>`(?>\\\\.|[^\\\\`]+)+`)|``))"
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    },
+    {
+      "v": "1",
+      "type": {
+        "name": "grok_pattern",
+        "version": "1"
+      },
+      "id": "2effc440-c356-400b-a4fc-51549b18a4ff",
+      "data": {
+        "name": "BASE10NUM",
+        "pattern": "(?<![0-9.+-])(?>[+-]?(?:(?:[0-9]+(?:\\.[0-9]+)?)|(?:\\.[0-9]+)))"
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=6.1.2+c8b654f"
+        }
+      ]
+    }
+  ]
+}
