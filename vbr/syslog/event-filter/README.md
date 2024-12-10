@@ -1,4 +1,4 @@
-# VBR Generate Syslog Event Filter 
+# VBR Generate Syslog Event Filter XML File
 
 ## Version Information
 ~~~~
