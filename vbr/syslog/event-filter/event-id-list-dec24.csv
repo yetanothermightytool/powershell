@@ -1,0 +1,301 @@
+Event ID,Event Name,Info,Warning,Error,Category
+110,Backup Job Started,Info,,,Backup
+114,File to Tape Job Started,Info,,,Tape
+115,Tape Erase Job Started,Info,,,Tape
+116,Tape Inventorying Job Started,Info,,,Tape
+117,Tape Cataloging Job Started,Info,,,Tape
+118,Tape Verification Job Started,Info,,,Tape
+119,Tape Export Job Started,Info,,,Tape
+120,Tape Copy Job Started,Info,,,Tape
+121,Tape Eject Job Started,Info,,,Tape
+122,Mark Tape As Free Job Started,Info,,,Tape
+123,Move To Media Pool Job Started,Info,,,Tape
+124,Delete From Library Job Started,Info,,,Tape
+125,Library Discovery Job Started,Info,,,Tape
+126,Tape Import Job Started,Info,,,Tape
+150,Backup Task Finished,Info,,,Backup
+151,File Backup Job Finished,Info,,,File
+190,Backup Job Finished,Info,Warning,Error,Backup
+194,File to Tape Job Finished,Info,Warning,Error,Tape
+195,Tape Erase Job Finished,Info,Warning,Error,Tape
+196,Tape Inventorying Job Finished,Info,Warning,Error,Tape
+197,Tape Cataloging Job Finished,Info,Warning,Error,Tape
+198,Tape Verification Job Finished,Info,Warning,Error,Tape
+199,Tape Export Job Finished,Info,Warning,Error,Tape
+200,Tape Copy Job Finished,Info,Warning,Error,Tape
+203,Tape Eject Job Finished,Info,Warning,Error,Tape
+204,Mark Tape As Free Job Finished,Info,Warning,Error,Tape
+205,Move To Media Pool Job Finished,Info,Warning,Error,Tape
+206,Delete From Library Job Finished,Info,Warning,Error,Tape
+207,Library Discovery Job Finished,Info,Warning,Error,Tape
+208,Tape Import Job Finished,Info,Warning,Error,Tape
+210,Restore Session Started,Info,,,Restore
+250,Restore Task for VMware VM Finished,Info,Warning,Error,Restore
+251,Restore Task for Hyper-V VM FInished,Info,Warning,Error,Restore
+290,Restore Session Finished,Info,Warning,Error,Restore
+310,SureBackup Job Started,Info,,,SureBackup
+350,Verification Task for VMware VM Finished,Info,Warning,Error,Misc
+351,Validation Task for VMware VM Finished,Info,Warning,Error,Misc
+360,Verification Task for Hyper-V VM Finished,Info,Warning,Error,Misc
+361,Validation Task for Hyper-V VM Finished,Info,Warning,Error,Misc
+390,SureBackup Job Finished,Info,Warning,Error,SureBackup
+410,Backup Copy Job Started,Info,,,Backup
+450,Backup Copy Task Finished,Info,Warning,Error,Backup
+451,File Backup Copy Job Finished,Info,,,File
+490,Backup Copy Job Finished,Info,Warning,Error,Backup
+510,File Copy Job Started,Info,,,File
+512,VM Copy Job Started,Info,,,Misc
+590,File Copy Job Finished,Info,Warning,Error,File
+592,VM Copy Job Finished,Info,Warning,Error,Misc
+600,Quick Migration Started,Info,,,Misc
+601,Migrating File Share to Production Job Started,Info,,,Restore
+610,Quick Migration Finished,Info,Warning,Error,Misc
+650,Active Full Backup for Backup Policy Started,Info,,,Backup
+652,Active Full Backup for Backup Policy Finished,Info,Warning,Error,Backup
+710,Agent Backup Job Started,Info,,,Agent
+790,Agent Backup Job Finished,Info,Warning,Error,Agent
+810,Rescan Job Started,Info,,,Agent
+890,Rescan Job Finished,Info,Warning,Error,Agent
+10010,Restore Point Created,Info,,,Restore
+10014,Restore Point Offloaded to Tape,Info,,,Restore
+10050,Restore Point Deleted,,Warning,,Restore
+10054,Restore Point Deleted from Tape,,Warning,,Restore
+10090,Restore Point Updated,Info,,,Restore
+20114,Tape Renamed,Info,,,Tape
+21210,Connection to Backup Proxy Restored,Info,,,Component
+21214,Connection to Backup Proxy Lost,error,,,Component
+21220,Connection to Backup Repository Restored,Info,,,Component
+21224,Connection to Backup Repository Lost,error,,,Component
+21230,Connection to WAN Accelerator Restored,Info,,,Component
+21234,Connection to WAN Accelerator Lost,error,,,Component
+23010,Job Created,Info,,,Backup
+23050,Job Settings Updated,Info,Warning,Error,Backup
+23090,Job Deleted,,Warning,,Backup
+23110,Objects for Job Added,Info,,,Backup
+23130,Objects for Job Changed,Info,,,Backup
+23210,SureBackup Job Created,Info,,,SureBackup
+23220,SureBackup Job Settings Updated,Info,,,SureBackup
+23230,SureBackup Job Deleted,,Warning,,SureBackup
+23310,Objects for SureBackup Job Added,Info,,,SureBackup
+23320,Objects for SureBackup Job Deleted,,Warning,,SureBackup
+23410,Job Assigned as Secondary Destination,Info,,,Backup
+23420,Job No Longer Used as Secondary Destionation,Info,,,Backup
+23440,Tape Job Created,Info,,,Tape
+23450,Tape Job Settings Updated,Info,,,Tape
+23490,Tape Job Deleted,,Warning,,Tape
+23510,Objects for Tape Job Added,Info,,,Tape
+23520,Objects for Tape Job Deleted,,Warning,,Tape
+23530,Objects for Tape Job Changed,Info,,,Tape
+23610,Tape Media Pool Created,Info,,,Tape
+23611,Tape Media Vault Created,Info,,,Tape
+23620,Tape Media Pool Updated,Info,,,Tape
+23621,Tape Media Vault Updated,Info,,,Tape
+23622,Tape Medium Updated,,,,Tape
+23623,Tape Library Settings Updated,Info,,,Tape
+23630,Tape Media Pool Deleted,,Warning,,Tape
+23631,Tape Media Vault Deleted,Info,,,Tape
+23632,Tape Medium Deleted,,Warning,,Tape
+23633,Tape Library Deleted,,Warning,,Tape
+24010,License Installed,Info,,,License
+24020,License Expiring,,Warning,,License
+24030,License Expired,,Warning,,License
+24040,License Support Expiring,,Warning,,License
+24050,License Support Expired,,Warning,,License
+24060,License Grace Period Started,,Info,,License
+24070,License Limit Exceeded,,Warning,,License
+24080,License Removed,Info,,,License
+24110,Tenant Added,Info,,,VCSP
+24114,Tenant Password Changed,Info,,,VCSP
+24120,Tenant Deleted,,Warning,,VCSP
+24130,Cloud Gateway Added,Info,,,VCSP
+24131,Cloud Gateway Settings Updated,Info,,,VCSP
+24140,Cloud Gateway Deleted,,Warning,,VCSP
+24141,Cloud Gateway Pool Added,Info,,,VCSP
+24142,Cloud Gateway Pool Settings Updated,Info,,,VCSP
+24143,Cloud Gateway Pool Deleted,,Warning,,VCSP
+24150,Tenant Quota Added,Info,,,VCSP
+24160,Tenant Quota Changed,Info,,,VCSP
+24170,Tenant Quota Deleted,,Warning,,VCSP
+24180,Cloud Connect Certificate Updated,Info,,,VCSP
+25000,Tenant State Changed,Info,,,VCSP
+25100,Tenant Updated,Info,,,VCSP
+25200,Subtenant Added,Info,,,VCSP
+25210,Subtenant Deleted,,Warning,,VCSP
+25220,Subtenant Updated,Info,,,VCSP
+25230,Subtenant State Changed,Info,,,VCSP
+25300,Credential Record Added,Info,Warning,,User
+25400,Credential Record Updated,Info,Warning,,User
+25500,Credential Record Deleted,,Warning,,User
+25600,Hypervisor Host Added,Info,Warning,Error,Component
+25700,Hypervisor Host Deleted,Info,,,Component
+25800,Hypervisor Host Settings Updated,Info,Warning,Error,Component
+25900,Failover Plan Created,Info,,,Replication
+26000,Failover Plan Settings Updated,Info,,,Replication
+26010,Target Location Does Not Match Source Location,,Warning,,Compliance
+26100,Failover Plan Deleted,,Warning,,Replication
+26110,Failover Plan Failed,,,,Replication
+26200,Hardware Plan Created,Info,,,VCSP
+26300,Hardware Plan Settings Updated,Info,,,VCSP
+26400,Hardware Plan Deleted,,Warning,,VCSP
+26500,Extent State for Scale-Out Backup Repository Changed,Info,,,Component
+26510,Cloud Connect State Changed,Info,,,VCSP
+26600,Failover Plan Started,Info,,,Replication
+26700,Failover Plan Stopped,Info,,,Replication
+26800,Tenant Replica Started,Info,,,VCSP
+26900,Tenant Replica Stopped,Info,Warning,Error,VCSP
+27000,Tenant Replica Permanent Failover Started,Info,,,VCSP
+27100,Wan Accelerator Added,Info,,,Component
+27200,Wan Accelerator Settings Updated,Info,,,Component
+27300,Wan Accelerator Deleted,,Warning,,Component
+27400,Service Provider Added,Info,,,VCSP
+27500,Service Provider Updated,Info,,,VCSP
+27600,Service Provider Deleted,,Warning,,VCSP
+27700,Backup Proxy Added,Info,,,Component
+27800,Backup Proxy Settings Updated,Info,,,Component
+27900,Backup Proxy Deleted,,Warning,,Component
+28000,Backup Repository Added,Info,,,Component
+28100,Backup Repository Settings Updated,Info,,,Component
+28200,Backup Repository Deleted,,Warning,,Component
+28300,Host Added,Info,Warning,Error,Component
+28400,Host Settings Updated,Info,Warning,Error,Component
+28500,Host Deleted,,Warning,,Component
+28600,Tape Server Added,Info,,,Tape
+28650,NDMP Server Added,Info,,,Tape
+28700,Tape Server Settings Updated,Info,,,Tape
+28750,NDMP Server Settings Updated,Info,,,Tape
+28800,Tape Server Deleted,,Warning,,Tape
+28850,NDMP Server Deleted,,Warning,,Tape
+28900,File Share Added,Info,,,File
+28910,File Share Settings Updated,Info,,,File
+28920,File Share Deleted,,Warning,,File
+28930,File Server Added,Info,,,File
+28940,File Server Settings Updated,Info,,,File
+28950,File Server Deleted,,Warning,,File
+28960,Object Storage Added,Info,,,Object
+28970,Object Storage Settings Updated,Info,,,Object
+28980,Object Storage Deleted,,Warning,,Object
+29100,Protection Group Added,Info,,,Agent
+29110,Protection Group Settings Updated,Info,,,Agent
+29120,Protection Group Deleted,,Warning,,Agent
+29130,Objects for Protection Group Added,Info,,,Agent
+29140,Objects for Protection Group Changed,Info,,,Agent
+29150,Objects for Protection Group Deleted,Info,,,Agent
+29700,Archive Object Storage Added,Info,,,Object
+29800,Archive Object Storage Settings Updated,Info,,,Object
+29900,Archive Object Storage Deleted,,Warning,,Object
+30000,Scale-Out Backup Repository Added,Info,,,Component
+30100,Scale-Out Backup Repository Settings Updated,Info,,,Component
+30200,Scale-Out Backup Repository Deleted,,Warning,,Component
+30300,Application Group Added,Info,,,SureBackup
+30400,Application Group Settings Updated,Info,,,SureBackup
+30500,Application Group Deleted,,Warning,,SureBackup
+30600,Virtual Lab Added,Info,,,SureBackup
+30700,Virtual Lab Settings Updated,Info,,,SureBackup
+30800,Virtual Lab Deleted,,Warning,,SureBackup
+31000,General Settings Updated,Info,Warning,Error,Component
+31100,Global Settings for Network Traffic Rules Updated,Info,Warning,Error,Component
+31200,User or Group Added,Info,,,User
+31210,Adding User or Group Failed,Info,,,User
+31400,User or Group Deleted,,Warning,,User
+31500,Configuration Backup Job Settings Updated,Info,Warning,Error,Component
+31600,Encryption Password Added,Info,Warning,Error,Component
+31700,Encryption Password Updated,Info,Warning,Error,Component
+31800,Encryption Password Deleted,,Warning,,Component
+31900,SSH Credentials Changed,Info,Warning,Error,User
+32000,External Repository Added,Info,,,Component
+32100,External Repository Settings Updated,Info,,,Component
+32120,Objects for Job Deleted,,Warning,,Backup
+32200,External Repository Deleted,Info,,,Component
+32300,Global Network Traffic Rules Added,Info,,,Component
+32400,Global Network Traffic Rules Deleted,,Warning,,Component
+32500,Global Network Traffic Rules Updated,Info,,,Component
+32600,Preferred Networks Updated,Info,,,Component
+32700,Preferred Networks Added,Info,,,Component
+32800,Preferred Networks Deleted,,Warning,,Component
+32900,Component Updated,Info,Warning,Error,Component
+33000,Wan Accelerator Cache Populated,Info,,,Component
+33001,Wan Accelerator Cache Cleared,Info,,,Component
+36011,Recovery Token Created,Info,,,User
+36012,Recovery Token Updated,Info,,,User
+36013,Recovery Token Deleted,,Warning,,Uer
+36014,Authentication with Recovery Token Succeeded,Info,,,User
+36021,Backup Job for Application Backup Policy Started,Info,,,Backup
+36022,Backup Job for Application Backup Policy Finished,Info,Warning,Error,Backup
+36023,Backup Task for Application Backup Policy Started,Info,,,Backup
+36024,Backup Task for Application Backup Policy Finished,Info,,,Backup
+36025,Log Backup Job for Application Backup Policy Started,Info,,,Backup
+36026,Log Backup Job for Application Backup Policy Finished,Info,Warning,Error,Backup
+36100,Generic Event for External Infrastructure Created,Info,,,Component
+36200,Connection with Managed Proxy Established,Info,,,Component
+36300,Connection with Managed Proxy Lost,,Warning,,Component
+36400,Connection with Platform Service Established,Info,,,Component
+36500,Connection with Platform Service Lost,,Warning,,Component
+36600,Connection from Platform Service to Managed Proxy Established,Info,,,Component
+36700,Connection from Platform Service to Managed Proxy Lost,,Warning,,Component
+36800,Data Synchronization Interrupted,,Warning,,Component
+36900,Data Synchronization Resumed,Info,,,Component
+40001,Configuration Database Connected,Info,,,Component
+40002,Storage Management Session Finished,Info,Warning,Error,Component
+40100,Veeam Backup & Replication Console Launched,Info,,,Component
+40101,Veeam Backup & Replication Console Closed,Info,,,Component
+40200,Multi-Factor Authentication Enabled,Info,,,Security
+40201,Multi-Factor Authentication Disabled,Info,,,Security
+40202,Multi-Factor Authentication Token Revoked,Info,,,Security
+40203,Multi-Factor Authentication for User Enabled,Info,,,Security
+40204,Multi-Factor Authentication for User Disabled,Info,,,Security
+40205,Invalid Code for Multi-Factor Authentication Entered,Info,,,Security
+40206,Allowed Attempts for Multi-Factor Authentication Exceeded,Info,,,Security
+40210,Restore Session Started,Info,,,Restore
+40290,Restore Session Finished,Info,Warning,Error,Restore
+40300,Logs Export Session Finished,Info,,,Component
+40400,Global VM Exclusions Added,Info,,,Component
+40500,Global VM Exclusions Deleted,,Warning,,Component
+40600,Global VM Exclusions Changed,Info,,,Component
+40700,Configuration Backup Job Finished,Info,,,Component
+40800,Configuration Restore Session Finished,Info,,,Component
+40900,Location Added,Info,,,Compliance
+40901,Location Settings Updated,Info,,,Compliance
+40902,Location Deleted,,Warning,,Compliance
+40903,Object Location Changed,Info,,,Compliance
+41000,Downloading Backup Metadata Started,Info,,,Component
+41001,Downloading Backup Metadata Finished,Info,,,Component
+41200,Detaching Backups Started,Info,,,Component
+41201,Copying Backups Started,Info,,,Component
+41202,Moving Backups Started,Info,,,Component
+41300,License Report Created,Info,,,License
+41301,Automatic License Update Disabled,Info,,,License
+41302,License Consumption for Veeam Agents Disabled,Info,,,License
+41303,Object License Revoked,Info,,,License
+41304,Object License Removed,Info,,,License
+41305,Object License Assigned,Info,,,License
+41400,Storage Added,Info,,,Component
+41401,Storage Settings Updated,Info,,,Component
+41402,Storage Deleted,Info,,,Component
+41500,Restore Point Mounted,Info,,,Restore
+41510,Restore Point Unmounted,Info,,,Restore
+41600,Malware Activity Detected,,Warning,,Malware
+41610,Object Marked as Clean,Info,,,Object
+41700,Health Check Job Started,Info,,,Backup
+41710,Health Check Job Finished,Info,Warning,Error,Backup
+41800,Attempt to Delete Backup Failed,,Warning,,Component
+41810,Attempt To Update Security Object Failed,,Warning,,Component
+42000,Downloading Object Storage Backup Metadata Started,Info,,,Object
+42001,Downloading Object Storage Backup Metadata Finished,Info,Warning,Error,Object
+42200,Malware Detection Session Started,Info,,,Malware
+42210,Malware Detection Session Finished,Info,Warning,Error,Malware
+42220,Restore Point Marked as Infected,,Warning,,Malware
+42230,Restore Point Marked as Clean,Info,,,Malware
+42260,Objects Added to Malware Detection Exclusions,Info,,,Malware
+42270,Objects Deleted from Malware Detection Exclusions,Info,,,Malware
+42280,Malware Detection Exclusions List Updated,Info,,,Malware
+42290,Malware Detection Settings Updated,Info,,,Malware
+42300,KMS Server Added,Info,,,Component
+42301,KMS Server Deleted,,Warning,,Component
+42302,KMS Server Settings Updated,Info,,,Component
+42400,Four-Eyes Authorization Enabled,Info,,,Security
+42401,Four-Eyes Authorization Disabled,Info,,,Security
+42402,Four-Eyes Authorization Request Created,Info,,,Security
+42403,Four-Eyes Authorization Request Approved,Info,,,Security
+42404,Four-Eyes Authorization Request Rejected,Info,,,Security
+42405,Four-Eyes Authorization Request Expired,Info,,,Security
+42500,KMS Key Rotation Job Finished,Info,Warning,Error,Component
