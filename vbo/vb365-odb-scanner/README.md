@@ -4,7 +4,7 @@
 ## Version
 ~~~~
 Version : 1.2 (March 6th, 2024)
-Requires: Veeam Backup for Microsoft 365 v7 or later
+Requires: Veeam Backup for Microsoft 365 v7 or later / v8 tested in Dec 2024
 Author  : Steve Herzig
 ~~~~
 
@@ -37,8 +37,10 @@ _(optional)_ Restore path. Default C:\Scripts\vb365\scanner\
 ## Notes
 
 This script has been tested with the following versions of Veeam Backup for Office 365:
+  - v8.0.5.20 / PowerShell 7
   - v7.1 (latest)
   - v7.0 (latest)
+
 
 ## Version History
 * 1.2
