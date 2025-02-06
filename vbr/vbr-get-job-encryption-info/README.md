@@ -18,6 +18,17 @@ Author: Stephan "Steve" Herzig
   - Key type and last modification date (if encryption is enabled)
 
 ## Usage
+# Navigate to the directory where the script is saved
+```powershell
+cd "C:\Path\To\Your\Script"
+```
+
+# Dot-source the script to load the function
+```powershell
+. .\vbr-get-job-encryption-info.ps1
+```
+
+# Use the function
 ```powershell
 # Retrieve VMware backup job information
 vbr-get-job-encryption-info.ps1 -JobType 'VMware'
