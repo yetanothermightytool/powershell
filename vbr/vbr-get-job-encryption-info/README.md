@@ -2,16 +2,16 @@
 
 ## Version Information
 ~~~~
-Version: 1.0 (Feb-6 2025)
+Version: 1.1 (Feb 7th 2025)
 Requires: Veeam Backup & Replication v12.3
 Author: Stephan "Steve" Herzig
 ~~~~
 
 ## Description
-`vbr-get-job-encryption-info` is a PowerShell script to retrieve and display configuration details for Veeam backup jobs, including **VMware Backup**, **Agent Backup**, and **File Backup** jobs. The script organizes and presents the information in a structured tabular format.
+`vbr-get-job-encryption-info` is a PowerShell script to retrieve and display the encryption configuration details for Veeam backup jobs, including **VMware Backup**, **Agent Backup**, **File Backup**  and **Object Storage Backup** jobs. The script organizes and presents the information in a structured tabular format.
 
 ## Features
-- **Supports multiple backup job types**: VMware, Agent, and File Backup.
+- **Supports multiple backup job types**: VMware, Agent, File Backup, and Object Storage Backup.
 - **Displays repository and encryption details**:
   - Repository name and path
   - Encryption status (Enabled/Unencrypted)
@@ -30,14 +30,17 @@ cd "C:\Path\To\Your\Script"
 
 # Use the function
 ```powershell
-# Retrieve VMware backup job information
+# Retrieve VMware backup Job Information
 vbr-get-job-encryption-info.ps1 -JobType 'VMware'
 
-# Retrieve Agent backup job information
+# Retrieve Agent backup Job Information
 vbr-get-job-encryption-info.ps1 -JobType 'Agent'
 
-# Retrieve File Backup job information
+# Retrieve File Backup Job Information
 vbr-get-job-encryption-info.ps1 -JobType 'File Backup'
+
+# Retrieve Object Storage Backup Job Information
+vbr-get-job-encryption-info.ps1 -JobType 'Object Storage Backup'
 ```
 
 ## Example Output
@@ -53,6 +56,8 @@ Demo2      BackupJob2   Default Backup Repository  C:\Backup             Unencry
 - Veeam Backup & Replication - Tested with version 12.3
 
 ## Version History
+- 1.1
+  - Added Object Storage Backup type
 - 1.0
   - Initial Release
 
