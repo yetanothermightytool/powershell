@@ -35,6 +35,38 @@ function Get-BackupJobEncryptionInfo {
             $jobs | Format-Table -AutoSize
         }
     }
+    elseif ($JobType -eq 'Object Storage Backup') {
+        $jobs = Get-VBRJob -WarningAction SilentlyContinue |
+            Where-Object { $_.TypeToString -eq 'Object Storage Backup' } |
+            ForEach-Object {
+                $cryptoKey = $_.UserCryptoKey
+                
+                $encryptionStatus = if (-not $cryptoKey -or -not $cryptoKey.Id) {
+                    'Unencrypted'
+                } else {
+                    'Enabled'
+                }
+
+                $keyType = if ($cryptoKey -and $cryptoKey.Id) { $cryptoKey.KeyType } else { '' }
+                $modificationDate = if ($cryptoKey -and $cryptoKey.Id) { $cryptoKey.ModificationDateUtc } else { '' }
+
+                [PSCustomObject]@{
+                    Name                 = $_.GetJobDisplayName()
+                    Description          = $_.Description
+                    TargetRepository     = ($_.GetBackupTargetRepository()).Name
+                    TargetRepositoryPath = ($_.GetBackupTargetRepository()).Path
+                    EncryptionStatus     = $encryptionStatus
+                    KeyType              = $keyType
+                    ModificationDateUtc  = $modificationDate
+                }
+            }
+        
+        if (-not $jobs) {
+            Write-Host "No backup job type 'Object Storage' found."
+        } else {
+            $jobs | Format-Table -AutoSize
+        }
+    }
     elseif ($JobType -eq 'File Backup') {
         $jobs = Get-VBRJob -WarningAction SilentlyContinue |
             Where-Object { $_.TypeToString -eq 'File Backup' } |
@@ -98,6 +130,6 @@ function Get-BackupJobEncryptionInfo {
         }
     }
     else {
-        Write-Host "Invalid job type specified. Use 'VMware', 'Agent', or 'File Backup'."
+        Write-Host "Invalid job type specified. Use 'VMware', 'Agent', 'File Backup', or 'Object Storage Backup'."
     }
 }
