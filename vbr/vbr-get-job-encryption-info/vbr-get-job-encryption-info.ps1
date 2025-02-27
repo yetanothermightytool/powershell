@@ -1,135 +1,52 @@
 function Get-BackupJobEncryptionInfo {
-    param (
-        [string]$JobType
-    )
-
-    if ($JobType -eq 'VMware') {
-        $jobs = Get-VBRJob -WarningAction SilentlyContinue |
-            Where-Object { $_.TypeToString -eq 'VMware Backup' } |
-            ForEach-Object {
-                $cryptoKey = $_.UserCryptoKey
-                
-                $encryptionStatus = if (-not $cryptoKey -or -not $cryptoKey.Id) {
-                    'Unencrypted'
-                } else {
-                    'Enabled'
-                }
-
-                $keyType = if ($cryptoKey -and $cryptoKey.Id) { $cryptoKey.KeyType } else { '' }
-                $modificationDate = if ($cryptoKey -and $cryptoKey.Id) { $cryptoKey.ModificationDateUtc } else { '' }
-
-                [PSCustomObject]@{
-                    Name                 = $_.GetJobDisplayName()
-                    Description          = $_.Description
-                    TargetRepository     = ($_.GetBackupTargetRepository()).Name
-                    TargetRepositoryPath = ($_.GetBackupTargetRepository()).Path
+    param(
+	[Parameter(Mandatory = $false)]
+		[ValidateSet("Vmware","Object Storage Backup","File Backup","Agent")]
+		[string]$JobType
+	)
+	
+	switch ($JobType) {
+		{$_ -like "*Vmware*"} {	$typeToString = "Vmware Backup"	}
+		{$_ -like "*Object*"} {$typeToString = "Object Storage Backup"}
+		{$_ -like "*File*"} {$typeToString = "File Backup"}
+		{$_ -like "*Agent*"} {$typeToString = "Agent"}
+	}	
+	If($JobType -eq "Agent"){
+		$jobs = Get-VBRComputerBackupJob
+	} else {
+		$jobs = Get-VBRJob -WarningAction SilentlyContinue | Where-Object {$_.TypeToString -eq $typeToString} 
+	}
+	If(-not($Jobs)){
+		Write-Host "No backup of job type $($typeToString) found."
+		Break
+	}
+	$encryptedReport = @()
+	Foreach($j in $jobs){
+		If($j.TargetType -eq "SanSnapshot"){Continue}
+		If($typeToString -eq "Agent"){$cryptoKey = $j.StorageOptions.EncryptionKey} else {$cryptoKey = $j.UserCryptoKey}
+		If(-not $cryptoKey -or -not $cryptoKey.id){
+			$encryptionStatus = 'Unencrypted'
+		} else { 
+			$encryptionStatus = 'Enabled'
+		}
+		$keytype = $cryptoKey.KeyType
+		$modificationDateUTC = $cryptoKey.ModificationDateUTC
+		If($typeToString -eq "Agent"){
+			$targetRepository = $j.BackupRepository.Name
+			$targetPath = $j.BackupRepository.FriendlyPath
+		} else {
+			$targetRepository = $j.GetBackupTargetRepository().Name
+			$targetPath = $j.GetBackupTargetRepository().Path
+		}
+		$data = [PSCustomObject]@{
+                    Name                 = $j.Name
+                    TargetRepository     = $targetRepository
+                    TargetRepositoryPath = $targetPath
                     EncryptionStatus     = $encryptionStatus
                     KeyType              = $keyType
-                    ModificationDateUtc  = $modificationDate
-                }
-            }
-        
-        if (-not $jobs) {
-            Write-Host "No backup job type 'VMware' found."
-        } else {
-            $jobs | Format-Table -AutoSize
-        }
-    }
-    elseif ($JobType -eq 'Object Storage Backup') {
-        $jobs = Get-VBRJob -WarningAction SilentlyContinue |
-            Where-Object { $_.TypeToString -eq 'Object Storage Backup' } |
-            ForEach-Object {
-                $cryptoKey = $_.UserCryptoKey
-                
-                $encryptionStatus = if (-not $cryptoKey -or -not $cryptoKey.Id) {
-                    'Unencrypted'
-                } else {
-                    'Enabled'
-                }
-
-                $keyType = if ($cryptoKey -and $cryptoKey.Id) { $cryptoKey.KeyType } else { '' }
-                $modificationDate = if ($cryptoKey -and $cryptoKey.Id) { $cryptoKey.ModificationDateUtc } else { '' }
-
-                [PSCustomObject]@{
-                    Name                 = $_.GetJobDisplayName()
-                    Description          = $_.Description
-                    TargetRepository     = ($_.GetBackupTargetRepository()).Name
-                    TargetRepositoryPath = ($_.GetBackupTargetRepository()).Path
-                    EncryptionStatus     = $encryptionStatus
-                    KeyType              = $keyType
-                    ModificationDateUtc  = $modificationDate
-                }
-            }
-        
-        if (-not $jobs) {
-            Write-Host "No backup job type 'Object Storage' found."
-        } else {
-            $jobs | Format-Table -AutoSize
-        }
-    }
-    elseif ($JobType -eq 'File Backup') {
-        $jobs = Get-VBRJob -WarningAction SilentlyContinue |
-            Where-Object { $_.TypeToString -eq 'File Backup' } |
-            ForEach-Object {
-                $cryptoKey = $_.UserCryptoKey
-                
-                $encryptionStatus = if (-not $cryptoKey -or -not $cryptoKey.Id) {
-                    'Unencrypted'
-                } else {
-                    'Enabled'
-                }
-
-                $keyType = if ($cryptoKey -and $cryptoKey.Id) { $cryptoKey.KeyType } else { '' }
-                $modificationDate = if ($cryptoKey -and $cryptoKey.Id) { $cryptoKey.ModificationDateUtc } else { '' }
-
-                [PSCustomObject]@{
-                    Name                 = $_.GetJobDisplayName()
-                    Description          = $_.Description
-                    TargetRepository     = ($_.GetBackupTargetRepository()).Name
-                    TargetRepositoryPath = ($_.GetBackupTargetRepository()).Path
-                    EncryptionStatus     = $encryptionStatus
-                    KeyType              = $keyType
-                    ModificationDateUtc  = $modificationDate
-                }
-            }
-        
-        if (-not $jobs) {
-            Write-Host "No backup job type 'File Backup' found."
-        } else {
-            $jobs | Format-Table -AutoSize
-        }
-    }
-    elseif ($JobType -eq 'Agent') {
-        $jobs = Get-VBRComputerBackupJob |
-            ForEach-Object {
-                $encryptionStatus = if (-not $_.StorageOptions.EncryptionEnabled) {
-                    'Unencrypted'
-                } else {
-                    'Enabled'
-                }
-
-                $cryptoKey = $_.StorageOptions.EncryptionKey
-                $keyType = if ($cryptoKey) { $cryptoKey.KeyType } else { '' }
-                $modificationDate = if ($cryptoKey) { $cryptoKey.ModificationDateUtc } else { '' }
-
-                [PSCustomObject]@{
-                    Name                 = $_.Name
-                    Description          = $_.BackupRepository.Description
-                    TargetRepository     = $_.BackupRepository.Name
-                    TargetRepositoryPath = $_.BackupRepository.FriendlyPath
-                    EncryptionStatus     = $encryptionStatus
-                    KeyType              = $keyType
-                    ModificationDateUtc  = $modificationDate
-                }
-            }
-        
-        if (-not $jobs) {
-            Write-Host "No backup job type 'Agent' found."
-        } else {
-            $jobs | Format-Table -AutoSize
-        }
-    }
-    else {
-        Write-Host "Invalid job type specified. Use 'VMware', 'Agent', 'File Backup', or 'Object Storage Backup'."
-    }
-}
+                    ModificationDateUtc  = $modificationDateUTC
+				}
+		$encryptedReport += $data
+		}
+		return $encryptedReport
+	}
