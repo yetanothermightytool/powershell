@@ -4,7 +4,7 @@ This Graylog content package extracts and visualizes Veeam Data Platform syslog 
 
 ## Version Information
 ~~~~
-Version: 1.0 (November 16th 2024)
+Version: 1.1 (November 13th 2025)
 Author: Stephan "Steve" Herzig
 ~~~~
 
@@ -15,7 +15,8 @@ This content pack lets you monitor various security-related activities in your V
 - The Veeam Security Dashboard
 - Graylog TCP Sslog Input with configured extractors
 - A Pipeline with assigned Pipeline Rules for assigning the criticality to the ingested data
-- A dedicated Stream with the Pipeline assigned
+
+After installing the content pack, the "Veeam Backup & Replication Pipline" must be connected to a stream for the processing to work.
 
 The Input type is Syslog TCP, and the TCP port can be configured during the installation of this content pack. The following parameters are extracted from the Syslog data by the input extractor:
 
@@ -26,17 +27,19 @@ The Input type is Syslog TCP, and the TCP port can be configured during the inst
 - `vbr_JobType`: The Job Type
 - `vbr_Description`: Data in the Syslog Description field
 
-This allows further data to be evaluated. The configured Stream Rule lets all syslog data that matches the application_name Veeam_MP set to go through. The specified Index Set for the Veeam Stream is configured to the Default index set. This might be adjusted.
 
 
 ## Notes
 This content pack has been tested with the following product versions:
-- Graylog OPEN version 6.1.2
-- Veeam Backup & Replication 12.2
+- Graylog OPEN version 7.0.0
+- Veeam Backup & Replication 12.3.2 & 13.0.1 (RTM)
 
 **Please note that this Graylog content pack is community driven and is not created nor supported by Veeam Software.**
 
 ## Version History
-
+* 1.1
+    * Updated content pack for Graylog 7.0.0 support. (Thanks fvrflho for the notice)
+    * Removed the connection between Pipeline/Stream within the package
+    * Veeam Backup & Replication 13.0.1 (RTM) testing
 * 1.0
     * Initial Release
