@@ -27,6 +27,7 @@ The intended use case is automated backup verification combined with lightweight
 - Script must run on the VBR server or a machine with the Veeam Console installed
 - **PostgreSQL:** `psql.exe` must be available in `PATH`
 - **MongoDB:** `mongosh.exe` must be available in `PATH` (falls back to TCP port check if not found)
+- The destination server must have the configured port open in the firewall to allow inbound connections to the published database instance.
 
 ---
 
@@ -44,7 +45,7 @@ The intended use case is automated backup verification combined with lightweight
 | `-LinuxUser` | No | `administrator` | Linux OS username for SSH access (PostgreSQL / MongoDB) |
 | `-LinuxPassword` | No | — | Password for `-LinuxUser` |
 | `-TimeoutMinutes` | No | `30` | Minutes the published DB stays available before auto-cleanup |
-| `-DBPort` | No | `5433` | Port for the published instance (`5433` for PostgreSQL, `27018` for MongoDB) |
+| `-DBPort` | No | `5433` | Port for the published instance (e. g. `5433` for PostgreSQL, `27018` for MongoDB) |
 | `-ReplicaSet` | No | `rs0` | MongoDB Replica Set name — used to find the correct restore point |
 | `-QueryFile` | No | — | Path to a JSON file containing security queries to run after publish |
 
