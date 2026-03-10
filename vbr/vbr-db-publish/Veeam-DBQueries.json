@@ -1,0 +1,63 @@
+{
+  "MSSQL": [
+    {
+      "name": "Recently Created Database Users",
+      "description": "Detects newly created accounts in the last 24 hours. May indicate unauthorized account creation.",
+      "query": "SELECT name, create_date, type_desc FROM sys.database_principals WHERE create_date > DATEADD(day, -1, GETDATE()) AND type IN ('S','U','G') ORDER BY create_date DESC;"
+    },
+    {
+      "name": "Sysadmin Role Members",
+      "description": "Lists all logins with sysadmin privileges. Any unexpected entry is a critical finding.",
+      "query": "SELECT sp.name AS login_name, sp.type_desc, sp.is_disabled FROM sys.server_principals sp INNER JOIN sys.server_role_members srm ON sp.principal_id = srm.member_principal_id INNER JOIN sys.server_principals r ON srm.role_principal_id = r.principal_id WHERE r.name = 'sysadmin' ORDER BY sp.name;"
+    },
+    {
+      "name": "Orphaned Database Users",
+      "description": "Lists database users without a matching server login. Can be used as backdoor accounts.",
+      "query": "SELECT dp.name AS db_user, dp.type_desc, dp.create_date FROM sys.database_principals dp LEFT JOIN sys.server_principals sp ON dp.sid = sp.sid WHERE dp.type IN ('S','U') AND dp.name NOT IN ('dbo','guest','INFORMATION_SCHEMA','sys') AND sp.sid IS NULL ORDER BY dp.name;"
+    }
+  ],
+  "PostgreSQL": [
+    {
+      "name": "Excessive Queries per User",
+      "description": "Detects possible automated access or scraping. Lists users with more than 100 active queries.",
+      "query": "SELECT usename, COUNT(*) AS queries FROM pg_stat_activity GROUP BY usename HAVING COUNT(*) > 100 ORDER BY queries DESC;"
+    },
+    {
+      "name": "Large Table Sequential Reads",
+      "description": "Detects potential data exfiltration via very large table scans.",
+      "query": "SELECT relname, seq_scan, seq_tup_read FROM pg_stat_user_tables WHERE seq_tup_read > 100000 ORDER BY seq_tup_read DESC;"
+    },
+    {
+      "name": "Privileged Roles",
+      "description": "Lists all roles with superuser, createdb or createrole privileges.",
+      "query": "SELECT rolname, rolsuper, rolcreatedb, rolcreaterole FROM pg_roles WHERE rolcreatedb = true OR rolcreaterole = true OR rolsuper = true ORDER BY rolname;"
+    }
+  ],
+  "MongoDB": [
+    {
+      "name": "List Database Users",
+      "description": "Lists all users and their roles in the admin database.",
+      "query": "db.getSiblingDB('admin').getUsers()"
+    },
+    {
+      "name": "List All Databases",
+      "description": "Lists all databases with their storage size.",
+      "query": "db.adminCommand({listDatabases: 1})"
+    },
+    {
+      "name": "Server Status Summary",
+      "description": "Returns key server metrics (version, uptime, connections).",
+      "query": "var s = db.serverStatus(); print('version: ' + s.version + ', uptime: ' + s.uptime + 's, connections: ' + s.connections.current)"
+    },
+    {
+      "name": "Active Operations by Client",
+      "description": "Detects unusual number of concurrent operations from a single source. Must run against admin db.",
+      "query": "db.getSiblingDB('admin').aggregate([{$currentOp:{allUsers:true}},{$group:{_id:'$client',operations:{$sum:1}}},{$match:{operations:{$gt:10}}},{$sort:{operations:-1}}])"
+    },
+    {
+      "name": "Collection Document Counts",
+      "description": "Lists document counts per collection. High counts may indicate large data dumps.",
+      "query": "db.getCollectionNames().forEach(function(c){ var count = db.getCollection(c).countDocuments({}); if(count > 0) print(c + ': ' + count + ' documents'); })"
+    }
+  ]
+}
