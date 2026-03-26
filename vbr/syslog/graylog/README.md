@@ -18,6 +18,8 @@ This content pack lets you monitor various security-related activities in your V
 
 After installing the content pack, the "Veeam Backup & Replication Pipline" must be connected to a stream for the processing to work.
 
+>**Note:** Ensure the message processor order is correct. The Stream Rule Processor must run before the Pipeline Processor. If the Pipeline Processor is above it, the stream rules won’t apply and the criticality field won’t be created.
+
 The Input type is Syslog TCP, and the TCP port can be configured during the installation of this content pack. The following parameters are extracted from the Syslog data by the input extractor:
 
 - `vbr_instanceId`: The ID of the event
