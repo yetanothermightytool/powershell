@@ -34,11 +34,14 @@ The Input type is Syslog TCP, and the TCP port can be configured during the inst
 ## Notes
 This content pack has been tested with the following product versions:
 - Graylog OPEN version 7.0.0
-- Veeam Backup & Replication 12.3.2 & 13.0.1 (RTM)
+- Graylog OPEN version 7.1.0- **NEW MAY 2026**
+- Veeam Backup & Replication 13.0.1
 
 **Please note that this Graylog content pack is community driven and is not created nor supported by Veeam Software.**
 
 ## Version History
+* 1.2
+    * Graylog 7.1.0 - Briefly tested for basic functionality only
 * 1.1
     * Updated content pack for Graylog 7.0.0 support. (Thanks fvrflho for the notice)
     * Removed the connection between Pipeline/Stream within the package
