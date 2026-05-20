@@ -22,3 +22,6 @@ $cred = Get-Credential -UserName <youruser@yourdomain.tld> -Message "Please ente
 ```
 
 You can also customize the script by modifying the HTML template to include additional columns or styling options for the report. 
+
+Update May 2026
+- Adjusted the script for V13 support.
