@@ -10,13 +10,38 @@
 .VERSION
     1.1
 #>
+Lese Swagger-Datei.
+
+Gross file — such direkt nach Plans-Endpoint.
+
+Endpoint `/api/v13/Plans` stimmt. Jetzt check ich Response-Schema — Feldnamen könnten geändert haben.
+
+Felder `lastTestTime`, `lastCheckTime` fehlen im v13 Response. Suche neue Feldnamen.
+
+Jetzt check ich ob es separate History/Sessions Endpoint gibt für Timestamps.
+
+Analyse komplett. **Kernproblem:** `lastTestTime`, `lastCheckTime`, `lastTestResult`, `lastCheckResult` **existieren nicht mehr in v13**.
+
+Neue verfügbare Felder:
+
+| Alt (v6) | Neu (v13) |
+|---|---|
+| `lastTestResult` | `currentTestResult` |
+| `lastCheckResult` | `currentCheckResult` |
+| `lastTestTime` | ~~entfernt~~ → `nearestTestScheduleTime` (nächster geplanter Test) |
+| `lastCheckTime` | ~~entfernt~~ → kein Äquivalent |
+| — | `planVerificationState` (neu: Verified/NotVerified/NeedsVerified) |
+| — | `resultName` (neu: Detailtext mit Fehler/Warnings) |
+
+Script mit korrekten v13-Feldern:
+
+```powershell
 Param(
     [Parameter(Mandatory=$true)]
     $ReportFilePath
 )
 Clear-Host
 
-# Certificate handling: PS 6+ uses -SkipCertificateCheck, PS 5.1 needs type hack
 if ($PSVersionTable.PSVersion.Major -lt 6) {
     if (-not ([System.Management.Automation.PSTypeName]'TrustAllCertsPolicy').Type) {
         Add-Type @"
@@ -52,8 +77,7 @@ function Connect-VRORestAPI {
         "password"      = $Cred.GetNetworkCredential().password
         "refresh_token" = " "
     }
-    $uri = $vroAPI + $AppUri
-    $response = Invoke-RestMethod -Uri $uri -Headers $header -Body $body -Method Post @skipCert
+    $response = Invoke-RestMethod -Uri ($vroAPI + $AppUri) -Headers $header -Body $body -Method Post @skipCert
     Write-Output $response.access_token
 }
 
@@ -67,8 +91,7 @@ function Get-VRORestAPI {
         "accept"        = "application/json"
         "Authorization" = "Bearer $Token"
     }
-    $uri = $vroAPI + $AppUri
-    $results = Invoke-RestMethod -Method GET -Uri $uri -Headers $header @skipCert
+    $results = Invoke-RestMethod -Method GET -Uri ($vroAPI + $AppUri) -Headers $header @skipCert
     Write-Output $results
 }
 
@@ -109,28 +132,34 @@ $htmlTemplate = @"
             <th>Name</th>
             <th>Plan Type</th>
             <th>State</th>
-            <th>Last Test Time</th>
-            <th>Last Test Result</th>
-            <th>Last Check Time</th>
-            <th>Last Check Result</th>
+            <th>Plan Mode</th>
+            <th>Verification State</th>
+            <th>Current Test Result</th>
+            <th>Current Check Result</th>
+            <th>Next Test Schedule</th>
+            <th>Result Details</th>
         </tr>
         $($vroPlanStats.data | ForEach-Object {
-            $name            = $_.name
-            $planType        = $_.planType
-            $state           = $_.state
-            $lastTestTime    = Format-Date $_.lastTestTime
-            $lastTestResult  = $_.lastTestResult
-            $lastCheckTime   = Format-Date $_.lastCheckTime
-            $lastCheckResult = $_.lastCheckResult
+            $name                 = $_.name
+            $planType             = $_.planType
+            $state                = $_.stateName
+            $planMode             = $_.planMode
+            $verificationState    = $_.planVerificationState
+            $currentTestResult    = $_.currentTestResult
+            $currentCheckResult   = $_.currentCheckResult
+            $nextTestSchedule     = Format-Date $_.nearestTestScheduleTime
+            $resultName           = $_.resultName
 
             "<tr>
                 <td>$name</td>
                 <td>$planType</td>
                 <td>$state</td>
-                <td>$lastTestTime</td>
-                <td>$lastTestResult</td>
-                <td>$lastCheckTime</td>
-                <td>$lastCheckResult</td>
+                <td>$planMode</td>
+                <td>$verificationState</td>
+                <td>$currentTestResult</td>
+                <td>$currentCheckResult</td>
+                <td>$nextTestSchedule</td>
+                <td>$resultName</td>
             </tr>"
         })
     </table>
@@ -140,3 +169,6 @@ $htmlTemplate = @"
 
 $htmlTemplate | Out-File -FilePath $ReportFilePath -Encoding UTF8
 Write-Host "Report saved: $ReportFilePath" -ForegroundColor Green
+```
+
+**Spalten geändert:** "Last Test/Check Time+Result" → "Verification State", "Current Test/Check Result", "Next Test Schedule", "Result Details". Timestamps für vergangene Runs existieren in v13 API nicht mehr direkt.
