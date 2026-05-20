@@ -10,32 +10,6 @@
 .VERSION
     1.1
 #>
-Lese Swagger-Datei.
-
-Gross file — such direkt nach Plans-Endpoint.
-
-Endpoint `/api/v13/Plans` stimmt. Jetzt check ich Response-Schema — Feldnamen könnten geändert haben.
-
-Felder `lastTestTime`, `lastCheckTime` fehlen im v13 Response. Suche neue Feldnamen.
-
-Jetzt check ich ob es separate History/Sessions Endpoint gibt für Timestamps.
-
-Analyse komplett. **Kernproblem:** `lastTestTime`, `lastCheckTime`, `lastTestResult`, `lastCheckResult` **existieren nicht mehr in v13**.
-
-Neue verfügbare Felder:
-
-| Alt (v6) | Neu (v13) |
-|---|---|
-| `lastTestResult` | `currentTestResult` |
-| `lastCheckResult` | `currentCheckResult` |
-| `lastTestTime` | ~~entfernt~~ → `nearestTestScheduleTime` (nächster geplanter Test) |
-| `lastCheckTime` | ~~entfernt~~ → kein Äquivalent |
-| — | `planVerificationState` (neu: Verified/NotVerified/NeedsVerified) |
-| — | `resultName` (neu: Detailtext mit Fehler/Warnings) |
-
-Script mit korrekten v13-Feldern:
-
-```powershell
 Param(
     [Parameter(Mandatory=$true)]
     $ReportFilePath
@@ -169,6 +143,3 @@ $htmlTemplate = @"
 
 $htmlTemplate | Out-File -FilePath $ReportFilePath -Encoding UTF8
 Write-Host "Report saved: $ReportFilePath" -ForegroundColor Green
-```
-
-**Spalten geändert:** "Last Test/Check Time+Result" → "Verification State", "Current Test/Check Result", "Next Test Schedule", "Result Details". Timestamps für vergangene Runs existieren in v13 API nicht mehr direkt.
