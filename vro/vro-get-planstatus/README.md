@@ -14,7 +14,7 @@ This PowerShell script retrieves data from the Veeam Recovery Orchestrator API a
 
 ## Customization
 
-You need to customize the API endpoint. Additionally, you can adjust the Username (Lines 69 and 70 in the code)
+You need to customize the API endpoint. Additionally, you need to adjust the user name.
 
 ```powershell
 $vroAPI = "https://<yourip>:9898"
@@ -23,5 +23,6 @@ $cred = Get-Credential -UserName <youruser@yourdomain.tld> -Message "Please ente
 
 You can also customize the script by modifying the HTML template to include additional columns or styling options for the report. 
 
+## History
 Update May 2026
-- Adjusted the script for V13 support.
+- Update - V13 Support
