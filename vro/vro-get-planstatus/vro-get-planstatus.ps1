@@ -16,9 +16,10 @@ Param(
 )
 Clear-Host
 
-# ── Certificate: PS 6+ uses -SkipCertificateCheck flag, PS 5.1 needs the type hack
+# Certificate handling: PS 6+ uses -SkipCertificateCheck, PS 5.1 needs type hack
 if ($PSVersionTable.PSVersion.Major -lt 6) {
-    add-type @"
+    if (-not ([System.Management.Automation.PSTypeName]'TrustAllCertsPolicy').Type) {
+        Add-Type @"
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 public class TrustAllCertsPolicy : ICertificatePolicy {
@@ -27,9 +28,10 @@ public class TrustAllCertsPolicy : ICertificatePolicy {
         WebRequest request, int certificateProblem) { return true; }
 }
 "@
+    }
     [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
-    $skipCert = @{}          # empty — flag not supported in PS 5.1
+    $skipCert = @{}
 } else {
     $skipCert = @{ SkipCertificateCheck = $true }
 }
@@ -70,24 +72,23 @@ function Get-VRORestAPI {
     Write-Output $results
 }
 
-# ── Helper: safe DateTime parse — returns "-" if null/empty/invalid
 function Format-Date {
     param([string]$Value)
     if ([string]::IsNullOrWhiteSpace($Value)) { return "-" }
     try   { [DateTime]::Parse($Value).ToString("dd-MM-yyyy HH:mm:ss") }
-    catch { $Value }   # return raw string if parse fails
+    catch { $Value }
 }
 
 $vroAPI = "https://yourip:9898"
 $cred   = Get-Credential -UserName youruser@yourdomain.tld -Message "Please enter your VRO credentials"
 
 Write-Host "Get Bearer Token...."
+Write-Host ""
 $token = Connect-VRORestAPI -AppUri "/token" -Cred $cred
 
 Write-Host "Getting Orchestration Plan Information...." -ForegroundColor White
-$vroPlanStats = Get-VRORestAPI -AppUri "/api/v13/Plans" -Token $token   # ← v13
-
-$counter = 0   # ← init before template
+Write-Host ""
+$vroPlanStats = Get-VRORestAPI -AppUri "/api/v13/Plans" -Token $token
 
 $htmlTemplate = @"
 <!DOCTYPE html>
@@ -105,9 +106,13 @@ $htmlTemplate = @"
     <h1>Veeam Recovery Orchestrator - Orchestration Plan Status Overview</h1>
     <table>
         <tr>
-            <th>Name</th><th>Plan Type</th><th>State</th>
-            <th>Last Test Time</th><th>Last Test Result</th>
-            <th>Last Check Time</th><th>Last Check Result</th>
+            <th>Name</th>
+            <th>Plan Type</th>
+            <th>State</th>
+            <th>Last Test Time</th>
+            <th>Last Test Result</th>
+            <th>Last Check Time</th>
+            <th>Last Check Result</th>
         </tr>
         $($vroPlanStats.data | ForEach-Object {
             $name            = $_.name
@@ -119,9 +124,13 @@ $htmlTemplate = @"
             $lastCheckResult = $_.lastCheckResult
 
             "<tr>
-                <td>$name</td><td>$planType</td><td>$state</td>
-                <td>$lastTestTime</td><td>$lastTestResult</td>
-                <td>$lastCheckTime</td><td>$lastCheckResult</td>
+                <td>$name</td>
+                <td>$planType</td>
+                <td>$state</td>
+                <td>$lastTestTime</td>
+                <td>$lastTestResult</td>
+                <td>$lastCheckTime</td>
+                <td>$lastCheckResult</td>
             </tr>"
         })
     </table>
