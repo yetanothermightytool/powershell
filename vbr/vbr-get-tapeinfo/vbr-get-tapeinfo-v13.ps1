@@ -18,3 +18,49 @@
 .VERSION
 1.0  
 #>
+ param(
+    [Parameter(Mandatory = $false)]
+    [string[]]$Barcode
+)
+
+Connect-VBRServer -Server localhost
+
+$TapeList = [System.Collections.Generic.List[psobject]]::new()
+
+try {
+    $catalogItems = Find-VBRTapeCatalog -WarningAction Ignore | Where-Object { $_.Type -eq 'File' }
+
+    foreach ($cat in $catalogItems) {
+        $version = $cat.LatestVersion
+        if ($version -and $version.FirstPart) {
+            $medium = $version.FirstPart.GetTapeMedium()
+            if ($null -eq $medium) { continue }
+
+            $TapeList.Add([pscustomobject]@{
+                JobName      = $cat.Parent.Name
+                VMName       = $cat.Name
+                Content      = if ($cat.Path) { $cat.Path.Link } else { $null }
+                TapeMedium   = $medium.Barcode
+                CreationTime = $version.CreationTime
+            })
+        }
+    }
+
+    if ($Barcode) {
+        foreach ($b in $Barcode) {
+            $TapeList |
+                Where-Object { $_.TapeMedium -like $b } |
+                Group-Object TapeMedium |
+                ForEach-Object {
+                    $_.Group | Select-Object TapeMedium, Content, CreationTime |
+                        Format-Table -AutoSize
+                }
+        }
+    } else {
+        $TapeList | Select-Object TapeMedium, Content, CreationTime
+    }
+}
+finally {
+    Disconnect-VBRServer
+}
+ 
