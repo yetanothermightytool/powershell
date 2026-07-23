@@ -1,7 +1,7 @@
-function Get-BackupJobEncryptionInfo {
+ function Get-BackupJobEncryptionInfo {
     param(
 	[Parameter(Mandatory = $false)]
-		[ValidateSet("Vmware","Object Storage Backup","File Backup","Agent")]
+		[ValidateSet("Vmware","Object Storage Backup","File Backup","Agent","Proxmox Backup")]
 		[string]$JobType
 	)
 	
@@ -10,6 +10,7 @@ function Get-BackupJobEncryptionInfo {
 		{$_ -like "*Object*"} {$typeToString = "Object Storage Backup"}
 		{$_ -like "*File*"} {$typeToString = "File Backup"}
 		{$_ -like "*Agent*"} {$typeToString = "Agent"}
+        {$_ -like "*Proxmox*"} {$typeToString = "Proxmox Backup"}
 	}	
 	If($JobType -eq "Agent"){
 		$jobs = Get-VBRComputerBackupJob
@@ -49,4 +50,4 @@ function Get-BackupJobEncryptionInfo {
 		$encryptedReport += $data
 		}
 		return $encryptedReport
-	}
+	} 
