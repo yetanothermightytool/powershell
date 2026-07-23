@@ -2,16 +2,16 @@
 
 ## Version Information
 ~~~~
-Version: 1.2 (Feb 27th 2025)
-Requires: Veeam Backup & Replication v12.3
+Version: 1.3 (July 23 2026)
+Requires: Veeam Backup & Replication v12.3 / 13.0.2
 Author: Stephan "Steve" Herzig / David Domask
 ~~~~
 
 ## Description
-`vbr-get-job-encryption-info` is a PowerShell script to retrieve and display the encryption configuration details for Veeam backup jobs, including **VMware Backup**, **Agent Backup**, **File Backup**  and **Object Storage Backup** jobs. The script organizes and presents the information in a structured tabular format.
+`vbr-get-job-encryption-info` is a PowerShell script to retrieve and display the encryption configuration details for Veeam backup jobs, including **VMware Backup**, **Proxmox Backup**, **Agent Backup**, **File Backup**  and **Object Storage Backup** jobs. The script organizes and presents the information in a structured tabular format.
 
 ## Features
-- **Supports multiple backup job types**: VMware, Agent, File Backup, and Object Storage Backup.
+- **Supports multiple backup job types**: VMware, Proxmox, Agent, File Backup, and Object Storage Backup.
 - **Displays repository and encryption details**:
   - Repository name and path
   - Encryption status (Enabled/Unencrypted)
@@ -32,6 +32,9 @@ cd "C:\Path\To\Your\Script"
 ```powershell
 # Retrieve VMware backup Job Information
 Get-BackupJobEncryptionInfo -JobType 'VMware'
+
+# Retrieve VMware backup Job Information
+Get-BackupJobEncryptionInfo -JobType 'Proxmox Backup'
 
 # Retrieve Agent backup Job Information
 Get-BackupJobEncryptionInfo -JobType 'Agent'
@@ -62,9 +65,12 @@ ModificationDateUtc  :
 
 ## Requirements
 - PowerShell
-- Veeam Backup & Replication - Tested with version 12.3
+- Veeam Backup & Replication - Tested with version 12.3 and 13.0.2
 
 ## Version History
+- 1.3
+  - Added Proxmox. More to be tested based on community feedback
+  - Tested code against v13.0.2 and PowerShell 7
 - 1.2
   - The code has been optimized/rewritten. Thanks to David Domask!
   - The information can now be retrieved with Get-BackupJobEncryptionInfo
