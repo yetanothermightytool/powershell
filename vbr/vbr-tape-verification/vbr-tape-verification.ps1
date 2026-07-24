@@ -7,7 +7,6 @@
 .NOTES  
     File Name  : vbr-tape-verification.ps1
     Author     : Stephan "Steve" Herzig
-    Edited by Creatronics: Added check for online only Tapes
 .VERSION
     1.0
 #>
