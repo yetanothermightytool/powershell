@@ -81,6 +81,10 @@ All parameters are optional:
 
 The console prints what it found at startup - Veeam module, connection, missing scripts - so a misconfiguration shows up immediately rather than on the first scan.
 
+## Web Console
+
+![Backup Scanning Tools v2 web console](pictures/backup-scanning-tools-webconsole.png)
+
 ## The scanning scripts
 
 Both scripts run fully non-interactive and can be used on their own, from the web console, or from a scheduled task. They share the same exit codes:
