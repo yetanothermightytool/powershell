@@ -1,3 +1,10 @@
+
+# ** IMPORTANT NOTICE **
+
+July 2026 / This is one of the most viewed and used scripts in my PowerShell collection. I am currently looking into how to update it for v13 support. Improvements to the web UI are also planned. Stay tuned.
+
+
+
 # Backup Scanning Tools Web Console
 
 ## Version Information
