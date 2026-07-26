@@ -22,7 +22,7 @@ Clear-Host
 Connect-VBRServer -Server localhost
 
 # Load tape information from JSON file or create new JSON file
-$FilePath = "checked_tapes.json"
+$FilePath = "$($MediaPool).json"
 if (-not (Test-Path $FilePath)) {
     $initialTapeInfo = Get-VBRTapeMedium -MediaPool $MediaPool | ForEach-Object {
         [PSCustomObject]@{
@@ -68,8 +68,10 @@ function NeedsVerification {
     )
 
     $tape = $tapeInfo | Where-Object { $_.TapeId -eq $TapeId }
-
-    if (-not $tape.Verified -or ((Get-Date) - $tape.LastVerificationDate).Days -ge $CheckInterval) {
+    Write-Host "Tape: $($tape)"
+    Write-Host "Type: $($tape.Location.Type)"
+    
+    if ((-not $tape.Verified -or ((Get-Date) - $tape.LastVerificationDate).Days -ge $CheckInterval ) -and $tape.Location.Type -ne "None") {
         return $true
     }
 
@@ -98,6 +100,7 @@ $tapeInfo | ConvertTo-Json | Set-Content $FilePath
 
 # Add new tapes to tape information
 foreach ($tape in $vbrTapes) {
+    $loc = $tape.Location
     $existingTape = $tapeInfo | Where-Object { $_.TapeId -eq $tape.Name }
     if (-not $existingTape) {
         $tapeInfo += [PSCustomObject]@{
@@ -105,6 +108,14 @@ foreach ($tape in $vbrTapes) {
             MediaPool              = $MediaPool
             Verified               = $false
             LastVerificationDate   = $null
+            Location               = $tape.Location
+        }
+    }else{
+        #Write-Host ($existingTape | Format-List | Out-String) 
+        if(-not $existingTape.Location){
+            Add-Member -InputObject $existingTape -NotePropertyName Location -NotePropertyValue $tape.Location
+        }else{
+            $existingTape.Location = $tape.Location
         }
     }
 }
@@ -132,9 +143,10 @@ if ($tapesToVerify.Count -eq 0) {
 } else {
     # Verify tape(s)
     foreach ($tape in $tapesToVerify | Select-Object -First $NumberofTapes) {
+        Write-Host "Starting Verification of Tape $($tape.Name)"
         Start-VBRTapeVerification -Medium $tape.Name
         Save-TapeInfo -FilePath $FilePath -TapeId $tape.Name -Verified $true -LastVerificationDate (Get-Date)
     }
 }
 
-Disconnect-VBRServer
+#Disconnect-VBRServer
