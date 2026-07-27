@@ -2,13 +2,19 @@
 
 July 2026 / This folder holds the v13 rewrite of the Backup Scanning Tools. It is not finished.
 
-Three components are available and working today:
+Four components are available and working today:
 
 - `backup-scanning-tools-webmenu.ps1`
 - `vbr-scan-backups.ps1`
 - `vbr-flr-hashscanner.ps1`
+- `vbr-securerestore.ps1`
 
 The remaining scanning scripts from the original collection will be updated where that still makes sense. Some of them may disappear instead of being ported, because Veeam Backup & Replication v13 now does natively what they used to do by hand. The web menu already lists the tools that have not been migrated yet and marks them clearly, so nobody starts a script that cannot work from there.
+
+Still open:
+
+- **NAS backup scanning** waits for v13.1. Until then there is no NAS coverage in this collection and the web menu entry stays marked as not migrated.
+- **Instant VM Disk Recovery** and **Staged VM Restore** are still on the list but have no priority. Staged restore in particular is now just a parameter set of `Start-VBRRestoreVM`, so it is a small job whenever it becomes relevant.
 
 ---
 
@@ -28,6 +34,7 @@ This is a rewrite of the Backup Scanning Tools for Veeam Backup & Replication v1
 The biggest change is what the scripts actually do. **The tools now lean heavily on Veeam's own built-in scanning features instead of building the same thing by hand.** v13 simply offers far more than v12 did, so a lot of the old machinery is no longer necessary:
 
 - Antivirus and YARA scanning run through `Start-VBRScanBackup`, using Veeam Threat Hunter or whichever signature engine is configured under Malware Detection Settings. There is no need to mount a backup to a Linux host over the Data Integration API and drive ClamAV across SSH any more.
+- Secure restore is not a separate step at all. `Start-VBRRestoreVM` and `Start-VBRHvRestoreVM` take the scan parameters directly, so scanning and restoring are one call - the disks are checked while they are mounted to the mount server and nothing reaches the target before that check is done.
 - Scan results end up in Veeam's malware detection state, not just in a text log. That means a scan feeds the machine status in the console, Secure Restore and the search for a clean restore point, instead of being a line in a file that nothing else reads.
 - Finding the last clean restore point is a scan mode (`MostRecent`, `FirstInInterval`), not a loop that walks restore points itself.
 - Malware events are read back through `Get-VBRMalwareDetectionEvent`, and the actual finding - including file names - is pulled from the Veeam scan session logs.
@@ -45,13 +52,15 @@ The web console itself was rebuilt as well:
 ## Prerequisites
 
 - **Veeam Backup & Replication v13.** The scripts use cmdlets and parameters that do not exist in v12.
-- **PowerShell 7.** Veeam PowerShell v13 dropped Windows PowerShell 5.1, so `powershell.exe` will not work - use `pwsh`. Scheduled tasks need to be changed accordingly.
+- **PowerShell 7.** Veeam PowerShell v13 dropped Windows PowerShell 5.1, so `powershell.exe` will not work - use `pwsh`. 
+- **Veeam Backup & Replication Console** installed on the machine running the scripts. The Veeam PowerShell module comes with it.
 - For the FLR hash scanner: a text file with SHA256 hashes, one per line.
+- For the secure restore: a VMware or Hyper-V backup. v13.0.2 has no entire VM restore cmdlet for Proxmox VE, Nutanix AHV, oVirt/RHV or Scale Computing.
 
 ## Installation
 
 1. Create a folder for the scripts, for example `D:\Scripts\vbr\scanningtools`.
-2. Copy `backup-scanning-tools-webmenu.ps1`, `vbr-scan-backups.ps1` and `vbr-flr-hashscanner.ps1` into it.
+2. Copy `backup-scanning-tools-webmenu.ps1`, `vbr-scan-backups.ps1`, `vbr-flr-hashscanner.ps1` and `vbr-securerestore.ps1` into it.
 3. Optionally place a `scanner.png` in the same folder - the web console picks it up as a logo and simply leaves it out if it is not there.
 4. Start the web console with `pwsh` (see below).
 
@@ -87,7 +96,7 @@ The console prints what it found at startup - Veeam module, connection, missing 
 
 ## The scanning scripts
 
-Both scripts run fully non-interactive and can be used on their own, from the web console, or from a scheduled task. They share the same exit codes:
+All three scripts run fully non-interactive and can be used on their own, from the web console, or from a scheduled task. They share the same exit codes:
 
 | Exit code | Meaning |
 |---|---|
@@ -136,6 +145,29 @@ The result lists every folder it actually visited and how many files were found 
 
 The restore session is stopped in a `finally` block, so an error cannot leave disks mounted on the mount server.
 
+### vbr-securerestore.ps1
+
+Scans a restore point and restores the machine in one step. Both restore cmdlets have secure restore built in, so there is no separate scan run: Veeam mounts the disks to the mount server, scans them there, and only then writes to the target - or cancels, depending on `-OnThreat`.
+
+This one script replaces three entries from the v1 collection. Secure Restore and YARA Backup Scan both used to mount the backup to a Linux host over the Data Integration API and drive ClamAV or YARA across SSH. Clean Restore walked back through restore points looking for a clean one. All three are now the same cmdlet call.
+
+```powershell
+PS C:\> .\vbr-securerestore.ps1 -JobName 'Demo VM Job' -VM 'win-client-04' -AVScan -ToOriginalLocation
+PS C:\> .\vbr-securerestore.ps1 -JobName 'Demo VM Job' -VM 'win-client-04' -AVScan -FindCleanRestorePoint -TargetServer 'esxi01' -Datastore 'ds-restore'
+PS C:\> .\vbr-securerestore.ps1 -JobName 'Demo VM Job' -VM 'win-client-04' -AVScan -ToOriginalLocation -WhatIf
+```
+
+Key parameters:
+
+- `AVScan` / `YARARule` - the scan engines. At least one is required; without a scan this would be a plain restore, which is not what the tool is for. Note the YARA rule is a single file name here, not a list - the restore cmdlets take one rule per run
+- `OnThreat` - `AbortRecovery` (default, cancel the restore) or `DisableNetwork` (restore with the network adapters disconnected)
+- `FindCleanRestorePoint` - scan first and restore the newest restore point that came out clean. Runs `Start-VBRScanBackup` in `MostRecent` or `FirstInInterval` mode, which stops at the first clean point, then reads the malware status back from the restore points
+- `ToOriginalLocation` or `TargetServer` - one of the two is required. `Datastore`, `ResourcePool` and `Folder` are VMware only, `TargetPath` is Hyper-V only
+- `ConnectNetwork` - off by default on both platforms. Veeam's own defaults differ (VMware connects, Hyper-V does not) and a machine restored because it might be infected should not come up on the network by accident
+- `WhatIf` - shows which restore point would be used and where it would go without touching anything. The clean restore point search is skipped in this mode, because it would start a real scan session
+
+A restore point that has never been scanned reports its malware status as Unknown, and `-FindCleanRestorePoint` does **not** treat that as clean. After a `MostRecent` scan every restore point older than the one that came out clean is still Unknown, so accepting those would restore an unverified point while reporting it as verified. If no explicitly clean point is found the script fails and lists the status of every restore point it looked at.
+
 ## Notes
 
 **The web console listens on localhost only and is not authenticated.** It is meant to be used interactively on the backup server console. Do not expose the port to a network.
@@ -144,7 +176,10 @@ A few limitations worth knowing:
 
 - `vbr-flr-hashscanner.ps1` works with Windows guest operating systems only, because it uses `Start-VBRWindowsFileRestore`.
 - Restore point selection in `vbr-scan-backups.ps1` is implemented through a narrow time window rather than the `-RestorePoint` parameter. That parameter expects a type that neither `Get-VBRRestorePoint` nor `Get-VBRObjectRestorePoint` returns.
-- `Get-VBRRestorePoint` searches across all backups when queried by name, and the catalogue can still contain entries whose restore points no longer exist. The hash scanner narrows results by backup ID and warns when it cannot, so verify the mounted restore point if that warning appears.
+- `Get-VBRRestorePoint` searches across all backups when queried by name, and the catalogue can still contain entries whose restore points no longer exist. The hash scanner and the secure restore narrow results by backup ID and warn when they cannot, so verify the restore point if that warning appears.
+- `vbr-securerestore.ps1` covers VMware and Hyper-V. v13.0.2 has no entire VM restore cmdlet for Proxmox VE, Nutanix AHV, oVirt/RHV or Scale Computing - those restores exist in the UI only. The script checks the backup platform up front and says so instead of failing somewhere deeper. Scanning those platforms works fine through `vbr-scan-backups.ps1`.
+- Secure restore skips disks or volumes that cannot be mounted to the mount server - Storage Spaces, or ReFS when the mount server OS does not support it. Those are restored without being scanned, and Veeam does not report this as an error. A partial scan can therefore look like a clean full scan; check the mount server OS if the machine uses either.
+- The tape parameters from the v1 secure restore (`-VMTape`, `-AgentTape`, `-Repository`) were not carried over. They restored a backup from tape to a repository first and removed it again afterwards, and the web console never exposed them.
 - The suspicious incremental backup analysis needs at least three sessions per job to say anything useful.
 
 **Please note these scripts are unofficial and are not created nor supported by Veeam Software.**
@@ -153,6 +188,9 @@ A few limitations worth knowing:
 * 2.0
     * Rewritten for Veeam Backup & Replication v13 and PowerShell 7
     * Scanning now uses Veeam Threat Hunter / YARA through `Start-VBRScanBackup` instead of ClamAV over SSH
+    * Results are written to the Veeam malware detection state, and findings are read back from the scan session logs
     * Web console: background scans, job table with state and output, drop-downs fed from the Veeam API
     * `vbr-flr-hashscanner.ps1` rewritten - hash set lookup instead of a linear search, guaranteed cleanup of the restore session, per-folder reporting
-    * `vbr-cleanrestore.ps1` is no longer needed; the `MostRecent` and `FirstInInterval` scan modes do the same thing natively
+    * `vbr-securerestore.ps1` rewritten around the secure restore parameters of `Start-VBRRestoreVM` / `Start-VBRHvRestoreVM`. The Data Integration API mount, the Linux mount host, the SSH key and ClamAV are all gone, and with them the four bugs the v1 script carried
+    * `vbr-cleanrestore.ps1` is no longer needed; the `MostRecent` and `FirstInInterval` scan modes do the same thing natively. It lives on as `-FindCleanRestorePoint` in the secure restore
+    * Web console: the three v1 entries Secure Restore, YARA Backup Scan and Clean Restore are replaced by a single migrated Secure Restore entry
