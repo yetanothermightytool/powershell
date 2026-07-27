@@ -31,9 +31,14 @@
 .PARAMETER SuspiciousDepth
     Number of most recent incremental sessions per job to analyse.
 
-.PARAMETER SuspiciousGrowth
-    A session is flagged when it is larger than this factor times the average
-    of the other analysed sessions of the same job.
+.PARAMETER SuspiciousGrowthWarning
+.PARAMETER SuspiciousGrowthError
+.PARAMETER SuspiciousShrinkWarning
+.PARAMETER SuspiciousShrinkError
+    Deviation thresholds for the suspicious incremental backup tile, expressed as a
+    factor of the average of the other analysed sessions of the same job. The
+    defaults mirror the Veeam ONE alarm "Suspicious incremental backup size":
+    warning above 150% or below 80%, error above 200% or below 70%.
 
 .PARAMETER StatsWindowHours
     Time window for the "started scans" and "scan warnings" counters.
@@ -61,11 +66,22 @@ param (
     [ValidateNotNullOrEmpty()]
     [string]$JobOutputPath = (Join-Path $env:ProgramData 'BackupScanningTools\jobs'),
 
+    # Defaults mirror the Veeam ONE alarm "Suspicious incremental backup size":
+    # last 3 increments, warning above 150% / below 80%, error above 200% / below 70%.
     [ValidateRange(3, 100)]
-    [int]$SuspiciousDepth = 5,
+    [int]$SuspiciousDepth = 3,
 
-    [ValidateRange(1.1, 100)]
-    [double]$SuspiciousGrowth = 1.8,
+    [ValidateRange(1.01, 100)]
+    [double]$SuspiciousGrowthWarning = 1.5,
+
+    [ValidateRange(1.01, 100)]
+    [double]$SuspiciousGrowthError = 2.0,
+
+    [ValidateRange(0.01, 0.99)]
+    [double]$SuspiciousShrinkWarning = 0.8,
+
+    [ValidateRange(0.01, 0.99)]
+    [double]$SuspiciousShrinkError = 0.7,
 
     [ValidateRange(1, 8760)]
     [int]$StatsWindowHours = 168,
@@ -161,46 +177,87 @@ $script:Tools = @(
             [ordered]@{ Name = 'EnableEntireImageScan'; Label = 'Keep scanning after the first hit'; Type = 'switch' }
         )
     }
+    # Replaces three v1 entries at once: 'Secure Restore - AV Scan',
+    # 'YARA Backup Scan' (both vbr-securerestore.ps1 over the Data Integration API)
+    # and 'Clean Restore - AV Scan' (vbr-cleanrestore.ps1). In v13 all three are the
+    # same cmdlet call - the scan is built into Start-VBRRestoreVM.
     [ordered]@{
         Id          = 1
-        Name        = 'Secure Restore - AV Scan'
+        Migrated    = $true
+        Name        = 'Secure Restore'
         Script      = 'vbr-securerestore.ps1'
-        Description = 'Mounts the selected restore point of a Veeam VM or agent backup via the Data Integration API to a Linux mount server and runs a ClamAV file level scan.'
-        Fixed       = [ordered]@{ AVScan = $true }
+        Description = 'Scans the restore point and restores the machine in one step. The scan runs while the disks are mounted to the mount server, so nothing reaches the target before it has been checked. Optionally searches for the last clean restore point first. VMware and Hyper-V only - v13.0.2 has no restore cmdlet for Proxmox VE, AHV, RHV or Scale Computing.'
+        Warning     = 'This writes to the production environment. Check the target before you start it.'
+        Fixed       = [ordered]@{}
+        # At least one scan engine has to be picked - without one this would be a
+        # plain restore.
+        RequireAnyOf = @('AVScan', 'YARARule')
         Fields      = @(
-            [ordered]@{ Name = 'Mounthost'; Label = 'Host to attach backup to'; Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Scanhost';  Label = 'Host to scan';             Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Jobname';   Label = 'Backup job name';          Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Keyfile';   Label = 'SSH key path and file name'; Type = 'text'; Required = $true; Placeholder = 'D:\Scripts\opensshkey.key' }
-            [ordered]@{ Name = 'Restore';   Label = 'Restore when the scan is clean'; Type = 'switch' }
-        )
-    }
-    [ordered]@{
-        Id          = 6
-        Name        = 'Clean Restore - AV Scan'
-        Script      = 'vbr-cleanrestore.ps1'
-        Description = 'Scans VM backup data via the Data Integration API and walks back through the restore points until a clean one is found. If one is found the restore is started (when selected), otherwise the run is aborted after the configured number of iterations.'
-        Fixed       = [ordered]@{ AVScan = $true }
-        Fields      = @(
-            [ordered]@{ Name = 'Mounthost';     Label = 'Host to attach backup to'; Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Scanhost';      Label = 'Host to scan';             Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Jobname';       Label = 'Backup job name';          Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Keyfile';       Label = 'SSH key path and file name'; Type = 'text'; Required = $true; Placeholder = 'D:\Scripts\opensshkey.key' }
-            [ordered]@{ Name = 'MaxIterations'; Label = 'Number of iterations';     Type = 'number'; Required = $true; Default = '5'; Min = 1; Max = 100 }
-            [ordered]@{ Name = 'Restore';       Label = 'Restore when a clean restore point is found'; Type = 'switch' }
-        )
-    }
-    [ordered]@{
-        Id          = 3
-        Name        = 'YARA Backup Scan'
-        Script      = 'vbr-securerestore.ps1'
-        Description = 'Mounts the selected restore point of a Veeam VM or agent backup via the Data Integration API to a Linux mount server and runs a YARA scan.'
-        Fixed       = [ordered]@{ YARAScan = $true }
-        Fields      = @(
-            [ordered]@{ Name = 'Mounthost'; Label = 'Host to attach backup to'; Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Scanhost';  Label = 'Host to scan';             Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Jobname';   Label = 'Backup job name';          Type = 'text'; Required = $true }
-            [ordered]@{ Name = 'Keyfile';   Label = 'SSH key path and file name'; Type = 'text'; Required = $true; Placeholder = 'D:\Scripts\opensshkey.key' }
+            [ordered]@{
+                Name       = 'JobName'
+                Label      = 'Backup job'
+                Type       = 'remote-select'
+                Source     = 'jobs'
+                Required   = $true
+                EmptyLabel = '(pick a job)'
+            }
+            [ordered]@{
+                Name       = 'VM'
+                Label      = 'Machine to restore'
+                Type       = 'remote-select'
+                Source     = 'objects'
+                DependsOn  = @('JobName')
+                Required   = $true
+                EmptyLabel = '(pick a job first)'
+            }
+            [ordered]@{
+                Name       = 'RestorePointId'
+                Label      = 'Restore point'
+                Type       = 'remote-select'
+                Source     = 'securerestorepoints'
+                DependsOn  = @('JobName', 'VM')
+                EmptyLabel = '(newest)'
+            }
+            [ordered]@{ Name = 'AVScan'; Label = 'Signature scan (Threat Hunter / antivirus)'; Type = 'switch' }
+            [ordered]@{
+                Name       = 'YARARule'
+                Label      = 'YARA rule'
+                Type       = 'remote-select'
+                Source     = 'yararules'
+                EmptyLabel = '(no YARA scan)'
+            }
+            [ordered]@{ Name = 'EntireVolumeScan'; Label = 'Keep scanning after the first hit'; Type = 'switch' }
+            [ordered]@{
+                Name    = 'OnThreat'
+                Label   = 'When a threat is found'
+                Type    = 'select'
+                Default = 'AbortRecovery'
+                Options = @(
+                    [ordered]@{ value = 'AbortRecovery';  label = 'AbortRecovery - cancel the restore' }
+                    [ordered]@{ value = 'DisableNetwork'; label = 'DisableNetwork - restore, network disconnected' }
+                )
+            }
+            [ordered]@{ Name = 'FindCleanRestorePoint'; Label = 'Find the last clean restore point first'; Type = 'switch' }
+            [ordered]@{
+                Name    = 'CleanScanMode'
+                Label   = 'Search mode for the clean restore point'
+                Type    = 'select'
+                Default = 'MostRecent'
+                Options = @(
+                    [ordered]@{ value = 'MostRecent';      label = 'MostRecent - newest first' }
+                    [ordered]@{ value = 'FirstInInterval'; label = 'FirstInInterval - optimal order' }
+                )
+            }
+            [ordered]@{ Name = 'ToOriginalLocation'; Label = 'Restore to the original location'; Type = 'switch' }
+            [ordered]@{ Name = 'TargetServer';   Label = 'Target host (leave empty for original location)'; Type = 'text'; Placeholder = 'esxi01' }
+            [ordered]@{ Name = 'Datastore';      Label = 'Datastore (VMware, optional)';   Type = 'text' }
+            [ordered]@{ Name = 'ResourcePool';   Label = 'Resource pool (VMware, optional)'; Type = 'text' }
+            [ordered]@{ Name = 'Folder';         Label = 'Folder (VMware, optional)';      Type = 'text' }
+            [ordered]@{ Name = 'TargetPath';     Label = 'Target path (Hyper-V, optional)'; Type = 'text' }
+            [ordered]@{ Name = 'RestoredVMName'; Label = 'Name for the restored machine (optional)'; Type = 'text' }
+            [ordered]@{ Name = 'PowerUp';        Label = 'Power the machine on after the restore'; Type = 'switch' }
+            [ordered]@{ Name = 'ConnectNetwork'; Label = 'Connect the machine to the network'; Type = 'switch' }
+            [ordered]@{ Name = 'Reason';         Label = 'Reason (shown in the Veeam console)'; Type = 'text' }
         )
     }
     [ordered]@{
@@ -671,6 +728,34 @@ function Get-FlrRestorePointChoice {
     })
 }
 
+<#
+    Restore points for the secure restore.
+
+    Same reason as the FLR list above: Start-VBRRestoreVM and Start-VBRHvRestoreVM
+    take a COib restore point, so the ids have to come from the script that will
+    later look them up, not from the VBRObjectRestorePoint based 'restorepoints'
+    source.
+#>
+function Get-SecureRestorePointChoice {
+    param (
+        [Parameter(Mandatory = $true)] [string]$JobName,
+        [Parameter(Mandatory = $true)] [string]$VM
+    )
+
+    $points = Invoke-ToolQuery -ScriptName 'vbr-securerestore.ps1' -Parameters ([ordered]@{
+        JobName           = $JobName
+        VM                = $VM
+        ListRestorePoints = $true
+        AsJson            = $true
+    })
+
+    return @($points | ForEach-Object {
+        $label = [string]$_.creationTime
+        if ($_.type) { $label = "$label  -  $($_.type)" }
+        [ordered]@{ value = [string]$_.id; label = $label }
+    })
+}
+
 function Get-YaraRuleChoice {
     Assert-VeeamReady
 
@@ -697,13 +782,22 @@ function ConvertTo-GuidString {
 }
 
 <#
-    Flags incremental sessions that are unusually large.
+    Flags incremental sessions whose size deviates from the recent norm.
+
+    Modelled on the Veeam ONE alarm "Suspicious incremental backup size", so the
+    web console and the monitoring flag the same jobs: the last 3 increments are
+    checked, and a session counts as Warning above 150% or below 80%, and as Error
+    above 200% or below 70%.
+
+    Deviation downwards matters as much as upwards. A sudden growth points at
+    encrypted data, a sudden drop at mass deletion, a broken CBT or a job that
+    silently stopped capturing changes.
 
     Two things are handled differently from a naive average check:
       * All sessions are fetched once and grouped by job, instead of querying
         the whole session list again inside the per job loop.
       * Each value is compared against the average of the *other* analysed
-        sessions. Including the outlier in its own baseline raises the very
+        sessions. Including the outlier in its own baseline moves the very
         threshold it is tested against and can hide it.
 #>
 function Get-SuspiciousBackup {
@@ -711,8 +805,17 @@ function Get-SuspiciousBackup {
         [ValidateRange(3, 100)]
         [int]$Depth = $SuspiciousDepth,
 
-        [ValidateRange(1.1, 100)]
-        [double]$Growth = $SuspiciousGrowth,
+        [ValidateRange(1.01, 100)]
+        [double]$GrowthWarning = $SuspiciousGrowthWarning,
+
+        [ValidateRange(1.01, 100)]
+        [double]$GrowthError = $SuspiciousGrowthError,
+
+        [ValidateRange(0.01, 0.99)]
+        [double]$ShrinkWarning = $SuspiciousShrinkWarning,
+
+        [ValidateRange(0.01, 0.99)]
+        [double]$ShrinkError = $SuspiciousShrinkError,
 
         [switch]$Force
     )
@@ -722,11 +825,13 @@ function Get-SuspiciousBackup {
     }
 
     $result = [ordered]@{
-        available = $false
-        message   = ''
-        count     = 0
-        jobs      = @()
-        updated   = (Get-Date).ToString($script:LogTimestampFormat)
+        available    = $false
+        message      = ''
+        count        = 0
+        errorCount   = 0
+        warningCount = 0
+        jobs         = @()
+        updated      = (Get-Date).ToString($script:LogTimestampFormat)
     }
 
     if (-not (Connect-VeeamServer)) {
@@ -780,31 +885,60 @@ function Get-SuspiciousBackup {
             # Fewer than three data points make the comparison meaningless.
             if ($sizes.Count -lt 3) { continue }
 
-            $sum      = ($sizes | Measure-Object -Sum).Sum
-            $hitCount = 0
-            $largest  = 0
+            $sum          = ($sizes | Measure-Object -Sum).Sum
+            $hitCount     = 0
+            $worst        = 'None'
+            $worstRatio   = 1.0
+            $worstSize    = 0
 
             foreach ($size in $sizes) {
                 $baseline = ($sum - $size) / ($sizes.Count - 1)
-                if ($baseline -gt 0 -and $size -gt ($baseline * $Growth)) {
-                    $hitCount++
-                    if ($size -gt $largest) { $largest = $size }
+                if ($baseline -le 0) { continue }
+
+                $ratio = $size / $baseline
+
+                $severity = 'None'
+                if ($ratio -ge $GrowthError -or $ratio -le $ShrinkError) {
+                    $severity = 'Error'
+                } elseif ($ratio -ge $GrowthWarning -or $ratio -le $ShrinkWarning) {
+                    $severity = 'Warning'
+                }
+                if ($severity -eq 'None') { continue }
+
+                $hitCount++
+                if ($severity -eq 'Error' -and $worst -ne 'Error') { $worst = 'Error' }
+                elseif ($worst -eq 'None') { $worst = 'Warning' }
+
+                # Keep the most extreme deviation in either direction.
+                if ([math]::Abs($ratio - 1) -gt [math]::Abs($worstRatio - 1)) {
+                    $worstRatio = $ratio
+                    $worstSize  = $size
                 }
             }
 
             if ($hitCount -gt 0) {
                 [void]$flagged.Add([ordered]@{
                     name      = [string]$job.Name
+                    severity  = $worst
+                    direction = if ($worstRatio -ge 1) { 'grew' } else { 'shrank' }
+                    percent   = [math]::Round($worstRatio * 100, 0)
+                    sizeGb    = [math]::Round($worstSize / 1GB, 2)
                     hits      = $hitCount
                     analysed  = $sizes.Count
-                    largestGb = [math]::Round($largest / 1GB, 2)
                 })
             }
         }
 
-        $result.available = $true
-        $result.jobs      = @($flagged)
-        $result.count     = $flagged.Count
+        # Error first, then the biggest deviation - the tile detail is read top down.
+        $ordered = @($flagged |
+            Sort-Object -Property @{ Expression = { if ($_.severity -eq 'Error') { 0 } else { 1 } } },
+                                  @{ Expression = { [math]::Abs($_.percent - 100) }; Descending = $true })
+
+        $result.available    = $true
+        $result.jobs         = $ordered
+        $result.count        = $ordered.Count
+        $result.errorCount   = @($ordered | Where-Object { $_.severity -eq 'Error' }).Count
+        $result.warningCount = @($ordered | Where-Object { $_.severity -eq 'Warning' }).Count
     } catch {
         $result.message = "Could not analyse backup sessions: $($_.Exception.Message)"
         Write-Console $result.message -Level Warning
@@ -1311,6 +1445,11 @@ function New-ToolDialogHtml {
             [void]$builder.AppendLine('        <p class="dialog-note">Not migrated to v13 yet. This script still expects console input and will fail when started from here.</p>')
         }
 
+        # Optional per-tool banner, for tools that change the production environment.
+        if ($tool.Contains('Warning') -and $tool.Warning) {
+            [void]$builder.AppendLine(('        <p class="dialog-warning">{0}</p>' -f (ConvertTo-HtmlText $tool.Warning)))
+        }
+
         foreach ($field in $tool.Fields) {
             $fieldId    = 'f{0}-{1}' -f $id, $field.Name
             $label      = ConvertTo-HtmlText $field.Label
@@ -1494,7 +1633,9 @@ $script:PageTemplate = @'
         .tile-detail {
             display: none;
             position: absolute;
-            bottom: calc(100% + 6px);
+            /* Downwards: the tiles sit near the top of the page, so a panel opening
+               upwards runs off screen as soon as it lists more than a few jobs. */
+            top: calc(100% + 6px);
             left: 0;
             min-width: 100%;
             max-width: 480px;
@@ -1585,6 +1726,15 @@ $script:PageTemplate = @'
             background: #fff4e5;
             border-left: 4px solid var(--alert);
             color: #7a4a00;
+            font-size: 13px;
+            line-height: 1.45;
+            padding: 8px 10px;
+            margin: 0 0 16px;
+        }
+        .dialog-warning {
+            background: #fdecea;
+            border-left: 4px solid var(--danger);
+            color: #7a1c14;
             font-size: 13px;
             line-height: 1.45;
             padding: 8px 10px;
@@ -1858,12 +2008,23 @@ __DIALOGS__
             }
 
             setValue('suspiciousCount', data.count, data.count > 0);
-            note.textContent = 'checked ' + data.updated;
+
+            // Error and warning are counted separately, like the Veeam ONE alarm.
+            if (data.count > 0) {
+                var parts = [];
+                if (data.errorCount > 0)   { parts.push(data.errorCount + ' error'); }
+                if (data.warningCount > 0) { parts.push(data.warningCount + ' warning'); }
+                note.textContent = parts.join(', ');
+            } else {
+                note.textContent = 'checked ' + data.updated;
+            }
 
             var flagged = asArray(data.jobs);
             if (flagged.length) {
                 detail.textContent = flagged.map(function (job) {
-                    return job.name + '  (' + job.hits + '/' + job.analysed + ' sessions, largest ' + job.largestGb + ' GB)';
+                    return '[' + job.severity + '] ' + job.name
+                         + '  ' + job.direction + ' to ' + job.percent + '% of the others'
+                         + '  (' + job.sizeGb + ' GB, ' + job.hits + '/' + job.analysed + ' sessions)';
                 }).join('\n');
                 detail.setAttribute('data-has-content', 'true');
             } else {
@@ -2262,6 +2423,16 @@ function Invoke-GetRequest {
                             return
                         }
                         Send-HttpJson -Response $Response -Data @(Get-FlrRestorePointChoice -JobName $job -VM $vm)
+                        return
+                    }
+                    'securerestorepoints' {
+                        $job = [string]$Request.QueryString['JobName']
+                        $vm  = [string]$Request.QueryString['VM']
+                        if ([string]::IsNullOrWhiteSpace($job) -or [string]::IsNullOrWhiteSpace($vm)) {
+                            Send-HttpError -Response $Response -Message 'Pick a backup job and a machine first.'
+                            return
+                        }
+                        Send-HttpJson -Response $Response -Data @(Get-SecureRestorePointChoice -JobName $job -VM $vm)
                         return
                     }
                     default {
