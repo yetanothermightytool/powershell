@@ -94,6 +94,27 @@ The console prints what it found at startup - Veeam module, connection, missing 
 
 ![Backup Scanning Tools v2 web console](pictures/backup-scanning-tools-webconsole.png)
 
+### Suspicious incremental backups
+
+The dashboard tile watches the size of the last few incremental sessions of every
+backup job and flags the ones that deviate from their own recent norm. Each session
+is compared against the average of the *other* analysed sessions, so an outlier does
+not quietly raise the very threshold it is measured against.
+
+| Deviation from the average of the other sessions | Level |
+|---|---|
+| 200% and above, or 70% and below | Error |
+| 150% and above, or 80% and below | Warning |
+
+Deviation downwards is treated as seriously as upwards. A sudden jump points at
+encrypted data, a sudden drop at mass deletion, broken changed block tracking, or a
+job that silently stopped capturing changes.
+
+This is a rough signal, not a detection engine - a patch day or a large data import
+will trip it too. Veeam's own inline malware detection looks at entropy and file
+activity and is the better source for an actual verdict. Treat the tile as a hint
+about which job deserves a scan.
+
 ## The scanning scripts
 
 All three scripts run fully non-interactive and can be used on their own, from the web console, or from a scheduled task. They share the same exit codes:
