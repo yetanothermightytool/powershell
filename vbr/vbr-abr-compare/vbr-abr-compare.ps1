@@ -96,6 +96,14 @@ param(
 
     [string]$InventoryStore = '.\inventory',
 
+    # Alert when a guest's compression ratio drops below this, but only if the
+    # baseline was above BaselineMinRatio. Encryption pushes the ratio to about
+    # 1.0; guests that never compressed well would otherwise alert every run.
+    [double]$MinRatio = 1.2,
+
+    [double]$BaselineMinRatio = 1.5,
+
+    # Ratio drift that stays above MinRatio is reported as a notice, not an alert.
     [int]$RatioDropPercent = 30,
 
     [int]$SizeChangePercent = 50
@@ -399,6 +407,8 @@ if ($readyToCompare) {
         -Baseline          $snapshotLabel `
         -Current           'live' `
         -InventoryStore    $InventoryStore `
+        -MinRatio          $MinRatio `
+        -BaselineMinRatio  $BaselineMinRatio `
         -RatioDropPercent  $RatioDropPercent `
         -SizeChangePercent $SizeChangePercent
 }

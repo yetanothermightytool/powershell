@@ -20,13 +20,24 @@
 
     2. CONTENT DRIFT (per guest)
        Compares the newest backup of each guest in the baseline against the
-       newest in the current inventory. Two things matter:
+       newest in the current inventory.
 
-         Compression ratio collapse - a guest that always compressed 3.2:1 and
-         now manages 1.05:1 has encrypted content. The ransomware signal,
-         obtained without ever reading the payload.
+         Compression ratio collapse. Encrypted data does not compress, so a
+         guest whose ratio has fallen to roughly 1.0 has encrypted content.
+         The ransomware signal, obtained without ever reading the payload.
 
-         Size jump - abrupt growth or shrinkage means the guest is no longer
+         This is judged on the absolute ratio, not on a percentage drop.
+         Encryption is not gradual: either data has structure and compresses,
+         or it does not. A guest that went from 3.24 to 2.20 is showing normal
+         variation, while one that went from 1.15 to 1.02 has been encrypted
+         even though the percentage barely moved.
+
+         Guests that never compressed well, media stores and the like, sit
+         near 1.0 permanently and would alert on every run. BaselineMinRatio
+         excludes them. Compression is simply not a usable signal there, and
+         saying so is more honest than reporting a number that means nothing.
+
+         Size jump. Abrupt growth or shrinkage means the guest is no longer
          what it was, or the dump was truncated.
 
     3. COVERAGE
@@ -47,9 +58,18 @@
 .PARAMETER List
     Show the available inventories and exit.
 
+.PARAMETER MinRatio
+    Alert when a guest's compression ratio falls below this. Default 1.2.
+    Encrypted data lands between 1.0 and 1.05, and a real file system does not
+    get there on its own.
+
+.PARAMETER BaselineMinRatio
+    Only alert when the baseline ratio was above this. Default 1.5. Keeps
+    guests that never compressed well from alerting on every single run.
+
 .PARAMETER RatioDropPercent
-    Flag a guest when its compression ratio falls by at least this much.
-    Default 30. Encryption typically drops it to near 1.0, so this is generous.
+    Report a notice when the ratio falls by at least this much without dropping
+    below MinRatio. Default 30. This is drift worth a look, not an alert.
 
 .PARAMETER SizeChangePercent
     Flag a guest when its archive size changes by at least this much. Default 50.
@@ -78,6 +98,10 @@ param(
     [string]$InventoryStore = '.\inventory',
 
     [switch]$List,
+
+    [double]$MinRatio = 1.2,
+
+    [double]$BaselineMinRatio = 1.5,
 
     [int]$RatioDropPercent = 30,
 
@@ -318,11 +342,21 @@ foreach ($vmid in $currNewest.Keys) {
 
     # The ransomware signal: compression stops working because the content is
     # already encrypted.
+    #
+    # Judged on the absolute ratio rather than a percentage drop. A fall from
+    # 3.24 to 2.20 is 32% and completely normal; a fall from 1.15 to 1.02 is
+    # 11% and means the data was encrypted. BaselineMinRatio keeps guests that
+    # never compressed well from alerting on every run.
     if ($b.CompressionRatio -and $c.CompressionRatio) {
         $drop = (1 - ($c.CompressionRatio / $b.CompressionRatio)) * 100
-        if ($drop -ge $RatioDropPercent) {
+
+        if ($c.CompressionRatio -lt $MinRatio -and $b.CompressionRatio -ge $BaselineMinRatio) {
             Add-Finding -Severity 'Alert' -Category 'CompressionCollapse' -Subject $subject `
-                -Message "compression ratio fell $([math]::Round($drop))% ($($b.CompressionRatio) -> $($c.CompressionRatio)) - content may be encrypted"
+                -Message "compression ratio $($b.CompressionRatio) to $($c.CompressionRatio). The data no longer compresses, which is what encryption looks like"
+        }
+        elseif ($drop -ge $RatioDropPercent) {
+            Add-Finding -Severity 'Notice' -Category 'CompressionDrop' -Subject $subject `
+                -Message "compression ratio fell $([math]::Round($drop))% ($($b.CompressionRatio) to $($c.CompressionRatio)), still above $MinRatio"
         }
     }
 
