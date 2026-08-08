@@ -11,7 +11,7 @@ Author  : Steve Herzig
 
 ## Description
 
-An Application Backup Repository (ABR) has no backup job. The application writes
+A Veeam Application Backup Repository (ABR) has no backup job. The application writes
 straight to an NFS target and does not know Veeam exists. That is convenient, but
 it means there is no job result telling you whether last night's backup worked or whether anything was written at all.
 
@@ -29,7 +29,7 @@ What it reports:
 
 | Signal | Meaning |
 |---|---|
-| Compression ratio collapse | A guest that always compressed 3.2:1 and now manages 1.05:1 has encrypted content. This is the ransomware signal, without reading the payload. |
+| Compression ratio collapse | A guest that always compressed 3.2:1 and now manages 1.05:1 has encrypted content. Judged on the absolute ratio, not on a percentage drop. This is the ransomware signal, without reading the payload. |
 | Modified archive | A finished dump is written once and never touched again. If its size or header changed, someone rewrote it. |
 | Backup with no data | A backup can report success and contain nothing. Exclude the disks and the job still goes green. |
 | Guest disappeared | A source that silently stopped writing looks exactly like one that works. Nothing else catches this. |
@@ -84,13 +84,15 @@ The main script. It does the whole run: mount, inventory, compare, clean up.
 - `Credential` - Optional. Pass a credential object for unattended runs.
 - `Abr` - Repository name. Wildcards allowed. Picks the only repository when there is just one.
 - `Snapshot` - Snapshot to compare against. Omit for a selection list, or use `latest`, or a name with wildcards.
-- `AllowFrom` _(mandatory)_ - Host or network allowed to mount the snapshot, e.g. `10.10.11.240`. Without it Veeam creates the clone but no NFS export, and there is nothing to mount.
+- `AllowFrom` _(mandatory)_ - Host or network allowed to mount the snapshot, e.g. `10.10.11.55`. Without it Veeam creates the clone but no NFS export, and there is nothing to mount.
 - `LiveDrive` - Drive letter for the live repository. Default `Y:`.
 - `SnapshotDrive` - Drive letter for the snapshot. Default `Z:`.
 - `MountPath` - Name of the temporary NFS export. Default `<repository>-ir`.
 - `Reason` - Recorded by Veeam in its own session log. Default `Automated backup comparison`.
 - `InventoryStore` - Directory holding one inventory per source. Default `.\inventory`.
-- `RatioDropPercent` - Flag a guest when its compression ratio falls by this much. Default `30`.
+- `MinRatio` - Alert when a guest's compression ratio falls below this. Default `1.2`.
+- `BaselineMinRatio` - Only alert when the baseline ratio was above this. Default `1.5`. Keeps guests that never compressed well from alerting on every run.
+- `RatioDropPercent` - Report a notice when the ratio falls by this much without dropping below `MinRatio`. Default `30`.
 - `SizeChangePercent` - Flag a guest when its archive size changes by this much. Default `50`.
 
 ### Supporting scripts
@@ -105,7 +107,7 @@ inspect one step on its own.
 ## Example
 
 ~~~powershell
-.\vbr-abr-compare.ps1 -Abr abr-repo01 -AllowFrom 10.10.11.240
+.\vbr-abr-compare.ps1 -Abr abr-repo01 -AllowFrom 10.10.11.55
 ~~~
 
 ~~~
@@ -137,7 +139,7 @@ Available snapshots
 
 Select snapshot to compare against live (1-3, empty = cancel): 2
 
-Exposing snapshot read-only to 10.10.11.240
+Exposing snapshot read-only to 10.10.11.55
 -------------------------------------------
   NFS path: abr-host-01.lab.local:/veeam-stg-abr-a1B2c3D4e5/abr-repo01-ir
   mount.exe -o anon,ro abr-host-01.lab.local:/veeam-stg-abr-a1B2c3D4e5/abr-repo01-ir Z:
@@ -209,6 +211,15 @@ have to be mounted at the same time.
 Failure detection is deliberately conservative. A log that cannot be parsed is
 reported as `Incomplete`, never as `Success`. The script will not tell you a
 backup is fine when it does not know.
+
+The compression alert uses an absolute ratio rather than a percentage drop,
+because encryption is not a gradual effect. Either data has structure and
+compresses, or it does not. A guest that went from 3.24 to 2.20 lost 32 percent
+and is perfectly normal, while one that went from 1.15 to 1.02 lost 11 percent
+and was encrypted. `BaselineMinRatio` excludes guests that never compressed well
+in the first place, such as media stores: they sit near 1.0 permanently and
+would alert on every run. For those, compression is not a usable signal at all,
+and the script stays quiet rather than reporting a number that means nothing.
 
 ---
 
