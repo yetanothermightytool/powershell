@@ -11,9 +11,12 @@ Author  : Steve Herzig
 
 ## Description
 
-A Veeam Application Backup Repository (ABR) has no backup job. The application writes
-straight to an NFS target and does not know Veeam exists. That is convenient, but
-it means there is no job result telling you whether last night's backup worked or whether anything was written at all.
+A Veeam Application Backup Repository (ABR) has no job result for the data itself.
+Veeam snapshots the volume on a schedule, and that snapshot succeeds whether the
+application wrote anything or not. The application writes straight to an NFS
+target and does not know Veeam exists. That is convenient, but it means nothing
+tells you whether last night's backup actually happened, or whether what landed
+there is worth restoring.
 
 Official documentation:
 https://helpcenter.veeam.com/docs/vbr/userguide/application_backup_repository.html?ver=13
@@ -220,6 +223,8 @@ and was encrypted. `BaselineMinRatio` excludes guests that never compressed well
 in the first place, such as media stores: they sit near 1.0 permanently and
 would alert on every run. For those, compression is not a usable signal at all,
 and the script stays quiet rather than reporting a number that means nothing.
+
+The PowerShell script documentation was prepared with AI assistance. The scripts were reviewed for common security issues.
 
 ---
 
