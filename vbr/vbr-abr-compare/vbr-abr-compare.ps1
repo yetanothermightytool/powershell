@@ -43,20 +43,20 @@
     instead when running unattended.
 
 .PARAMETER AllowFrom
-    Host or network permitted to mount the snapshot export, e.g. '10.10.11.240'.
+    Host or network permitted to mount the snapshot export, e.g. '10.10.11.100'.
     Without it Veeam creates the clone but no NFS export, leaving nothing to
     mount. The live export uses the permissions already configured on the
     repository, so this only affects the snapshot.
 
 .EXAMPLE
-    .\vbr-abr-compare.ps1 -Abr abr-repo01 -AllowFrom 10.10.11.240
+    .\vbr-abr-compare.ps1 -Abr abr-repo01 -AllowFrom 10.10.11.100
     Interactive snapshot selection.
 
 .EXAMPLE
-    .\vbr-abr-compare.ps1 -Abr abr-repo01 -AllowFrom 10.10.11.240 -Snapshot latest
+    .\vbr-abr-compare.ps1 -Abr abr-repo01 -AllowFrom 10.10.11.100 -Snapshot latest
 
 .EXAMPLE
-    .\vbr-abr-compare.ps1 -Abr abr-repo01 -AllowFrom 10.10.11.240 -Snapshot 'snapshot_20260808_*'
+    .\vbr-abr-compare.ps1 -Abr abr-repo01 -AllowFrom 10.10.11.100 -Snapshot 'snapshot_20260808_*'
 
 .EXAMPLE
     .\vbr-abr-compare.ps1 -VbrServer vbr-01.lab.local -Abr abr-repo01 -AllowFrom 10.10.11.55
@@ -106,7 +106,21 @@ param(
     # Ratio drift that stays above MinRatio is reported as a notice, not an alert.
     [int]$RatioDropPercent = 30,
 
-    [int]$SizeChangePercent = 50
+    [int]$SizeChangePercent = 50,
+
+    # Past values a series needs before the history replaces the two-point
+    # comparison, and how far outside that history a value has to sit.
+    [int]$MinHistoryPoints = 8,
+
+    [double]$HistorySensitivity = 3,
+
+    # A series is overdue when the time since its last file exceeds its usual
+    # interval by this factor.
+    [double]$CadenceTolerance = 2.5,
+
+    # Days to keep inventory files. They are tiny and outlive the snapshots
+    # themselves, which makes them the only remaining record of what existed.
+    [int]$Retention = 365
 )
 
 $ErrorActionPreference = 'Stop'
@@ -278,6 +292,13 @@ try {
     Write-Host "Host       : $repoHost"
     Write-Host "ZFS pool   : $($selectedRepo.ZFSPool)"
 
+    # The inventory must outlive the snapshots, not the other way round. Once
+    # Veeam drops a snapshot, its inventory is the only remaining record that a
+    # source was backed up that day.
+    if ($Retention -gt 0 -and $selectedRepo.RetentionDays -and $Retention -lt $selectedRepo.RetentionDays) {
+        Write-Warning "Inventory retention is $Retention days but the repository keeps $($selectedRepo.RetentionDays). Snapshots would exist with no inventory to match."
+    }
+
     # -----------------------------------------------------------------------
     # 2. Mount the live export
     # -----------------------------------------------------------------------
@@ -296,7 +317,7 @@ try {
     # -----------------------------------------------------------------------
 
     Write-Head 'Inventory: live'
-    & $InventoryScript -Path "$LiveDrive\" -Source 'live' -InventoryStore $InventoryStore
+    & $InventoryScript -Path "$LiveDrive\" -Source 'live' -InventoryStore $InventoryStore -Retention $Retention
 
     # -----------------------------------------------------------------------
     # 4. Pick a snapshot
@@ -372,7 +393,7 @@ try {
     # -----------------------------------------------------------------------
 
     Write-Head "Inventory: $snapshotLabel"
-    & $InventoryScript -Path "$SnapshotDrive\" -Source $snapshotLabel -InventoryStore $InventoryStore
+    & $InventoryScript -Path "$SnapshotDrive\" -Source $snapshotLabel -InventoryStore $InventoryStore -Retention $Retention
 
     $readyToCompare = $true
 }
@@ -404,11 +425,14 @@ if ($readyToCompare) {
     Write-Head "Comparing $snapshotLabel against live"
 
     & $CompareScript `
-        -Baseline          $snapshotLabel `
-        -Current           'live' `
-        -InventoryStore    $InventoryStore `
-        -MinRatio          $MinRatio `
-        -BaselineMinRatio  $BaselineMinRatio `
-        -RatioDropPercent  $RatioDropPercent `
-        -SizeChangePercent $SizeChangePercent
+        -Baseline            $snapshotLabel `
+        -Current             'live' `
+        -InventoryStore      $InventoryStore `
+        -MinRatio            $MinRatio `
+        -BaselineMinRatio    $BaselineMinRatio `
+        -RatioDropPercent    $RatioDropPercent `
+        -SizeChangePercent   $SizeChangePercent `
+        -MinHistoryPoints    $MinHistoryPoints `
+        -HistorySensitivity  $HistorySensitivity `
+        -CadenceTolerance    $CadenceTolerance
 }
