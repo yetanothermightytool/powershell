@@ -24,9 +24,9 @@ https://helpcenter.veeam.com/docs/vbr/userguide/application_backup_repository.ht
 This script closes that gap. It mounts the live repository and one of its
 snapshots, reads what is in both, and reports what changed between them.
 
-It never opens an archive. Everything comes from file names, file sizes, the log
-the application writes next to each dump, and the first four bytes of each
-archive. A 100 MB backup costs four bytes of reading.
+It never opens an archive. Everything comes from file names, file sizes, sibling
+files such as the log written next to each dump, and the first 512 bytes. A
+100 MB backup costs half a kilobyte of reading.
 
 It works on any application writing into the export, not only on Proxmox. Files
 are grouped into series by stripping timestamps out of their names, so
