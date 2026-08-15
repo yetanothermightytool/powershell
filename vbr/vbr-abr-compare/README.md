@@ -2,7 +2,7 @@
 
 ## Version Information
 ~~~~
-Version : 1.0 (August 2026)
+Version : 1.1 (August 2026)
 Requires: Veeam Backup & Replication v13.1
           Application Backup Repository
           Windows NFS Client
@@ -28,17 +28,53 @@ It never opens an archive. Everything comes from file names, file sizes, the log
 the application writes next to each dump, and the first four bytes of each
 archive. A 100 MB backup costs four bytes of reading.
 
-What it reports:
+It works on any application writing into the export, not only on Proxmox. Files
+are grouped into series by stripping timestamps out of their names, so
+`switch-core-01-2026-08-01.cfg` and `switch-core-01-2026-08-02.cfg` become one
+series without anything having to be configured. Recognised formats add what
+only they can know: vzdump contributes the backup log result, the compression
+ratio and the disk check.
+
+What it reports, without knowing the source:
 
 | Signal | Meaning |
 |---|---|
-| Compression ratio collapse | A guest that always compressed 3.2:1 and now manages 1.05:1 has encrypted content. Judged on the absolute ratio, not on a percentage drop. This is the ransomware signal, without reading the payload. |
-| Modified archive | A finished dump is written once and never touched again. If its size or header changed, someone rewrote it. |
-| Backup with no data | A backup can report success and contain nothing. Exclude the disks and the job still goes green. |
-| Guest disappeared | A source that silently stopped writing looks exactly like one that works. Nothing else catches this. |
-| Invalid header | The first bytes no longer match the format the file name claims. Truncated or overwritten. |
+| Overdue series | Written every 24 hours for weeks, then nothing for 70. The expected interval comes from the series itself, not from configuration. An ABR has no job event, so nothing else catches this. |
+| Cadence gap | A stretched interval inside an otherwise regular series. |
+| Write window | Always written around 02:00, now appearing at 14:00. Says nothing about the content, but says the schedule changed. |
+| Size collapse | The newest file is an order of magnitude smaller than its predecessors. What a truncated or aborted write looks like. |
+| Modified file | A finished backup file is written once and never touched again. A change in size or content format means someone rewrote it, and there is no benign explanation. |
+| Format mismatch | The leading bytes disagree with what the extension claims, or the format changes inside a series. |
+| Timestamp skew | A file named `...2026-08-01...` whose modification time is a week later was touched after the fact. |
+| Series disappeared | A source that was there before and now writes nothing at all. |
 
-The current version reads Proxmox `vzdump` backups (LXC containers).
+And with a recognised format, currently Proxmox `vzdump`:
+
+| Signal | Meaning |
+|---|---|
+| Compression anomaly | Encrypted data does not compress. Judged against everything the series has ever shown, which is what catches partial encryption. See the notes. |
+| Backup with no data | A backup can report success and contain nothing. Exclude the disks and the job still goes green. |
+| Failed backup | The result from the application's own log, which is the success signal an ABR itself cannot provide. |
+
+When something does look wrong, the output also suggests where to restore from.
+Every file in every snapshot is judged, per series, so the suggestion accounts
+for the first bad backup rather than the one that finally crossed the threshold.
+Those are usually not the same snapshot.
+
+~~~
+Possible clean restore point
+----------------------------
+Based on metadata only. A starting point for a look, not a verdict.
+
+  dump/vzdump-lxc-601
+      last unremarkable: snapshot_20260809_092451  (2026-08-09 09:24:51)
+      2 later snapshot(s) look wrong, from vzdump-lxc-601-2026_08_09-11_31_18.tar.zst: ratio 2.17 against a history of 3.41
+~~~
+
+It rests on metadata alone. Nothing has opened an archive or looked at its
+contents, so it says a snapshot looks unremarkable, not that it is clean. Verify
+before restoring.
+
 
 ## Prerequisites
 
@@ -87,16 +123,20 @@ The main script. It does the whole run: mount, inventory, compare, clean up.
 - `Credential` - Optional. Pass a credential object for unattended runs.
 - `Abr` - Repository name. Wildcards allowed. Picks the only repository when there is just one.
 - `Snapshot` - Snapshot to compare against. Omit for a selection list, or use `latest`, or a name with wildcards.
-- `AllowFrom` _(mandatory)_ - Host or network allowed to mount the snapshot, e.g. `10.10.11.55`. Without it Veeam creates the clone but no NFS export, and there is nothing to mount.
+- `AllowFrom` _(mandatory)_ - Host or network allowed to mount the snapshot, e.g. `10.10.11.100`. Without it Veeam creates the clone but no NFS export, and there is nothing to mount.
 - `LiveDrive` - Drive letter for the live repository. Default `Y:`.
 - `SnapshotDrive` - Drive letter for the snapshot. Default `Z:`.
 - `MountPath` - Name of the temporary NFS export. Default `<repository>-ir`.
 - `Reason` - Recorded by Veeam in its own session log. Default `Automated backup comparison`.
 - `InventoryStore` - Directory holding one inventory per source. Default `.\inventory`.
-- `MinRatio` - Alert when a guest's compression ratio falls below this. Default `1.2`.
-- `BaselineMinRatio` - Only alert when the baseline ratio was above this. Default `1.5`. Keeps guests that never compressed well from alerting on every run.
-- `RatioDropPercent` - Report a notice when the ratio falls by this much without dropping below `MinRatio`. Default `30`.
-- `SizeChangePercent` - Flag a guest when its archive size changes by this much. Default `50`.
+- `Retention` - Days to keep inventory files. Default `365`. Use `0` to keep everything.
+- `MinHistoryPoints` - Past values a series needs before the history is used instead of the two-point comparison. Default `8`.
+- `HistorySensitivity` - How far outside its own history a value has to sit before it is an alert, in robust standard deviations. Default `3`.
+- `CadenceTolerance` - Report a series as overdue when the time since its last file exceeds its usual interval by this factor. Default `2.5`.
+- `MinRatio` - Two-point fallback: alert when the ratio drops below this. Default `1.2`.
+- `BaselineMinRatio` - Two-point fallback: only alert when the baseline was above this. Default `1.5`.
+- `RatioDropPercent` - Two-point fallback: notice when the ratio falls by this much without crossing `MinRatio`. Default `30`.
+- `SizeChangePercent` - Two-point fallback: flag a size change of this much. Default `50`.
 
 ### Supporting scripts
 
@@ -203,6 +243,13 @@ window and should not be left behind.
 Inventories are cached per source. A snapshot never changes, so scanning it twice
 gives the same result - the file is simply overwritten instead of piling up.
 
+They are also kept far longer than the snapshots themselves. A record is about
+800 bytes, so a year of daily snapshots across 50 sources costs roughly 15 MB.
+Once Veeam drops a snapshot after its retention period, the inventory is the
+only remaining evidence that a source was backed up on that day, which is why
+the default is 365 days and why the script warns when `-Retention` is set
+shorter than the repository's own retention.
+
 ## Notes
 
 Access is requested as `Read`, and the mount adds `ro` on top. The script never
@@ -215,20 +262,53 @@ Failure detection is deliberately conservative. A log that cannot be parsed is
 reported as `Incomplete`, never as `Success`. The script will not tell you a
 backup is fine when it does not know.
 
-The compression alert uses an absolute ratio rather than a percentage drop,
-because encryption is not a gradual effect. Either data has structure and
-compresses, or it does not. A guest that went from 3.24 to 2.20 lost 32 percent
-and is perfectly normal, while one that went from 1.15 to 1.02 lost 11 percent
-and was encrypted. `BaselineMinRatio` excludes guests that never compressed well
-in the first place, such as media stores: they sit near 1.0 permanently and
-would alert on every run. For those, compression is not a usable signal at all,
-and the script stays quiet rather than reporting a number that means nothing.
+### About the compression signal
+
+Encrypted data does not compress, which makes the compression ratio a ransomware
+indicator that costs nothing to obtain. It has limits, and they are worth
+knowing before relying on it.
+
+**Partial encryption is the reason the history matters.** Ransomware often
+encrypts only part of a file, to work faster and stay under detection
+thresholds. Starting from a 3.24 baseline:
+
+| Encrypted | Resulting ratio |
+|---|---|
+| 10% | 2.65 |
+| 30% | 1.94 |
+| 50% | 1.53 |
+| 70% | 1.26 |
+| 90% | 1.07 |
+
+A fixed threshold of 1.2 only fires at roughly 75% encrypted content and above.
+That is why the script compares against everything a series has ever shown
+instead. A series that sat between 3.20 and 3.28 twelve times running and now
+shows 1.94 is far outside anything it has ever done, even though 1.94 looks
+harmless on its own. The tighter the history, the smaller the deviation that
+means something, and no fixed threshold can express that.
 
 The PowerShell script documentation was prepared with AI assistance. The scripts were reviewed for common security issues.
 
 ---
 
 ## Version History
+- 1.1
+  - Generic file mode. Any application writing into the export is covered, not
+    only Proxmox. Files are grouped into series by stripping timestamps out of
+    their names.
+  - Format detection from the leading bytes rather than the extension, with
+    vzdump as the first specific handler. The detected format is stored per
+    file, which makes coverage visible and format drift inside a series
+    detectable.
+  - Cadence, gap, write window and size plausibility checks that need no
+    knowledge of the source.
+  - Compression judged against the full history of a series instead of a single
+    earlier point, which is what catches partial encryption. Falls back to the
+    two-point comparison until enough history exists.
+  - Suggests a possible clean restore point per series, judging every file in
+    every snapshot rather than only the newest one.
+  - Inventory retention with `-Retention`, default 365 days.
+  - Inventory schema version 2. Version 1 files are skipped with a warning.
 - 1.0
   - Initial version
 
